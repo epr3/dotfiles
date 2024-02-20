@@ -21,30 +21,6 @@ M.general = {
 	},
 }
 
-M.neogit = {
-	plugin = true,
-	n = {
-		["<leader>gn"] = {
-			function()
-				require("neogit").open()
-			end,
-			"Open Neogit",
-		},
-		["<leader>gc"] = {
-			function()
-				require("neogit").open({ "commit" })
-			end,
-			"Open Neogit Commit",
-		},
-		["<leader>gs"] = {
-			function()
-				require("neogit").open({ kind = "split" })
-			end,
-			"Open Neogit Split",
-		},
-	},
-}
-
 M.dap = {
 	plugin = true,
 	n = {

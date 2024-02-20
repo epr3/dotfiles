@@ -208,16 +208,4 @@ return {
 			require("custom.configs.conform")
 		end,
 	},
-	{
-		"NeogitOrg/neogit",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"sindrets/diffview.nvim",
-			"nvim-telescope/telescope.nvim",
-		},
-		config = true,
-		init = function()
-			require("core.utils").load_mappings("neogit")
-		end,
-	},
 }
