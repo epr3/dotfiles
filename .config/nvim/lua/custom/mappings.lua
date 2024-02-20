@@ -9,7 +9,7 @@ M.general = {
 			end,
 			"formatting",
 		},
-		["<leader>vc"] = {
+		["<leader>gg"] = {
 			function()
 				local nvterm = require("nvterm.terminal")
 				nvterm.send("lazygit && exit", "float")
