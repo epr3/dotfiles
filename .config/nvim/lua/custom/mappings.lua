@@ -24,31 +24,31 @@ M.general = {
 M.trouble = {
 	plugin = true,
 	n = {
-		["<leader>px"] = {
+		["<leader>yx"] = {
 			function()
 				require("trouble").toggle()
 			end,
 			"Toggle Trouble",
 		},
-		["<leader>pw"] = {
+		["<leader>yw"] = {
 			function()
 				require("trouble").toggle("workspace_diagnostics")
 			end,
 			"Toggle workspace diagnostics",
 		},
-		["<leader>pd"] = {
+		["<leader>yd"] = {
 			function()
 				require("trouble").toggle("document_diagnostics")
 			end,
 			"Toggle document diagnostics",
 		},
-		["<leader>pq"] = {
+		["<leader>yq"] = {
 			function()
 				require("trouble").toggle("quickfix")
 			end,
 			"Toggle quickfix",
 		},
-		["<leader>pl"] = {
+		["<leader>yl"] = {
 			function()
 				require("trouble").toggle("loclist")
 			end,
