@@ -88,13 +88,20 @@ return {
     },
   },
   {
-    "stevearc/conform.nvim",
-    --  for users those who want auto-save conform + lazyloading!
-    event = "BufWritePre",
-    config = function()
-      require("custom.configs.conform")
+    "nvimtools/none-ls.nvim",
+    event = "VeryLazy",
+    opts = function()
+      return require("custom.configs.null-ls")
     end,
   },
+  --{
+  --	"stevearc/conform.nvim",
+  --  for users those who want auto-save conform + lazyloading!
+  --	event = "BufWritePre",
+  --	config = function()
+  --		require("custom.configs.conform")
+  --	end,
+  --	},
   {
     "windwp/nvim-ts-autotag",
     ft = {
@@ -107,6 +114,13 @@ return {
     },
     config = function()
       require("nvim-ts-autotag").setup()
+    end,
+  },
+  {
+    "folke/trouble.nvim",
+    dependencies = "nvim-tree/nvim-web-devicons",
+    init = function()
+      require("core.utils").load_mappings("trouble")
     end,
   },
 }
