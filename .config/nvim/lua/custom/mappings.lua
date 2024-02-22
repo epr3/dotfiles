@@ -30,6 +30,10 @@ M.dap = {
 			end,
 			"Add breakpoint at line",
 		},
+		["<leader>dr"] = {
+			"<cmd> DapContinue <CR>",
+			"Run or continue debugger",
+		},
 		["<leader>dus"] = {
 			function()
 				local widgets = require("dap.ui.widgets")
