@@ -14,6 +14,7 @@ local server_settings = {
 	unocss = {},
 	astro = {},
 	marksman = {},
+	gopls = require("custom.configs.servers.gopls"),
 }
 
 local conf = require("neoconf")

@@ -19,6 +19,8 @@ return {
 				"vue",
 				"svelte",
 				"astro",
+
+				"go",
 			},
 		},
 	},
@@ -30,6 +32,25 @@ return {
 		config = function()
 			require("custom.configs.dap")
 			require("core.utils").load_mappings("dap")
+		end,
+	},
+	{
+		"rcarriga/nvim-dap-ui",
+		dependencies = "mfussenegger/nvim-dap",
+		config = function()
+			require("custom.configs.dap-ui")
+		end,
+	},
+	{
+		"leoluz/nvim-dap-go",
+		ft = "go",
+		dependencies = {
+			"mfussenegger/nvim-dap",
+			"rcarriga/nvim-dap-ui",
+		},
+		config = function(_, opts)
+			require("dap-go").setup(opts)
+			require("core.utils").load_mappings("dap_go")
 		end,
 	},
 	{
@@ -85,6 +106,11 @@ return {
 				"js-debug-adapter",
 				"marksman",
 				"markdownlint",
+				"gopls",
+				"gofumpt",
+				"golines",
+				"goimports",
+				"delve",
 			},
 		},
 	},
@@ -95,14 +121,6 @@ return {
 			return require("custom.configs.null-ls")
 		end,
 	},
-	--{
-	--	"stevearc/conform.nvim",
-	--  for users those who want auto-save conform + lazyloading!
-	--	event = "BufWritePre",
-	--	config = function()
-	--		require("custom.configs.conform")
-	--	end,
-	--	},
 	{
 		"windwp/nvim-ts-autotag",
 		ft = {

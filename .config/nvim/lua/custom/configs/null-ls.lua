@@ -18,6 +18,9 @@ local opts = {
 		null_ls.builtins.formatting.stylua,
 		null_ls.builtins.diagnostics.markdownlint,
 		null_ls.builtins.formatting.markdownlint,
+		null_ls.builtins.formatting.gofumpt,
+		null_ls.builtins.formatting.goimports,
+		null_ls.builtins.formatting.golines,
 	},
 	on_attach = function(client, bufnr)
 		if client.supports_method("textDocument/formatting") then
