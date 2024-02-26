@@ -2,12 +2,24 @@ local M = {}
 
 M.general = {
 	n = {
-		--  format with conform
-		["<leader>fm"] = {
-			function()
-				require("conform").format()
-			end,
-			"formatting",
+		["<C-h>"] = {
+			"<cmd> TmuxNavigateLeft<CR>",
+			"window left",
+		},
+
+		["<C-j>"] = {
+			"<cmd> TmuxNavigateDown<CR>",
+			"window down",
+		},
+
+		["<C-l>"] = {
+			"<cmd> TmuxNavigateRight<CR>",
+			"window right",
+		},
+
+		["<C-k>"] = {
+			"<cmd> TmuxNavigateUp<CR>",
+			"window up",
 		},
 		["<leader>gg"] = {
 			function()
@@ -17,6 +29,63 @@ M.general = {
 				nvterm.toggle("float")
 			end,
 			"Toggle lazygit",
+		},
+	},
+}
+
+M.harpoon = {
+	plugin = true,
+	n = {
+		["<leader>aa"] = {
+			function()
+				require("harpoon"):list():append()
+			end,
+			"Append to list harpoon",
+		},
+		["<leader>ae"] = {
+			function()
+				require("harpoon").ui:toggle_quick_menu(require("harpoon"):list())
+			end,
+			"Toggle harpoon list",
+		},
+		["<leader>ah"] = {
+			function()
+				require("harpoon"):list():select(1)
+			end,
+			"Select first file harpoon",
+		},
+
+		["<leader>aj"] = {
+			function()
+				require("harpoon"):list():select(2)
+			end,
+			"Select second file harpoon",
+		},
+
+		["<leader>ak"] = {
+			function()
+				require("harpoon"):list():select(3)
+			end,
+			"Select third file harpoon",
+		},
+
+		["<leader>al"] = {
+			function()
+				require("harpoon"):list():select(4)
+			end,
+			"Select fourth file harpoon",
+		},
+		["<leader>ap"] = {
+			function()
+				require("harpoon"):list():prev()
+			end,
+			"Previous buffer harpoon",
+		},
+		["<leader>an"] = {
+			function()
+				require("harpoon"):list():next()
+			end,
+			"Next buffer harpoon",
 		},
 	},
 }

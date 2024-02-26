@@ -10,6 +10,7 @@ local server_settings = {
 	lua_ls = require("custom.configs.servers.lua_ls"),
 	jsonls = require("custom.configs.servers.jsonls"),
 	tsserver = require("custom.configs.servers.tsserver"),
+	eslint = require("custom.configs.servers.eslint"),
 	tailwindcss = {},
 	unocss = {},
 	astro = {},

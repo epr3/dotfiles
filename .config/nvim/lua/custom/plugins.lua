@@ -37,6 +37,9 @@ return {
 	{
 		"rcarriga/nvim-dap-ui",
 		dependencies = "mfussenegger/nvim-dap",
+		init = function()
+			require("core.utils").load_mappings("harpoon")
+		end,
 		config = function()
 			require("custom.configs.dap-ui")
 		end,
@@ -141,5 +144,23 @@ return {
 		init = function()
 			require("core.utils").load_mappings("trouble")
 		end,
+	},
+	{
+		"ThePrimeagen/harpoon",
+		branch = "harpoon2",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+		init = function()
+			require("core.utils").load_mappings("harpoon")
+		end,
+		config = function()
+			require("custom.configs.harpoon")
+		end,
+	},
+	{
+		"christoomey/vim-tmux-navigator",
+		lazy = false,
 	},
 }
