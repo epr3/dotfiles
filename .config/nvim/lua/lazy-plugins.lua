@@ -23,6 +23,8 @@ require('lazy').setup({
 
   require 'nvim/plugins/conform',
 
+  require 'nvim/plugins/autopairs',
+
   require 'nvim/plugins/cmp',
 
   require 'nvim/plugins/todo-comments',
