@@ -31,4 +31,3 @@ eval "$(zoxide init --cmd cd zsh)"
 alias ll="exa -l -g --icons --git"
 alias llt="exa -1 --icons --tree --git-ignore"
 alias vim=nvim
-
