@@ -46,6 +46,8 @@ require('lazy').setup({
   require 'nvim/plugins/trouble',
 
   require 'nvim/plugins/lualine',
+
+  require 'nvim/plugins/neogit',
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
