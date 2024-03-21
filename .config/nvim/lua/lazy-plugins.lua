@@ -52,6 +52,12 @@ require('lazy').setup({
   require 'nvim/plugins/tmux',
 
   require 'nvim/plugins/dashboard',
+
+  require 'nvim/plugins/lightbulb',
+
+  require 'nvim/plugins/surround',
+
+  require 'nvim/plugins/treesitter-context',
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
