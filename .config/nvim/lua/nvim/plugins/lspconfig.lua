@@ -9,11 +9,11 @@ return {
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',  opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim',  opts = {} },
+      { 'folke/neodev.nvim', opts = {} },
       { 'folke/neoconf.nvim', opts = {} },
     },
     config = function()
@@ -137,16 +137,17 @@ return {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        emmet_ls = require("nvim.servers.emmet_ls"),
-        volar = require("nvim.servers.volar"),
-        lua_ls = require("nvim.servers.lua_ls"),
-        jsonls = require("nvim.servers.jsonls"),
-        tsserver = require("nvim.servers.tsserver"),
-        eslint = require("nvim.servers.eslint"),
-        tailwindcss = require("nvim.servers.tailwind"),
+        emmet_ls = require 'nvim.servers.emmet_ls',
+        volar = require 'nvim.servers.volar',
+        lua_ls = require 'nvim.servers.lua_ls',
+        jsonls = require 'nvim.servers.jsonls',
+        tsserver = require 'nvim.servers.tsserver',
+        eslint = require 'nvim.servers.eslint',
+        tailwindcss = require 'nvim.servers.tailwind',
         astro = {},
         marksman = {},
-        gopls = require("nvim.servers.gopls"),
+        svelte = {},
+        gopls = require 'nvim.servers.gopls',
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
@@ -177,6 +178,7 @@ return {
         'astro-language-server',
         'vue-language-server',
         'typescript-language-server',
+        'svelte-language-server',
         'lua-language-server',
         'emmet-ls',
         'eslint-lsp',
@@ -187,7 +189,7 @@ return {
         'gopls',
         'gofumpt',
         'goimports',
-        'golines'
+        'golines',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -198,15 +200,13 @@ return {
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
             -- certain features of an LSP (for example, turning off formatting for tsserver)
-            local conf = require("neoconf")
+            local conf = require 'neoconf'
 
             local is_disabled = function(client)
-              return conf.get(client .. ".disable")
+              return conf.get(client .. '.disable')
             end
 
-            server.capabilities = vim.tbl_deep_extend('force', {
-            }, capabilities, server.capabilities or {})
-
+            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
 
             if not is_disabled(server_name) then
               require('lspconfig')[server_name].setup(server)
