@@ -33,9 +33,13 @@ return {
           :find()
       end
 
-      vim.keymap.set('n', '<leader>a', function()
+      vim.keymap.set('n', '<leader>ha', function()
         harpoon:list():append()
       end, { desc = '[A]ppend to Harpoon' })
+      vim.keymap.set('n', '<leader>hd', function()
+        harpoon:list():remove()
+      end, { desc = '[D]elete from Harpoon' })
+
       vim.keymap.set('n', '<C-a>', function()
         toggle_telescope(harpoon:list())
       end)
