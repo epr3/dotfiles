@@ -2,7 +2,7 @@
 family = "Inconsolata Nerd Font"
 
 [font]
-size = 20.0
+size = 18.0
 
 [window]
 option_as_alt = "OnlyLeft"
