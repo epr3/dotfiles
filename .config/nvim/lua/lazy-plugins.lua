@@ -58,6 +58,8 @@ require('lazy').setup({
   require 'nvim/plugins/surround',
 
   require 'nvim/plugins/treesitter-context',
+
+  require 'nvim/plugins/gitignore',
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
