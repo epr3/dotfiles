@@ -1,18 +1,24 @@
 return {
   { -- Autoformat
     'stevearc/conform.nvim',
-    event = { "BufWritePre" },
-    cmd = { "ConformInfo" },
+    event = { 'BufWritePre' },
+    cmd = { 'ConformInfo' },
     opts = {
       formatters_by_ft = {
-        lua = { "stylua" },
+        lua = { 'stylua' },
 
-        css = { "prettier" },
-        html = { "prettier" },
+        css = { 'prettier' },
+        html = { 'prettier' },
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        vue = { 'prettier' },
+        astro = { 'prettier' },
 
-        sh = { "shfmt" },
+        sh = { 'shfmt' },
 
-        go = { "gofumpt", "goimports", "golines" },
+        go = { 'gofumpt', 'goimports', 'golines' },
       },
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -26,7 +32,7 @@ return {
           typescript = true,
           typescriptreact = true,
           javascript = true,
-          javascriptreact = true
+          javascriptreact = true,
         }
         return {
           timeout_ms = 500,
