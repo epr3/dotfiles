@@ -33,6 +33,27 @@ return {
       --   return '%2l:%-2v'
       -- end
 
+      local starter = require 'mini.starter'
+      starter.setup {
+        items = {
+          starter.sections.builtin_actions(),
+          starter.sections.recent_files(5, false),
+          starter.sections.recent_files(5, true),
+          { name = 'Lazy', action = 'Lazy', section = 'Lazy' },
+        },
+        silent = true,
+      }
+
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LazyVimStarted',
+        callback = function()
+          local stats = require('lazy').stats()
+          local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
+          starter.config.footer = 'Neovim loaded ' .. stats.count .. ' plugins in ' .. ms .. 'ms'
+          pcall(starter.refresh)
+        end,
+      })
+
       require('mini.files').setup()
 
       vim.keymap.set('n', '<leader>n', require('mini.files').open, { desc = 'Display Mi[n]i Files' })

@@ -51,7 +51,7 @@ require('lazy').setup({
 
   require 'nvim/plugins/tmux',
 
-  require 'nvim/plugins/dashboard',
+  --  require 'nvim/plugins/dashboard',
 
   require 'nvim/plugins/lightbulb',
 
