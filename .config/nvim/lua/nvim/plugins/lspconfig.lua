@@ -117,7 +117,6 @@ return {
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
-
       local servers = {
         emmet_ls = require 'nvim.servers.emmet_ls',
         lua_ls = require 'nvim.servers.lua_ls',
@@ -138,9 +137,6 @@ return {
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
         --
       }
 
