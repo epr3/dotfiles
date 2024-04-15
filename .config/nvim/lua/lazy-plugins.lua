@@ -37,7 +37,7 @@ require('lazy').setup({
 
   require 'nvim/plugins/debug',
 
-  require 'nvim/plugins/indent_line',
+  require 'nvim/plugins/indent-line',
 
   require 'nvim/plugins/copilot',
 
