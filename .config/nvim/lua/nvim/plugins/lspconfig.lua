@@ -101,7 +101,7 @@ return {
         'stylua', -- Used to format lua code
         'astro-language-server',
         'vue-language-server',
-        'typescript-language-server',
+        'vtsls',
         'svelte-language-server',
         'lua-language-server',
         'emmet-ls',
@@ -121,7 +121,7 @@ return {
         emmet_ls = require 'nvim.servers.emmet_ls',
         lua_ls = require 'nvim.servers.lua_ls',
         jsonls = require 'nvim.servers.jsonls',
-        tsserver = require 'nvim.servers.tsserver',
+        vtsls = require 'nvim.servers.vtsls',
         eslint = require 'nvim.servers.eslint',
         tailwindcss = require 'nvim.servers.tailwind',
         volar = require 'nvim.servers.volar',
@@ -129,15 +129,6 @@ return {
         marksman = {},
         svelte = {},
         gopls = require 'nvim.servers.gopls',
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
       }
 
       require('mason-lspconfig').setup {
