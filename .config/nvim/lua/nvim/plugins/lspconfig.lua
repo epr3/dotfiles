@@ -100,8 +100,8 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
         'astro-language-server',
-        { 'vue-language-server', version = '2.0.7' },
-        'vtsls',
+        'vue-language-server',
+        'typescript-language-server',
         'svelte-language-server',
         'lua-language-server',
         'emmet-ls',
@@ -121,7 +121,7 @@ return {
         emmet_ls = require 'nvim.servers.emmet_ls',
         lua_ls = require 'nvim.servers.lua_ls',
         jsonls = require 'nvim.servers.jsonls',
-        vtsls = require 'nvim.servers.vtsls',
+        tsserver = require 'nvim.servers.tsserver',
         eslint = require 'nvim.servers.eslint',
         tailwindcss = require 'nvim.servers.tailwind',
         volar = require 'nvim.servers.volar',
