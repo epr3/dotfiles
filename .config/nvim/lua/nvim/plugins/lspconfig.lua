@@ -100,7 +100,7 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
         'astro-language-server',
-        'vue-language-server',
+        { 'vue-language-server', version = '2.0.7' },
         'vtsls',
         'svelte-language-server',
         'lua-language-server',
