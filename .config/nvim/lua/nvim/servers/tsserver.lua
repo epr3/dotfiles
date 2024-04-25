@@ -15,5 +15,6 @@ return {
     'typescriptreact',
     'javascript',
     'javascriptreact',
+    'vue',
   },
 }
