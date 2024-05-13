@@ -13,18 +13,18 @@ return {
         'vim',
         'vimdoc',
 
-				-- web dev
-				"css",
-				"javascript",
-				"typescript",
-				"tsx",
-				"json",
-				"jsonc",
-				"vue",
-				"svelte",
-				"astro",
+        -- web dev
+        'css',
+        'javascript',
+        'typescript',
+        'tsx',
+        'json',
+        'jsonc',
+        'vue',
+        'svelte',
+        'astro',
 
-				"go",
+        'go',
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
@@ -43,8 +43,14 @@ return {
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
+      vim.filetype.add {
+        extension = {
+          mdx = 'mdx',
+        },
+      }
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
+      vim.treesitter.language.register('markdown', 'mdx')
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
