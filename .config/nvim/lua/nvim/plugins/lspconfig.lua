@@ -108,7 +108,6 @@ return {
         'eslint-lsp',
         'json-lsp',
         'tailwindcss-language-server',
-        'marksman',
         'markdownlint',
         'gopls',
         'gofumpt',
