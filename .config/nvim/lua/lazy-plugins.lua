@@ -13,6 +13,8 @@ require('lazy').setup({
 
   require 'nvim/plugins/theme',
 
+  require 'nvim/plugins/web-devicons',
+
   require 'nvim/plugins/gitsigns',
 
   require 'nvim/plugins/which-key',
@@ -50,8 +52,6 @@ require('lazy').setup({
   require 'nvim/plugins/neogit',
 
   require 'nvim/plugins/tmux',
-
-  --  require 'nvim/plugins/dashboard',
 
   require 'nvim/plugins/lightbulb',
 
