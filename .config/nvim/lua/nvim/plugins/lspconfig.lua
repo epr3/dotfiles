@@ -113,6 +113,7 @@ return {
         'gofumpt',
         'goimports',
         'golines',
+        'templ',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -127,6 +128,7 @@ return {
         astro = {},
         marksman = {},
         svelte = {},
+        templ = {},
         gopls = require 'nvim.servers.gopls',
       }
 
