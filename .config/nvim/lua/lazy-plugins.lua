@@ -41,15 +41,11 @@ require('lazy').setup({
 
   require 'nvim/plugins/indent-line',
 
-  require 'nvim/plugins/copilot',
-
   require 'nvim/plugins/neotest',
 
   require 'nvim/plugins/trouble',
 
   require 'nvim/plugins/lualine',
-
-  require 'nvim/plugins/neogit',
 
   require 'nvim/plugins/tmux',
 
