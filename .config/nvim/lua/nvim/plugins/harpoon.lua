@@ -34,7 +34,7 @@ return {
       end
 
       vim.keymap.set('n', '<leader>ha', function()
-        harpoon:list():append()
+        harpoon:list():add()
       end, { desc = '[A]ppend to Harpoon' })
       vim.keymap.set('n', '<leader>hd', function()
         harpoon:list():remove()
@@ -58,10 +58,10 @@ return {
       end, { desc = '[H]arpoon window [4]' })
 
       -- Toggle previous & next buffers stored within Harpoon list
-      vim.keymap.set('n', '<C-H>', function()
+      vim.keymap.set('n', '<C-P>', function()
         harpoon:list():prev()
       end)
-      vim.keymap.set('n', '<C-L>', function()
+      vim.keymap.set('n', '<C-N>', function()
         harpoon:list():next()
       end)
     end,
