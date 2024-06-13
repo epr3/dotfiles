@@ -51,12 +51,6 @@ return {
           local disable_filetypes = {
             c = true,
             cpp = true,
-            astro = true,
-            vue = true,
-            typescript = true,
-            typescriptreact = true,
-            javascript = true,
-            javascriptreact = true,
           }
           return {
             timeout_ms = 500,
