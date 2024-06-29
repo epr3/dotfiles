@@ -43,3 +43,5 @@
     description: Generate SSH key
   - [eval "$(ssh-agent -s)", add ssh key to ssh-agent]
   - [touch ~/.ssh/config, add ssh config]
+  - [source ~/.zshrc, reload zsh]
+  - [tmux source-file ~/.config/tmux/tmux.conf, reload tmux]
