@@ -37,7 +37,7 @@
   - [curl -fsSL https://get.pnpm.io/install.sh | sh -, installing pnpm]
   - [pnpm env use --global lts, set node version to lts]
   - 
-    command: read email && ssh-keygen -t ed25519 -C $var
+    command: read email && ssh-keygen -t ed25519 -C $email
     stdin: true
     stdout: true
     description: Generate SSH key
