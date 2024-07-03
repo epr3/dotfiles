@@ -1,63 +1,69 @@
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  install = {
+    colorscheme = { 'tokyonight' },
+  },
+  checker = { enabled = true },
+  spec = {
+    -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+    'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  -- Use `opts = {}` to force a plugin to be loaded.
-  --
-  --  This is equivalent to:
-  --    require('Comment').setup({})
+    -- Use `opts = {}` to force a plugin to be loaded.
+    --
+    --  This is equivalent to:
+    --    require('Comment').setup({})
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+    -- "gc" to comment visual regions/lines
+    { 'numToStr/Comment.nvim', opts = {} },
 
-  require 'nvim/plugins/theme',
+    require 'nvim/plugins/theme',
 
-  require 'nvim/plugins/web-devicons',
+    require 'nvim/plugins/web-devicons',
 
-  require 'nvim/plugins/gitsigns',
+    require 'nvim/plugins/gitsigns',
 
-  require 'nvim/plugins/which-key',
+    require 'nvim/plugins/which-key',
 
-  require 'nvim/plugins/telescope',
+    require 'nvim/plugins/telescope',
 
-  require 'nvim/plugins/lspconfig',
+    require 'nvim/plugins/lspconfig',
 
-  require 'nvim/plugins/conform',
+    require 'nvim/plugins/conform',
 
-  require 'nvim/plugins/autopairs',
+    require 'nvim/plugins/autopairs',
 
-  require 'nvim/plugins/cmp',
+    require 'nvim/plugins/cmp',
 
-  require 'nvim/plugins/todo-comments',
+    require 'nvim/plugins/todo-comments',
 
-  require 'nvim/plugins/mini',
+    require 'nvim/plugins/mini',
 
-  require 'nvim/plugins/treesitter',
+    require 'nvim/plugins/treesitter',
 
-  require 'nvim/plugins/harpoon',
+    require 'nvim/plugins/harpoon',
 
-  require 'nvim/plugins/debug',
+    require 'nvim/plugins/debug',
 
-  require 'nvim/plugins/indent-line',
+    require 'nvim/plugins/indent-line',
 
-  require 'nvim/plugins/neotest',
+    require 'nvim/plugins/neotest',
 
-  require 'nvim/plugins/trouble',
+    require 'nvim/plugins/trouble',
 
-  require 'nvim/plugins/lualine',
+    require 'nvim/plugins/lualine',
 
-  require 'nvim/plugins/tmux',
+    require 'nvim/plugins/tmux',
 
-  require 'nvim/plugins/lightbulb',
+    require 'nvim/plugins/lightbulb',
 
-  require 'nvim/plugins/surround',
+    require 'nvim/plugins/surround',
 
-  require 'nvim/plugins/treesitter-context',
+    require 'nvim/plugins/treesitter-context',
 
-  require 'nvim/plugins/gitignore',
+    require 'nvim/plugins/gitignore',
 
-  require 'nvim/plugins/supermaven',
+    require 'nvim/plugins/supermaven',
+  },
 }, {
   ui = {
     -- If you have a Nerd Font, set icons to an empty table which will use the
