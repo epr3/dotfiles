@@ -3,7 +3,6 @@ require('lazy').setup({
   install = {
     colorscheme = { 'tokyonight' },
   },
-  checker = { enabled = true },
   spec = {
     -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
     'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
