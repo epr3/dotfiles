@@ -18,7 +18,7 @@ https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generati
 ### Update submodules
 
 ```bash
-git submodule update --init --recursive
+git submodule update --recursive --remote
 ```
 
 ## License
