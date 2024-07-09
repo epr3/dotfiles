@@ -4,38 +4,14 @@
       create: true
       glob: true
 
-- install-brew: true
-
 - clean: ['~']
 
 - link:
     ~/.config/: .config/*
     ~/.zshrc: .zshrc
 
-- brew:
-  - neovim
-  - zsh
-  - tmux
-  - lazygit
-  - rbenv
-  - pyenv
-  - zoxide
-  - fzf
-  - go
-  - ripgrep
-  - exa
-  - oh-my-posh
-  - btop
-  - jq
-
-- cask:
-  - alacritty
-  - amethyst
-  - font-inconsolata-nerd-font
-
 - shell:
-  - [curl -fsSL https://get.pnpm.io/install.sh | sh -, installing pnpm]
-  - [pnpm env use --global lts, set node version to lts]
+  - [git submodule update --init --recursive, Installing submodules]
   - 
     command: read email && ssh-keygen -t ed25519 -C $email
     stdin: true
@@ -43,5 +19,19 @@
     description: Generate SSH key
   - [eval "$(ssh-agent -s)", add ssh key to ssh-agent]
   - [touch ~/.ssh/config, add ssh config]
-  - [source ~/.zshrc, reload zsh]
-  - [tmux source-file ~/.config/tmux/tmux.conf, reload tmux]
+  - 
+    command: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    description: Install homebrew
+    stdout: true
+    stderr: true
+  - 
+    command: curl -fsSL https://get.pnpm.io/install.sh | sh -
+    description: Install pnpm
+    stdout: true
+    stderr: true
+  - [pnpm env use --global lts, set node version to lts]
+  - 
+    command: brew bundle 
+    description: Install homebrew packages
+    stdout: true
+    stderr: true

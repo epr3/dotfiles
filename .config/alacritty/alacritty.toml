@@ -13,6 +13,3 @@ option_as_alt = "OnlyLeft"
 
 [shell] 
 program = "/opt/homebrew/bin/tmux"
-
-[env]
-TERM = "xterm-256color"
