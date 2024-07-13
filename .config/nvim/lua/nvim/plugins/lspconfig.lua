@@ -99,7 +99,6 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
-        'angular-language-server',
         'astro-language-server',
         'css-lsp',
         'vue-language-server',
@@ -132,7 +131,6 @@ return {
         marksman = {},
         svelte = {},
         templ = {},
-        angularls = {},
         gopls = require 'nvim.servers.gopls',
       }
 
