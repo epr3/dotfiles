@@ -99,22 +99,15 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format lua code
-        'astro-language-server',
         'css-lsp',
-        'vue-language-server',
+        'angular-language-server',
         'typescript-language-server',
-        'svelte-language-server',
         'lua-language-server',
         'emmet-ls',
         'eslint-lsp',
         'json-lsp',
         'tailwindcss-language-server',
         'markdownlint',
-        'gopls',
-        'gofumpt',
-        'goimports',
-        'golines',
-        'templ',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -125,13 +118,9 @@ return {
         tsserver = require 'nvim.servers.tsserver',
         eslint = require 'nvim.servers.eslint',
         tailwindcss = require 'nvim.servers.tailwind',
-        volar = require 'nvim.servers.volar',
+        angularls = require 'nvim.servers.angularls',
         cssls = {},
-        astro = {},
         marksman = {},
-        svelte = {},
-        templ = {},
-        gopls = require 'nvim.servers.gopls',
       }
 
       require('mason-lspconfig').setup {

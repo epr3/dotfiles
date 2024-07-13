@@ -61,7 +61,7 @@ require('lazy').setup({
 
     require 'nvim/plugins/gitignore',
 
-    require 'nvim/plugins/supermaven',
+    require 'nvim/plugins/copilot',
   },
 }, {
   ui = {

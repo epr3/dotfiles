@@ -14,14 +14,11 @@ return {
     dependencies = {
       -- Creates a beautiful debugger UI
       'rcarriga/nvim-dap-ui',
-      "nvim-neotest/nvim-nio",
+      'nvim-neotest/nvim-nio',
 
       -- Installs the debug adapters for you
       'williamboman/mason.nvim',
       'jay-babu/mason-nvim-dap.nvim',
-
-      -- Add your own debuggers here
-      'leoluz/nvim-dap-go',
     },
     config = function()
       local dap = require 'dap'
@@ -41,7 +38,7 @@ return {
         ensure_installed = {
           -- Update this to ensure that you have the debuggers for the langs you want
           'delve',
-          'js-debug-adapter'
+          'js-debug-adapter',
         },
       }
 
@@ -84,60 +81,55 @@ return {
       dap.listeners.before.event_terminated['dapui_config'] = dapui.close
       dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-      -- Install golang specific config
-      require('dap-go').setup()
-
-      dap.adapters["pwa-node"] = {
-        type = "server",
-        host = "localhost",
-        port = "${port}",
+      dap.adapters['pwa-node'] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
         executable = {
           -- command = "node",
           -- -- 💀 Make sure to update this path to point to your installation
           -- args = { "/path/to/js-debug/src/dapDebugServer.js", "${port}" },
-          command = "js-debug-adapter",
-          args = { "${port}" },
+          command = 'js-debug-adapter',
+          args = { '${port}' },
         },
       }
 
-
-      for _, language in ipairs({ "typescript", "javascript" }) do
+      for _, language in ipairs { 'typescript', 'javascript' } do
         dap.configurations[language] = {
           {
-            type = "pwa-node",
-            request = "launch",
-            name = "Launch Current File (pwa-node)",
+            type = 'pwa-node',
+            request = 'launch',
+            name = 'Launch Current File (pwa-node)',
             cwd = vim.fn.getcwd(),
-            args = { "${file}" },
+            args = { '${file}' },
             sourceMaps = true,
-            protocol = "inspector",
+            protocol = 'inspector',
           },
           {
-            type = "pwa-node",
-            request = "attach",
-            name = "Attach Program (pwa-node)",
+            type = 'pwa-node',
+            request = 'attach',
+            name = 'Attach Program (pwa-node)',
             cwd = vim.fn.getcwd(),
-            processId = require("dap.utils").pick_process,
-            skipFiles = { "<node_internals>/**" },
+            processId = require('dap.utils').pick_process,
+            skipFiles = { '<node_internals>/**' },
           },
           {
-            type = "pwa-node",
-            request = "launch",
-            name = "Debug Current Test File",
+            type = 'pwa-node',
+            request = 'launch',
+            name = 'Debug Current Test File',
             autoAttachChildProcesses = true,
-            skipFiles = { "<node_internals>/**", "**/node_modules/**" },
-            program = "${workspaceFolder}/node_modules/vitest/vitest.mjs",
-            runtimeExecutable = "node",
-            rootPath = "${workspaceFolder}",
-            cwd = "${workspaceFolder}",
-            args = { "run", "--no-file-parallelism", "${relativeFile}" },
+            skipFiles = { '<node_internals>/**', '**/node_modules/**' },
+            program = '${workspaceFolder}/node_modules/vitest/vitest.mjs',
+            runtimeExecutable = 'node',
+            rootPath = '${workspaceFolder}',
+            cwd = '${workspaceFolder}',
+            args = { 'run', '--no-file-parallelism', '${relativeFile}' },
             smartStep = true,
-            console = "integratedTerminal",
-            internalConsoleOptions = "neverOpen",
-          }
+            console = 'integratedTerminal',
+            internalConsoleOptions = 'neverOpen',
+          },
         }
       end
     end,
-  }
-
+  },
 }
