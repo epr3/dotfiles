@@ -1,8 +1,8 @@
-vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
-  pattern = { "tsconfig.json" },
+vim.api.nvim_create_autocmd({ 'BufNewFile', 'BufRead' }, {
+  pattern = { 'tsconfig.json' },
 
   callback = function()
-    Set.filetype = "jsonc"
+    Set.filetype = 'jsonc'
   end,
 })
 
