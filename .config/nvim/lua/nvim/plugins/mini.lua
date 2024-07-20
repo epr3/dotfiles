@@ -54,10 +54,6 @@ return {
         end,
       })
 
-      require('mini.files').setup()
-
-      vim.keymap.set('n', '<leader>n', require('mini.files').open, { desc = 'Display Mi[n]i Files' })
-
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
