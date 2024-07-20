@@ -61,6 +61,8 @@ require('lazy').setup({
 
     require 'nvim/plugins/gitignore',
 
+    require 'nvim/plugins/oil',
+
     require 'nvim/plugins/supermaven',
   },
 }, {
