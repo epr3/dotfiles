@@ -53,8 +53,6 @@ require('lazy').setup({
 
     require 'nvim/plugins/tmux',
 
-    require 'nvim/plugins/lightbulb',
-
     require 'nvim/plugins/surround',
 
     require 'nvim/plugins/treesitter-context',
@@ -87,4 +85,3 @@ require('lazy').setup({
   },
 })
 
--- vim: ts=2 sts=2 sw=2 et

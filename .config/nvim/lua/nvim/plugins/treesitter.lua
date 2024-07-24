@@ -39,11 +39,6 @@ return {
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 
-      vim.filetype.add {
-        extension = {
-          mdx = 'markdown.mdx',
-        },
-      }
       ---@diagnostic disable-next-line: missing-fields
       require('nvim-treesitter.configs').setup(opts)
 
