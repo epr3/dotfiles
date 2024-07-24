@@ -45,8 +45,6 @@ return {
           ['markdown.mdx'] = { 'prettier' },
 
           sh = { 'shfmt' },
-
-          go = { 'gofumpt', 'goimports', 'golines' },
         },
         notify_on_error = false,
         format_on_save = function(bufnr)
