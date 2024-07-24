@@ -39,6 +39,9 @@ return {
           vue = { 'prettier' },
           astro = { 'prettier' },
 
+          json = { 'prettier' },
+          jsonc = { 'prettier' },
+
           sh = { 'shfmt' },
 
           go = { 'gofumpt', 'goimports', 'golines' },
@@ -56,6 +59,8 @@ return {
             typescriptreact = true,
             javascript = true,
             javascriptreact = true,
+            json = true,
+            jsonc = true,
           }
           return {
             timeout_ms = 500,
