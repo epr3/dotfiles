@@ -13,6 +13,16 @@
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - 
+    command: read email && git config --global user.email $email
+    stdin: true
+    stdout: true
+    description: Set git email
+  - 
+    command: read name && git config --global user.name $name
+    stdin: true
+    stdout: true
+    description: Set git name
+  - 
     command: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     description: Install homebrew
     stdout: true
