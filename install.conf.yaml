@@ -13,13 +13,6 @@
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - 
-    command: read email && ssh-keygen -t ed25519 -C $email
-    stdin: true
-    stdout: true
-    description: Generate SSH key
-  - [eval "$(ssh-agent -s)", add ssh key to ssh-agent]
-  - [touch ~/.ssh/config, add ssh config]
-  - 
     command: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     description: Install homebrew
     stdout: true
