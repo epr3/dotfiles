@@ -62,6 +62,8 @@ require('lazy').setup({
     require 'nvim/plugins/oil',
 
     require 'nvim/plugins/supermaven',
+
+    require 'nvim/plugins/mdx',
   },
 }, {
   ui = {
