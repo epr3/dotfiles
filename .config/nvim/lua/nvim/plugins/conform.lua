@@ -41,6 +41,8 @@ return {
 
           json = { 'prettier' },
           jsonc = { 'prettier' },
+          markdown = { 'prettier' },
+          ['markdown.mdx'] = { 'prettier' },
 
           sh = { 'shfmt' },
 
