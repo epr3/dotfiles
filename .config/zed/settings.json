@@ -9,13 +9,13 @@
 {
   "assistant": {
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-3-5-sonnet"
+      "provider": "copilot_chat",
+      "model": "gpt-4"
     },
     "version": "2"
   },
   "features": {
-    "inline_completion_provider": "supermaven"
+    "inline_completion_provider": "copilot"
   },
   "project_panel": {
     "dock": "right"
