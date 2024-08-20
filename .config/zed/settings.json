@@ -1,0 +1,71 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  "assistant": {
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-3-5-sonnet"
+    },
+    "version": "2"
+  },
+  "features": {
+    "inline_completion_provider": "supermaven"
+  },
+  "project_panel": {
+    "dock": "right"
+  },
+  "vim_mode": true,
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "theme": {
+    "mode": "system",
+    "light": "One Light",
+    "dark": "Catppuccin Macchiato"
+  },
+  "copilot": {
+    "enabled": true,
+    "key": "Tab"
+  },
+  "cursor_blink": false,
+  "relative_line_numbers": true,
+  "scrollbar": {
+    "show": "never"
+  },
+  "vertical_scroll_margin": 0,
+  "tab_bar": {
+    "show": false
+  },
+  "toolbar": {
+    "breadcrumbs": true,
+    "quick_actions": false
+  },
+  "use_autoclose": false,
+  "git": {
+    "inline_blame": {
+      "enabled": false,
+      "delay_ms": 500
+    }
+  },
+  "terminal": {
+    "alternate_scroll": "off",
+    "blinking": "terminal_controlled",
+    "copy_on_select": true,
+    "font_family": "Inconsolata Nerd Font",
+    "line_height": "standard",
+    "toolbar": {
+      "title": true
+    },
+    "working_directory": "current_project_directory"
+  },
+  "buffer_font_family": "Inconsolata Nerd Font",
+  "vim": {
+    "use_system_clipboard": "always",
+    "use_multiline_find": true
+  }
+}
