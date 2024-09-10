@@ -147,7 +147,7 @@ return {
         emmet_ls = require 'nvim.servers.emmet_ls',
         lua_ls = require 'nvim.servers.lua_ls',
         jsonls = require 'nvim.servers.jsonls',
-        tsserver = require 'nvim.servers.tsserver',
+        ts_ls = require 'nvim.servers.ts_ls',
         eslint = require 'nvim.servers.eslint',
         tailwindcss = require 'nvim.servers.tailwind',
         angularls = require 'nvim.servers.angularls',
