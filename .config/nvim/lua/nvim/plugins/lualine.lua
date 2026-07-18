@@ -1,15 +1,8 @@
-return {
-  {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
-    cond = (function()
-      return not vim.g.vscode
-    end),
-    opts = {
-      theme = 'tokyonight',
-      sections = {
-        lualine_c = { { 'filename', path = 1 } },
-      },
-    },
+-- Statusline
+require('lualine').setup {
+  theme = 'tokyonight',
+  sections = {
+    lualine_c = { { 'filename', path = 1 } },
   },
 }
+-- vim: ts=2 sts=2 sw=2 et

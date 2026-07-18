@@ -1,17 +1,7 @@
--- autopairs
--- https://github.com/windwp/nvim-autopairs
+-- Auto-close brackets, quotes, etc.
+require('nvim-autopairs').setup {}
 
-return {
-  'windwp/nvim-autopairs',
-  event = 'InsertEnter',
-  -- Optional dependency
-  dependencies = { 'hrsh7th/nvim-cmp' },
-  cond = (function() return not vim.g.vscode end),
-  config = function()
-    require('nvim-autopairs').setup {}
-    -- If you want to automatically add `(` after selecting a function or method
-    local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
-    local cmp = require 'cmp'
-    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-  end,
-}
+local cmp_autopairs = require 'nvim-autopairs.completion.cmp'
+local cmp = require 'cmp'
+cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
+-- vim: ts=2 sts=2 sw=2 et

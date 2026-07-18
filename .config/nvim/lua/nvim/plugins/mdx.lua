@@ -1,10 +1,3 @@
-return {
-  {
-    'davidmh/mdx.nvim',
-    cond = (function()
-      return not vim.g.vscode
-    end),
-    config = true,
-    dependencies = { 'nvim-treesitter/nvim-treesitter' },
-  },
-}
+-- MDX syntax highlighting (requires treesitter)
+-- Configuration is minimal; treesitter grammar handles highlighting.
+-- vim: ts=2 sts=2 sw=2 et
