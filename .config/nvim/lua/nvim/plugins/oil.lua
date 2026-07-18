@@ -1,6 +1,9 @@
 return {
   {
     'stevearc/oil.nvim',
+    cond = (function()
+      return not vim.g.vscode
+    end),
     opts = {
       view_options = {
         show_hidden = true,

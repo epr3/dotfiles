@@ -6,15 +6,8 @@ return {
       {
         name = '@vue/typescript-plugin',
         location = vue_language_server_path,
-        languages = { 'vue', 'typescript', 'javascript' },
+        languages = { 'vue' },
       },
     },
-  },
-  filetypes = {
-    'typescript',
-    'typescriptreact',
-    'javascript',
-    'javascriptreact',
-    'vue',
   },
 }

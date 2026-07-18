@@ -10,6 +10,9 @@ return {
   {
     -- NOTE: Yes, you can install new plugins here!
     'mfussenegger/nvim-dap',
+    cond = (function()
+        return not vim.g.vscode
+    end),
     -- NOTE: And you can specify dependencies as well
     dependencies = {
       -- Creates a beautiful debugger UI

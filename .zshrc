@@ -52,7 +52,6 @@ export PATH=$PATH:$GOROOT/bin
 export PATH=$PATH:$HOME/.poetry/bin
 export PATH=$PATH:$HOME/.local/bin
 export PATH=$PATH:$HOME/.cargo/bin
-export PATH=$PATH:$HOME/flutter/bin
 export PATH=$PATH:$HOME/.rbenv/bin
 export SHELL=$HOMEBREW_PREFIX/bin/zsh
 
@@ -101,3 +100,35 @@ alias llt="eza -1 --icons --tree --git-ignore"
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
 fi
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/eduardpredescu/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+# Claude Code aliases
+alias c='claude'
+alias ch='claude --chrome'
+alias cs='claude --dangerously-skip-permissions'
+
+# Claude --fs shortcut
+claude() {
+  local args=()
+  for arg in "$@"; do
+    if [[ "$arg" == "--fs" ]]; then
+      args+=("--fork-session")
+    else
+      args+=("$arg")
+    fi
+  done
+  command claude "${args[@]}"
+}
+
+# opencode
+export PATH=/Users/eduardpredescu/.opencode/bin:$PATH
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi

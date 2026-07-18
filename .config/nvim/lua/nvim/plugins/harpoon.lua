@@ -2,6 +2,9 @@ return {
   {
     'ThePrimeagen/harpoon',
     branch = 'harpoon2',
+    cond = (function()
+        return not vim.g.vscode
+    end),
     dependencies = {
       'nvim-lua/plenary.nvim',
       'nvim-telescope/telescope.nvim',

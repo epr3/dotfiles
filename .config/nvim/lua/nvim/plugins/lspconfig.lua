@@ -3,6 +3,9 @@ return {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
     -- used for completion, annotations and signatures of Neovim apis
     'folke/lazydev.nvim',
+        cond = (function()
+        return not vim.g.vscode
+    end),
     ft = 'lua',
     opts = {
       library = {
@@ -11,9 +14,14 @@ return {
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true,     cond = (function()
+        return not vim.g.vscode
+    end), },
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
+        cond = (function()
+        return not vim.g.vscode
+    end),
     dependencies = {
       -- Automatically install LSPs and related tools to stdpath for neovim
 
@@ -154,10 +162,10 @@ return {
         emmet_ls = require 'nvim.servers.emmet_ls',
         lua_ls = require 'nvim.servers.lua_ls',
         jsonls = require 'nvim.servers.jsonls',
+        volar = require 'nvim.servers.volar',
         ts_ls = require 'nvim.servers.ts_ls',
         eslint = require 'nvim.servers.eslint',
         tailwindcss = require 'nvim.servers.tailwind',
-        volar = require 'nvim.servers.volar',
         cssls = {},
         astro = {},
         marksman = {},

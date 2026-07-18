@@ -2,6 +2,9 @@
 return {
   {
     'folke/todo-comments.nvim',
+    cond = (function()
+      return not vim.g.vscode
+    end),
     event = 'VimEnter',
     dependencies = { 'nvim-lua/plenary.nvim' },
     opts = { signs = false },

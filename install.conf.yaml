@@ -9,32 +9,36 @@
 - link:
     ~/.config/: .config/*
     ~/.zshrc: .zshrc
+    ~/.fvmrc: .fvmrc
+    ~/Library/Application Support/Code/User/settings.json: vscode/settings.json
+    ~/Library/Application Support/Code/User/keybindings.json: vscode/keybindings.json
+    ~/Library/Application Support/Code/User/snippets/: vscode/snippets/*
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
-  - 
+  -
     command: read email && git config --global user.email $email
     stdin: true
     stdout: true
     description: Set git email
-  - 
+  -
     command: read name && git config --global user.name $name
     stdin: true
     stdout: true
     description: Set git name
-  - 
+  -
     command: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     description: Install homebrew
     stdout: true
     stderr: true
-  - 
+  -
     command: curl -fsSL https://get.pnpm.io/install.sh | sh -
     description: Install pnpm
     stdout: true
     stderr: true
   - [pnpm env use --global lts, set node version to lts]
-  - 
-    command: brew bundle 
+  -
+    command: brew bundle
     description: Install homebrew packages
     stdout: true
     stderr: true

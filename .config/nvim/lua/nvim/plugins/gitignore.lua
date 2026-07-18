@@ -2,6 +2,9 @@ return {
   {
     'wintermute-cell/gitignore.nvim',
     dependencies = { 'nvim-telescope/telescope.nvim' },
+    cond = (function()
+        return not vim.g.vscode
+    end),
     config = function()
       local gitignore = require 'gitignore'
 

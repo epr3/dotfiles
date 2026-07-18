@@ -1,6 +1,9 @@
 return {
   {
     'nvim-neotest/neotest',
+    cond = (function()
+      return not vim.g.vscode
+    end),
     dependencies = {
       'nvim-lua/plenary.nvim',
       'antoinemadec/FixCursorHold.nvim',
