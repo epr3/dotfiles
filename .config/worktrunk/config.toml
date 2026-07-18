@@ -213,12 +213,12 @@ S={{ branch | sanitize }}
 W={{ worktree_path }}
 tmux new-window -c "$W" -n "$S"
 
-# Create 3-pane layout: opencode (top) | lazygit / shell (bottom)
+# Create 3-pane layout: pi (top) | lazygit / shell (bottom)
 tmux split-window -v -t "$S.1" -c "$W"
 tmux split-window -h -t "$S.2" -c "$W" -p 30
 
 # Start services in each pane
-tmux send-keys -t "$S.1" 'opencode' Enter
+tmux send-keys -t "$S.1" 'pi' Enter
 tmux send-keys -t "$S.2" 'lazygit' Enter
 
 tmux select-pane -t "$S.1"
