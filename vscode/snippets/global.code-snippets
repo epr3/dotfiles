@@ -1,0 +1,41 @@
+{
+  // Global VS Code snippets
+  // Triggered by prefix in any file type.
+
+  "Dotfiles header": {
+    "scope": "javascript,typescript,lua,python,go,json,yaml,shellscript",
+    "prefix": "dotfiles-hdr",
+    "body": [
+      "// ── ${1:section} ──────────────────────────────────────────────────────────────"
+    ],
+    "description": "Insert a section header separator comment"
+  },
+
+  "TODO comment": {
+    "scope": "javascript,typescript,lua,python,go,json,yaml,shellscript",
+    "prefix": "todo",
+    "body": "TODO(${1:eduard}): ${2:description}",
+    "description": "Insert a TODO comment with author"
+  },
+
+  "FIXME comment": {
+    "scope": "javascript,typescript,lua,python,go,json,yaml,shellscript",
+    "prefix": "fixme",
+    "body": "FIXME(${1:eduard}): ${2:description}",
+    "description": "Insert a FIXME comment with author"
+  },
+
+  "Log console message": {
+    "scope": "javascript,typescript",
+    "prefix": "log",
+    "body": "console.log('${1:message}', ${2:value});",
+    "description": "Insert a console.log statement"
+  },
+
+  "Arrow function": {
+    "scope": "javascript,typescript",
+    "prefix": "afn",
+    "body": "(${1:params}) => ${2:expression}",
+    "description": "Insert an arrow function"
+  }
+}

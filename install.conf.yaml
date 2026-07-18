@@ -42,3 +42,8 @@
     description: Install homebrew packages
     stdout: true
     stderr: true
+  -
+    command: cat vscode/extensions.list | xargs -I {} code --install-extension {} --force
+    description: Install VS Code extensions
+    stderr: true
+    stdout: true
