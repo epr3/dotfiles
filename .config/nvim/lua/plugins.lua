@@ -19,9 +19,10 @@ pack.use('nvim-telescope/telescope-fzf-native.nvim', { build = 'make' })
 pack.use 'nvim-telescope/telescope-ui-select.nvim'
 pack.use 'folke/lazydev.nvim'
 pack.use 'Bilal2453/luvit-meta'
+-- neovim/nvim-lspconfig kept for utility functions (root_pattern, etc.) used by
+-- some server configs; registration uses the built-in vim.lsp.enable.
 pack.use 'neovim/nvim-lspconfig'
 pack.use 'williamboman/mason.nvim'
-pack.use 'williamboman/mason-lspconfig.nvim'
 pack.use 'WhoIsSethDaniel/mason-tool-installer.nvim'
 pack.use 'j-hui/fidget.nvim'
 pack.use 'hrsh7th/cmp-nvim-lsp'
