@@ -1,25 +1,36 @@
 # dotfiles
 
-These are my dotfiles.
+Personal dotfiles — Shell, tmux, Neovim, VS Code, pi (coding agent), and macOS dev tools.
 
-## Installation
+Managed with [Dotbot](https://github.com/anishathalye/dotbot).
 
-### Install
+## Quick start
+
 ```bash
-git clone https://github.com/wren/dotfiles.git
+git clone https://github.com/epr3/dotfiles.git
 cd dotfiles
-./install
+git submodule update --init dotbot
+./install           # link configs + run bootstrap scripts
 ```
 
-### Finish setting up ssh
+> To install only the config links (skip Homebrew, VS Code extensions, etc.):
+> `./install --only link`
 
-https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+## What's inside
 
-### Update submodules
+| Directory | What |
+|---|---|
+| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, tmux, alacritty |
+| `.pi/` | pi coding agent config, skills, themes, extensions |
+| `vscode/` | VS Code settings, keybindings, snippets |
+| `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
+| `dotbot/` | Dotbot submodule for symlink management |
 
-```bash
-git submodule update --recursive --remote
-```
+## Post-clone steps
+
+- [Generate SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub
+- Update submodules: `git submodule update --recursive --remote`
+- Open Neovim + VS Code to let extension managers finish setup
 
 ## License
 
