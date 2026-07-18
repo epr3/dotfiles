@@ -62,4 +62,17 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Diagnostic display
+-- See `:help vim.diagnostic.config()`
+vim.diagnostic.config({
+  virtual_text = true,
+  signs = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = {
+    border = 'rounded',
+    source = true,
+  },
+})
+
 -- vim: ts=2 sts=2 sw=2 et
