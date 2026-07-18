@@ -2,3 +2,17 @@
 */tmux/plugins/
 Brewfile.lock.json
 lazy-lock.json
+
+# Pi runtime state — excluded from Dotfile-managed tool config
+.pi/agent/auth.json
+.pi/agent/models-store.json
+.pi/agent/trust.json
+.pi/agent/sessions/
+.pi/agent/ctx/
+.pi/agent/git/
+.pi/agent/npm/
+.pi/node_modules/
+.pi/package.json
+.pi/pnpm-lock.yaml
+.pi/.DS_Store
+.pi/agent/.DS_Store

@@ -1,0 +1,103 @@
+{
+  "lastChangelogVersion": "0.80.10",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4-flash",
+  "defaultThinkingLevel": "high",
+  "theme": "catppuccin-mocha",
+  "//": "Pi settings drop-in for the artifact-first skill suite. Skills load via the Agent Skills standard (name+description at startup, body on demand, /skill:<name> to invoke). Extension packages are TypeScript, loaded by Pi via jiti (no build step). Paths are absolute because this is the global file at ~/.pi/agent/settings.json — the shipped relative paths in packages/pi-config/settings.json assume the monorepo root.",
+  "extensions": [
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/subagents",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/question",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/todo",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/lsp",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/statusline",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-fetch",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-search",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/model-presets"
+  ],
+  "subagents": {
+    "//": "explore is read-only by allowlist; grant it extra READ-ONLY tools here. This example grants the lsp navigation set. researcher is read-only + web (web_search/web_fetch). general gets every discovered tool automatically; add names to excludeExtraTools to take some away.",
+    "maxConcurrency": 4,
+    "explore": {
+      "defaultModel": "opencode-go/deepseek-v4-flash",
+      "extraTools": [
+        "lsp_definition",
+        "lsp_implementation",
+        "lsp_references",
+        "lsp_workspace_symbols",
+        "lsp_document_symbols",
+        "lsp_hover",
+        "lsp_incoming_calls",
+        "lsp_outgoing_calls",
+        "lsp_diagnostics"
+      ]
+    },
+    "researcher": {
+      "defaultModel": "openai-codex/gpt-5.5",
+      "//": "read-only + web research. web_search / web_fetch come from separate Pi extensions (e.g. amosblomqvist/pi-config: extensions/web-search, extensions/web-fetch) dropped into ~/.pi/agent/extensions/. If they aren't installed, researcher degrades to the core read-only tools. Grant extra READ-ONLY tools here.",
+      "extraTools": []
+    },
+    "general": {
+      "defaultModel": "opencode-go/minimax-m3",
+      "excludeExtraTools": []
+    }
+  },
+  "statusline": {
+    "//": "Absolute degradation budget: >effectiveLimit tokens = caveman. Thresholds are fractions of the limit. Env EFFECTIVE_LIMIT / Z_* override.",
+    "effectiveLimit": 120000,
+    "thresholds": {
+      "sharp": 0.3333333333,
+      "fading": 0.6666666666,
+      "risky": 1
+    },
+    "meterWidth": 10
+  },
+  "modelPresets": {
+    "//": "Coding preset set: default, fast-codex, coding-fallback, deepseek-v4-flash, deep-reasoning. See packages/model-presets/ for the catalog parser and activation flow.",
+    "cycle": [
+      "default",
+      "fast-codex",
+      "coding-fallback",
+      "deepseek-v4-flash",
+      "deep-reasoning"
+    ],
+    "presets": {
+      "default": {
+        "label": "GPT 5.5 medium",
+        "provider": "openai-codex",
+        "model": "gpt-5.5",
+        "thinkingLevel": "medium",
+        "repairDefault": true
+      },
+      "fast-codex": {
+        "label": "Codex Spark low",
+        "provider": "openai-codex",
+        "model": "gpt-5.3-codex-spark",
+        "thinkingLevel": "low"
+      },
+      "coding-fallback": {
+        "label": "MiniMax M3 high",
+        "provider": "opencode-go",
+        "model": "minimax-m3",
+        "thinkingLevel": "high"
+      },
+      "deepseek-v4-flash": {
+        "label": "DeepSeek V4 Flash high",
+        "provider": "opencode-go",
+        "model": "deepseek-v4-flash",
+        "thinkingLevel": "high"
+      },
+      "deep-reasoning": {
+        "label": "DeepSeek V4 Pro high",
+        "provider": "opencode-go",
+        "model": "deepseek-v4-pro",
+        "thinkingLevel": "high"
+      }
+    }
+  },
+  "lsp": {
+    "//": "Add or override language servers without touching the Extension package dir; merged over the shipped servers.json. Example: \"zig\": { \"cmd\": \"zls\", \"args\": [], \"extensions\": [\".zig\"] }",
+    "servers": {},
+    "diagnosticsDelayMs": 600
+  }
+}

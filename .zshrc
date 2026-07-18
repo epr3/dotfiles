@@ -31,6 +31,7 @@ autoload -Uz compinit && compinit
 zinit cdreplay -q
 
 export XDG_CONFIG_HOME=$HOME/.config
+export AGENT_CONTEXT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx"
 export HOMEBREW_PREFIX=/opt/homebrew
 export PATH=$PATH:/opt/homebrew/bin
 # pnpm

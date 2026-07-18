@@ -15,35 +15,38 @@
     ~/Library/Application Support/Code/User/snippets/: vscode/snippets/*
 
 - shell:
-  - [git submodule update --init --recursive, Installing submodules]
   -
-    command: read email && git config --global user.email $email
+    command: bash scripts/setup-git-identity.sh
     stdin: true
     stdout: true
-    description: Set git email
+    description: Set git identity
   -
-    command: read name && git config --global user.name $name
-    stdin: true
-    stdout: true
-    description: Set git name
-  -
-    command: NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    description: Install homebrew
+    command: bash scripts/install-homebrew.sh
+    description: Install Homebrew
     stdout: true
     stderr: true
   -
-    command: curl -fsSL https://get.pnpm.io/install.sh | sh -
+    command: bash scripts/install-pnpm.sh
     description: Install pnpm
     stdout: true
     stderr: true
-  - [pnpm env use --global lts, set node version to lts]
+  -
+    command: bash scripts/setup-node-lts.sh
+    description: Set Node LTS via pnpm
+    stdout: true
+    stderr: true
   -
     command: brew bundle
-    description: Install homebrew packages
+    description: Install Homebrew packages
     stdout: true
     stderr: true
   -
-    command: cat vscode/extensions.list | xargs -I {} code --install-extension {} --force
-    description: Install VS Code extensions
-    stderr: true
+    command: bash scripts/install-gh-dash.sh
+    description: Install gh-dash GitHub CLI extension
     stdout: true
+    stderr: true
+  -
+    command: bash scripts/install-vscode-extensions.sh
+    description: Install VS Code extensions
+    stdout: true
+    stderr: true
