@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.80.10",
-  "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4-flash",
-  "defaultThinkingLevel": "high",
+  "lastChangelogVersion": "0.81.1",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
   "theme": "catppuccin-mocha",
   "//": "Pi settings drop-in for the artifact-first skill suite. Skills load via the Agent Skills standard (name+description at startup, body on demand, /skill:<name> to invoke). Extension packages are TypeScript, loaded by Pi via jiti (no build step). Paths are absolute because this is the global file at ~/.pi/agent/settings.json — the shipped relative paths in packages/pi-config/settings.json assume the monorepo root.",
   "extensions": [

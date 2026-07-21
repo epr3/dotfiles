@@ -8,6 +8,7 @@
 
 - link:
     ~/.config/: .config/*
+    ~/.pi/: .pi/*
     ~/.zshrc: .zshrc
     ~/.fvmrc: .fvmrc
 
@@ -33,8 +34,18 @@
     stdout: true
     stderr: true
   -
+    command: bash scripts/install-pi.sh
+    description: Install pi coding agent
+    stdout: true
+    stderr: true
+  -
     command: brew bundle
     description: Install Homebrew packages
+    stdout: true
+    stderr: true
+  -
+    command: bash scripts/init-rtk-pi.sh
+    description: Initialize RTK for Pi
     stdout: true
     stderr: true
   -
