@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or conversation into independently-grabbable tracer-bullet tickets written as local markdown files under tickets/, using tracer-bullet vertical slices, each named with its zero-padded build position within its parent spec. Use when the user wants to convert a plan into issues, create implementation tickets, or break work into issues. Third step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
+description: Break a plan, spec, or conversation into independently-grabbable tracer-bullet tickets, each numbered with its build position. Use when the user wants work sliced into tickets or issues. Third step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
 argument-hint: "optional path to a spec/plan .md file"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "optional path to a spec/plan .md file"
 
 If the recorded `## Agent skills` block / `issue-tracker.md` (config home) designates a tracker, publish each issue there per its conventions (labels included when triage is on) instead of local files — everything else below is unchanged. Default:
 
-Break plan into independently-grabbable tickets = vertical slices (tracer bullets) -> local files under `.scratch/<feature-slug>/tickets/` **at the context home** — check the recorded `## Agent skills` block *first*: in-repo declared -> the code repo is the home; otherwise the store worktree; never bare CWD (CONTEXT-FORMAT.md, *Context home*). Filename carries per-spec build order (`<NNNN>-<slug>.md`) -> `ls tickets/` = build sequence, nothing re-derived later.
+Break the plan into independently-grabbable tickets = vertical slices (**tracer bullets**) -> local files under `.scratch/<feature-slug>/tickets/` **at the context home** — check the recorded `## Agent skills` block *first*: in-repo declared -> the code repo is the home; otherwise the store worktree; never bare CWD (CONTEXT-FORMAT.md, *Context home*).
 
 ## Process
 
@@ -18,7 +18,7 @@ Work from conversation. Path arg (spec/plan `.md`) -> read fully. Default source
 
 ### 2. Explore (optional)
 
-Not explored yet -> read-only `explore` sub-agent via `Agent` tool if available, else `read`/`grep`/`find`/`ls` (LSP tools when available). Issue titles use domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in area.
+Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
 
 ### 3. Draft vertical slices
 
@@ -40,7 +40,7 @@ No todo list here — a todo list breaks down ONE issue into steps (that's `impl
 
 Present breakdown as numbered list **in proposed build order**. Per slice: order · title · type (HITL/AFK) · blocked-by · user stories covered.
 
-Review via `question` tool if available, else prose (2–4 options, `(recommended)`, one-line reason, stop), one question at a time. Cover: granularity (coarse/fine/right) · dependency correctness · **build order itself** (anything sequenced before its dependency?) · merge/split · HITL/AFK assignment. Iterate until approved.
+Review via the `question` tool (prose if unavailable), one question at a time. Cover: granularity (coarse/fine/right) · dependency correctness · **build order itself** (anything sequenced before its dependency?) · merge/split · HITL/AFK assignment. Iterate until approved.
 
 ### 5. Order and write issue files
 
@@ -48,7 +48,7 @@ Each ticket **declares its blocking edges**: a `blocked_by:` frontmatter list of
 
 Compute **build order per spec** from dependency graph: topological sort, every blocker ahead of what it blocks. Ties: foundational first (schema/contracts before features built on them), then delivered value.
 
-Write each slice to `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, where `<feature-slug>` is **the parent spec's directory** — tickets live beside their SPEC.md, one dir per feature. No spec (conversation-sourced) -> mint a fresh `<feature-slug>` at the same context home (location rule at the top; never bare CWD). `<NNNN>` = zero-padded build position in this spec (`0001`, `0002`, …); **order lives in the filename** — `ls tickets/` reads as build sequence. Order is per-spec: a different spec starts again at `0001`, the slug keeps filenames unique. Create blockers-first so `blocked_by` references real ticket numbers. New ticket starts `status: open`; `implement` flips it to `resolved` and uses `<NNNN>` to pick next.
+Write each slice to `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, where `<feature-slug>` is **the parent spec's directory** — tickets live beside their SPEC.md, one dir per feature. No spec (conversation-sourced) -> mint a fresh `<feature-slug>` at the same context home (location rule at the top; never bare CWD). `<NNNN>` = zero-padded build position in this spec (`0001`, `0002`, …), so **order lives in the filename** and `ls tickets/` reads as the build sequence with nothing re-derived later. Order is per-spec: a different spec starts again at `0001`, the slug keeps filenames unique. Create blockers-first so `blocked_by` references real ticket numbers. New ticket starts `status: open`; `implement` flips it to `resolved` and uses `<NNNN>` to pick next.
 
 **Incremental runs:** tickets with this `parent` exist -> continuation, not fresh sequence. Read them; continue after highest `<NNNN>`. New slice must precede still-open work -> renumber (`git mv`) only open tail — never resolved issues; their number = history. Read numbering from own parent's tickets only: avoided race = *global* sequential numbering across specs/branches (same reason ADRs not numbered); one spec's ticket set normally lives on one branch.
 

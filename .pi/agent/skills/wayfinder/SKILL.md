@@ -1,6 +1,6 @@
 ---
 name: wayfinder
-description: Plan a huge chunk of work — more than one agent session can hold — as a shared map of investigation tickets on the issue tracker, and resolve them one at a time until the way to the destination is clear. Use only when invoked; for turning an already-clear thread into a spec use to-spec, for slicing an understood plan use to-tickets.
+description: Chart an effort too big for one agent session as a shared map of decision tickets, then resolve them one at a time until the way to the destination is clear. (An already-clear thread goes to to-spec; an understood plan to to-tickets.)
 disable-model-invocation: true
 argument-hint: "the effort to chart, or the ticket to resolve next"
 ---
@@ -9,7 +9,7 @@ argument-hint: "the effort to chart, or the ticket to resolve next"
 
 A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its tickets one at a time until the route is clear.
 
-It **plans, it doesn't build**: every ticket resolves a decision, and the map is done when nothing is left to decide before someone goes and builds the thing — decisions, not deliverables.
+It **plans, it doesn't build**: every ticket resolves a decision — decisions, not deliverables.
 
 The destination varies per effort, and naming it is the first act of charting — it shapes every ticket. It might be a spec to hand off, a decision to lock before planning starts, or a change made in place.
 
@@ -44,10 +44,10 @@ Beyond the live tickets lies fog — decisions you can tell are coming but can't
 
 1. **Orient** — load the map (destination, notes, decisions index). Zoom into linked tickets only where relevant.
 2. **Pick from the frontier** — an open ticket whose blockers are all resolved (or the one the user named).
-3. **Resolve it** — one decision, sized to one session. Lean on [`grilling`](../grilling/SKILL.md) + [`domain-modeling`](../domain-modeling/SKILL.md) to sharpen it; [`prototype`](../prototype/SKILL.md) or [`research`](../research/SKILL.md) where the ticket calls for exploring or reading.
+3. **Resolve it** — one decision, sized to one session. Lean on `grilling` + `domain-modeling` to sharpen it; `prototype` or `research` where the ticket calls for exploring or reading.
 4. **Record** — the full decision in the ticket (close it per the tracker conventions); a one-line gist + link under "Decisions so far"; new tickets or fog lines the decision revealed.
 5. **Stop cleanly** — the map is the handoff; the next session re-orients from it.
 
 ## Done
 
-The map is cleared when nothing is left to decide. Hand the way found to `to-spec` to schedule the build — or, if the effort turned out small, straight to `implement`.
+The map is cleared when nothing is left to decide before someone goes and builds the thing. Hand the way found to `to-spec` to schedule the build — or, if the effort turned out small, straight to `implement`.

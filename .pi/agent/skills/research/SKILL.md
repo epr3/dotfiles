@@ -5,9 +5,7 @@ description: Investigate a question against high-trust primary sources and captu
 
 # Research
 
-Spin up a **background agent** to do the research, so you keep working while it reads.
-
-Use `Agent` with `subagent_type: "general"` and `run_in_background: true` — general carries the web tools (`web_search` / `web_fetch`) and can write, so it investigates and writes the note itself. Poll with `get_subagent_result` while you keep working.
+Spin up a **background agent** to do the reading — `Agent` with `subagent_type: "general"` and `run_in_background: true`; it carries the web tools (`web_search` / `web_fetch`) and writes the note itself, so you stay unblocked while it works. Poll with `get_subagent_result`.
 
 Its job:
 

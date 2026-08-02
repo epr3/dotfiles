@@ -67,8 +67,8 @@ Context is **personal to the codebase** and lives, by default, in a separate **c
 The context repo is a **bare git repo**, one per code repo, with a **team remote** and one **`git worktree` per code branch**:
 
       $AGENT_CONTEXT_HOME/<slug>/        # slug = <org>__<repo> from the code repo's origin
-      # bare repo at <slug>/.git; worktrees are siblings <slug>/<branch>; default root ~/.claude/ctx
-      # (Pi: ~/.pi/agent/ctx, OpenCode: ~/.config/opencode/ctx)
+      # bare repo at <slug>/.git; worktrees are siblings <slug>/<branch>
+      # default root <harness ctx dir> (Claude Code: ~/.claude/ctx; Pi: ~/.pi/agent/ctx)
 
 `<slug>` derives from `remote.origin.url` (no remote -> the repo's folder name). Set `AGENT_CONTEXT_HOME` via your harness config to relocate or share the root. Inside a worktree, files **mirror the code paths**:
 

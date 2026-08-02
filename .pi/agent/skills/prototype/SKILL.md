@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: Build a throwaway prototype to flesh out a design — a runnable terminal app for state/business-logic questions, or several radically different UI variations on one route. Use when the user wants to prototype, sanity-check a data model or state machine, mock up a UI, explore design options, or says "prototype this", "let me play with it", "try a few designs" — or when another skill (e.g. wayfinder) needs a design question answered with runnable code.
+description: Build a throwaway prototype that answers a design question with runnable code. Use when the user wants to prototype, sanity-check a data model or state machine, or see several UI options — or when another skill (e.g. wayfinder) needs a design question answered by running something.
 ---
 
 # Prototype
@@ -9,7 +9,7 @@ A prototype is **throwaway code that answers a question**. The question decides 
 
 ## Pick a branch
 
-From the prompt, the surrounding code, or by asking (`question` tool if available):
+From the prompt, the surrounding code, or by asking via the `question` tool (prose if unavailable):
 
 - **"Does this logic / state model feel right?"** → [LOGIC.md](LOGIC.md) — tiny interactive terminal app driving the state machine through cases hard to reason about on paper.
 - **"What should this look like?"** → [UI.md](UI.md) — several radically different UI variants on one route, switched via `?variant=` and a floating bottom bar.

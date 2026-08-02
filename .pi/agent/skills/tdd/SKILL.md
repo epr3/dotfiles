@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development via a red-green-refactor loop, one vertical slice at a time. Use when building a feature or fixing a bug test-first, when the user mentions TDD, red-green-refactor, integration tests, or test-first development, or when a change needs a tight feedback loop. Tests verify behaviour through public interfaces, not implementation details.
+description: Test-driven development via a red-green-refactor loop, one vertical slice at a time. Use when the user wants work done test-first, mentions TDD or red-green-refactor, or when a change needs a tight feedback loop.
 ---
 
 # Test-Driven Development
@@ -42,52 +42,38 @@ RIGHT (vertical):
 
 ## Workflow
 
-When the work is a tracked issue, `tdd` runs on top of [`implement`](../implement/SKILL.md): follow its flow — load the issue, build the slice, verify, set status — and iterate on the implement step with the red-green-refactor loop below (one failing test, then the minimal code to pass, then refactor). Standalone, with no issue in play, run the loop directly.
+When the work is a tracked issue, `tdd` runs on top of `implement`: follow its flow — load the ticket, build the slice, verify, set status — and iterate on the build step with the loop below. Standalone, with no ticket in play, run the loop directly.
 
 ### 1. Planning
 
-Orient to the project's domain model first: test names and interface vocabulary should match the glossary in this branch's context worktree (`CONTEXT.md`; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). A new domain term you surface while testing -> write it into the worktree per [domain-modeling](../domain-modeling/SKILL.md).
+Orient to the project's domain model first: test names and interface vocabulary should match the glossary in this branch's context worktree (`CONTEXT.md`; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). A new domain term you surface while testing -> write it into the worktree per `domain-modeling`.
 
 Before writing any code:
 
 - Confirm what interface changes are needed.
-- Confirm which behaviours to test, and prioritise them.
-- Identify opportunities for [deep modules](./deep-modules.md) (small interface, deep implementation) — see [codebase-design](../codebase-design/SKILL.md) for the full module/seam/adapter/leverage/locality vocabulary.
+- Identify opportunities for [deep modules](./deep-modules.md) — see `codebase-design` for the full module/seam/adapter/leverage/locality vocabulary.
 - Design interfaces for [testability](./interface-design.md).
-- List the behaviours to test (not implementation steps).
-- Get approval on the plan: `question` tool if available, else prose (2-4 options, `(recommended)`, one-line reason, stop) — confirm the public interface and the behaviours that matter most before writing code.
+- List the behaviours to test (not implementation steps) and prioritise them.
+- Get approval on the plan (`question` tool; prose if unavailable): the public interface, and which behaviours matter most.
 
-**You can't test everything.** Confirm exactly which behaviours matter most; focus effort on critical paths and complex logic, not every possible edge case.
+**You can't test everything.** Focus effort on critical paths and complex logic, not every possible edge case.
 
-### 2. Tracer bullet
-
-Write ONE test that confirms ONE thing about the system:
+### 2. The loop
 
 ```
-RED:   write the test for the first behaviour -> test fails
-GREEN: write minimal code to pass        -> test passes
+RED:   write ONE test for the next behaviour -> it fails
+GREEN: write the minimal code to pass        -> it passes
 ```
 
-This is your tracer bullet — it proves the path works end-to-end.
-
-### 3. Incremental loop
-
-For each remaining behaviour:
-
-```
-RED:   write the next test -> fails
-GREEN: minimal code to pass -> passes
-```
+The first pass through is your **tracer bullet** — it proves the path works end-to-end. Then repeat, one behaviour at a time, each test responding to what the last cycle taught you.
 
 Rules:
 
-- One test at a time.
-- Only enough code to pass the current test.
+- One test at a time, only enough code to pass it.
 - Don't anticipate future tests.
 - Keep tests focused on observable behaviour.
-- After GREEN, `lsp_diagnostics` on the touched files is the fast first check before moving on — fix type errors + missing imports immediately (prefer LSP over grep when available).
 
-### 4. Refactor
+### 3. Refactor
 
 After all tests pass, look for [refactor candidates](./refactoring.md):
 
@@ -95,8 +81,7 @@ After all tests pass, look for [refactor candidates](./refactoring.md):
 - Deepen modules (move complexity behind simple interfaces).
 - Apply SOLID principles where natural.
 - Consider what the new code reveals about existing code.
-- Before renaming or changing a shared interface, run `lsp_references` on it first — grep misses dynamic + re-exported usages and over-matches common names.
-- Run tests after each refactor step; `lsp_diagnostics` on touched files alongside catches type errors before the suite runs.
+- Run tests after each refactor step.
 
 **Never refactor while RED.** Get to GREEN first.
 

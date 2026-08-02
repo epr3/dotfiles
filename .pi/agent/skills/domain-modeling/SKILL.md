@@ -1,11 +1,11 @@
 ---
 name: domain-modeling
-description: Build and sharpen the project's domain model — challenge terms against the glossary, sharpen fuzzy language, stress-test with edge-case scenarios, surface code contradictions, and write the glossary + ADRs the moment they crystallise. The reusable modeling discipline behind grill-with-docs; reach for it when actively pinning down domain terms or recording a decision outside a grill.
+description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Reach for it when actively pinning down domain terms or recording a decision, inside a grill or outside one.
 ---
 
 # Domain Modeling
 
-The *active* discipline of building + sharpening the domain model: challenge terms, invent edge-case scenarios, write the glossary + decisions the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill does. This is for when you're *changing* the model.)
+The *active* discipline of building + sharpening the domain model. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill does. This is for when you're *changing* the model.)
 
 ## Four moves
 

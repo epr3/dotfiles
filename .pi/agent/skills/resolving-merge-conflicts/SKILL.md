@@ -11,6 +11,6 @@ description: Use when you need to resolve an in-progress git merge/rebase confli
 
 3. **Resolve each hunk.** Preserve both intents where possible. Where incompatible, pick the one matching the merge's stated goal and note the trade-off. Do **not** invent new behaviour. Always resolve; never `--abort`.
 
-4. Discover the project's **automated checks** and run them — typically typecheck, then tests, then format. Fix anything the merge broke. If the same check keeps failing after a couple of honest fix attempts, or a hunk's intents genuinely can't both survive, stop thrashing: present the conflict, both intents, and your best resolution to the user and let them decide — still without `--abort`ing.
+4. Discover the project's **automated checks** and run them — typically typecheck, then tests, then format. Fix anything the merge broke. If the same check keeps failing after a couple of honest fix attempts, or a hunk's intents genuinely can't both survive, stop thrashing: present the conflict, both intents, and your best resolution to the user and let them decide.
 
 5. **Finish the merge/rebase.** Stage everything and commit. If rebasing, continue the rebase process until all commits are rebased.

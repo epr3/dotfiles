@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: Shared vocabulary and principles for designing deep modules — a lot of behaviour behind a small interface, at a clean seam, testable through that interface. Use when designing or improving a module's interface, finding deepening opportunities, deciding where a seam goes, making code more testable or AI-navigable, or when another skill (tdd, improve-codebase-architecture) needs the deep-module vocabulary.
+description: Shared vocabulary and principles for designing deep modules — a lot of behaviour behind a small interface, at a clean seam, testable through that interface. Use when designing or restructuring a module's interface or seam, and when another skill (tdd, improve-codebase-architecture) needs the deep-module vocabulary.
 ---
 
 # Codebase Design
@@ -13,7 +13,7 @@ The domain glossary names the *concepts*; this vocabulary names their *shape*. U
 
 Use these terms exactly — don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.
 
-**Module** — anything with an interface and an implementation. Deliberately scale-agnostic: a function, class, package, or tier-spanning slice. *Avoid*: unit, component, service.
+**Module** — anything with an interface and an implementation, and it has exactly one interface. Deliberately scale-agnostic: a function, class, package, or tier-spanning slice. *Avoid*: unit, component, service.
 
 **Interface** — everything a caller must know to use the module correctly: the type signature, but also invariants, ordering constraints, error modes, required configuration, and performance characteristics. *Avoid*: API, signature (too narrow — they refer only to the type-level surface).
 
@@ -31,33 +31,12 @@ Use these terms exactly — don't substitute "component," "service," "API," or "
 
 ## Deep vs shallow
 
-**Deep module** = small interface + lots of implementation:
-
 ```
-┌─────────────────────┐
-│   Small interface   │  <- few methods, simple params
-├─────────────────────┤
-│                     │
-│ Deep implementation │  <- complex logic hidden
-│                     │
-└─────────────────────┘
+deep:     [ small interface ] over [ lots of implementation ]  <- complexity hidden
+shallow:  [ large interface ] over [ thin implementation    ]  <- just passes through
 ```
 
-**Shallow module** = large interface + little implementation (avoid):
-
-```
-┌─────────────────────────────────┐
-│        Large interface          │  <- many methods, complex params
-├─────────────────────────────────┤
-│  Thin implementation            │  <- just passes through
-└─────────────────────────────────┘
-```
-
-When designing an interface, ask:
-
-- Can I reduce the number of methods?
-- Can I simplify the parameters?
-- Can I hide more complexity inside?
+Designing an interface is therefore a hunt for three things: fewer methods, simpler parameters, more complexity hidden inside.
 
 ## Principles
 
@@ -93,16 +72,6 @@ Good interfaces make testing natural:
      cart.total -= discount;
    }
    ```
-
-3. **Small surface area.** Fewer methods = fewer tests needed. Fewer params = simpler test setup.
-
-## Relationships
-
-- A **Module** has exactly one **Interface** (the surface it presents to callers and tests).
-- **Depth** is a property of a **Module**, measured against its **Interface**.
-- A **Seam** is where a **Module**'s **Interface** lives.
-- An **Adapter** sits at a **Seam** and satisfies the **Interface**.
-- **Depth** produces **Leverage** for callers and **Locality** for maintainers.
 
 ## Rejected framings
 

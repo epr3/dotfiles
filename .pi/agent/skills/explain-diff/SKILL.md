@@ -1,6 +1,6 @@
 ---
 name: explain-diff
-description: Create a rich, self-contained interactive HTML explanation of a code change, diff, branch, or pull request — background, intuition, literate walk-through, diagrams, and a quiz — saved as a dated HTML file in the context home. Use when the user wants to understand a change, not review it (reviewing against standards/spec is code-review).
+description: Explain a code change as a self-contained interactive HTML page — a literate walk-through, not a review. Use when the user wants to understand a diff, branch, or PR (reviewing it against standards/spec is code-review).
 argument-hint: "the change to explain (diff, branch, PR, commit range; default: working tree vs main)"
 ---
 

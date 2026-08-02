@@ -1,18 +1,18 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec written to a local markdown file under .scratch/. Use when the user wants to create a spec from the current context. Synthesizes what's already known — does not interview. Second step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
+description: Turn the current conversation into a spec file. Use when the user wants a spec written from the current context. Second step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
 argument-hint: "optional topic/slug for the filename"
 ---
 
-Synthesize the spec from current conversation + codebase understanding. No interview — use what you already know.
+Synthesize the spec from current conversation + codebase understanding. **No interview** — use what you already know.
 
 ## Process
 
-1. Explore repo if not already: read-only `explore` sub-agent via `Agent` tool if available, else `read`/`grep`/`find`/`ls` (LSP tools for precise navigation when available). Domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)) vocabulary throughout; respect ADRs in area.
+1. Explore the repo if you haven't — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary's vocabulary throughout (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
 
-2. Sketch seams to test feature at. Prefer existing seams; use highest possible. New seams only if needed, at highest point. Confirm seams match user's expectations via `question` tool if available, else prose (2–4 options, `(recommended)`, one-line reason, stop).
+2. Sketch the **seams** to test the feature at. Prefer existing seams, at the highest point available; new ones only if needed. Confirm they match the user's expectations via the `question` tool (prose if unavailable).
 
-3. Write the spec to `.scratch/<feature-slug>/SPEC.md` **at the context home** — check the recorded `## Agent skills` block *first*: in-repo declared -> the code repo is the home; otherwise the store worktree; never bare CWD (CONTEXT-FORMAT.md, *Context home*). `<feature-slug>` = the arg if given, else kebab-case the topic; `to-tickets` writes this feature's tickets beside it. Specs stay local files even when issues live in a tracker. Open or report path.
+3. Write the spec to `.scratch/<feature-slug>/SPEC.md` **at the context home** — check the recorded `## Agent skills` block *first*: in-repo declared -> the code repo is the home; otherwise the store worktree; never bare CWD (CONTEXT-FORMAT.md, *Context home*). `<feature-slug>` = the arg if given, else kebab-case the topic; `to-tickets` writes this feature's tickets beside it. Specs stay local files even when issues live in a tracker. Open or report the path.
 
 <prd-template>
 

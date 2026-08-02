@@ -1,12 +1,12 @@
 ---
 name: setup-context
-description: Configure this repo for the engineering skills — context home (store or in-repo), tickets/specs (local files or GitHub/GitLab/other), triage labels, domain-doc layout — then scaffold it. Installs the machine-wide `## Agent skills` block once. Run before first use of to-spec, to-tickets, triage, implement, code-review, wayfinder, tdd, or improve-codebase-architecture — or when those skills appear to be missing context about the issue tracker, triage labels, or where context lives. Defaults preserve current behaviour.
+description: Configure and scaffold this repo for the engineering skills — context home, tickets/specs, triage labels, domain-doc layout — and install the machine-wide `## Agent skills` block. Run once before the other skills, or again to switch any of those choices.
 disable-model-invocation: true
 ---
 
 # Setup Context
 
-Scaffold the config the engineering skills assume. Prompt-driven — explore, present, confirm, write. Machine-wide conventions live in global config; per-repo choices (made below) are recorded as an `## Agent skills` block + convention docs in the **config home** (CONTEXT-FORMAT.md defines it) — every skill reads them without extra wiring. Defaults: context in the separate store, tickets as local files, no triage.
+Scaffold the config the engineering skills assume. Prompt-driven — explore, present, confirm, write. Machine-wide conventions live in global config; per-repo choices (made below) are recorded as an `## Agent skills` block + convention docs in the **config home** (CONTEXT-FORMAT.md defines it) — every skill reads them without extra wiring. Every default below preserves current behaviour.
 
 ## Process
 
@@ -30,7 +30,7 @@ Check current state, don't assume:
 
 ### 3. Present + ask
 
-Summarise present/missing. Walk decisions **one at a time** — present, answer, next. No dumping all at once. `question` tool if available, else prose (2–4 options, `(recommended)`, one-line reason, stop).
+Summarise present/missing. Walk decisions **one at a time** via the `question` tool (prose if unavailable) — present, answer, next. No dumping all at once.
 
 Assume user doesn't know terms. Each section: short explainer (what, why skills need it, what changes per choice), then choices + default.
 
@@ -74,11 +74,7 @@ If — and only if — a tracker (GitHub/GitLab) was picked, one follow-up: **PR
 
 ### 4. Confirm + edit
 
-Show drafts, let the user edit before writing:
-
-- the per-repo `## Agent skills` block (one line per decision from sections A–D, e.g. "Context: store" / "Issues: GitHub via `gh`, triage labels on — see `issue-tracker.md` in the config home" / "Layout: single-context")
-- `issue-tracker.md` (always — from the seed matching section B) and, when triage is on, `triage-labels.md` — both at the config home (step 5)
-- `domain.md` contents (from seed template [domain.md](./domain.md), filled for the chosen layout)
+Show a draft of everything step 5 writes and let the user edit it first. The `## Agent skills` block gets one line per decision from sections A–D (e.g. "Context: store" / "Issues: GitHub via `gh`, triage labels on — see `issue-tracker.md` in the config home" / "Layout: single-context").
 
 ### 5. Write
 

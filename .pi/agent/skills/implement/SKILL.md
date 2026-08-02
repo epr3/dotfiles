@@ -1,41 +1,47 @@
 ---
 name: implement
-description: Pick up a local ticket file (`.scratch/<feature>/tickets/`), implement the vertical slice it describes, verify it, and set its status to resolved. Use when the user wants to work, resolve, close, or implement an issue from issues/. Fourth step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
+description: Pick up a ticket, build the vertical slice it describes, verify it, and set its status to resolved. Use when the user wants a ticket implemented, resolved, or closed. Fourth step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
 argument-hint: "issue number or path under .scratch/*/tickets/"
 ---
 
-# Resolve Issue
+# Implement
 
-Implement one issue end-to-end, mark resolved.
+Implement one ticket end-to-end, mark it resolved.
 
 ## Process
 
-### 1. Load issue
+### 1. Load the ticket
 
-If the recorded `## Agent skills` block / `issue-tracker.md` (config home) designates a tracker, fetch the issue there per its conventions (a bare `#42` resolves in the tracker; when triage is on, `ready-for-agent` is the pick-up signal, and an attached Agent Brief — `triage`'s output, see [AGENT-BRIEF.md](../triage/AGENT-BRIEF.md) — is the spec: its acceptance criteria are the definition of done, its out-of-scope line is binding) — everything else below is unchanged. Default: Arg = slug, numbered filename, or full path -> resolve under `.scratch/*/tickets/` **at the context home** by slug match against `.scratch/*/tickets/*.md` — skipping effort dirs (those with a `MAP.md`): wayfinder tickets are decisions to make, not slices to build (named `<NNNN>-<slug>.md`, `<NNNN>` = build position in parent spec). Ambiguous -> list candidates, ask. Read full body: what to build, acceptance criteria, blocked-by.
+**Tracker configured** (the recorded `## Agent skills` block / `issue-tracker.md` in the config home) -> fetch the issue there per its conventions; a bare `#42` resolves in the tracker. With triage on, `ready-for-agent` is the pick-up signal, and an attached Agent Brief (`triage`'s output — see [AGENT-BRIEF.md](../triage/AGENT-BRIEF.md)) *is* the spec: its acceptance criteria are the definition of done and its out-of-scope line is binding. Everything below is unchanged.
 
-Arg names spec (or omitted, single spec in play) -> don't pick arbitrarily: open ticket with lowest `<NNNN>` for that `parent`, all blockers resolved. That's what the filename number is for — implement the spec's tickets in sequence.
+**Default — local files.** Resolve the arg (slug, numbered filename, or full path) by slug match against `.scratch/*/tickets/*.md` **at the context home**, skipping effort dirs — those with a `MAP.md` — since wayfinder tickets are decisions to make, not slices to build. Ambiguous -> list candidates, ask.
 
-`status: resolved` already -> stop, tell user, don't redo. No `status` field -> treat as `open`.
+Arg names a spec, or is omitted with a single spec in play -> don't pick arbitrarily: take the open ticket with the lowest `<NNNN>` for that `parent` whose blockers are all resolved. That's what the filename number is for — implement a spec's tickets in sequence.
+
+`status: resolved` already -> stop, tell the user, don't redo. No `status` field -> treat as `open`.
+
+Read the full body: what to build, acceptance criteria, blocked-by.
 
 ### 2. Check unblocked
 
-Read each "Blocked by" issue. Any not `status: resolved` -> stop: report open blocker, don't start. Offer to resolve blocker first.
+Read each "Blocked by" issue. Any not `status: resolved` -> stop: report the open blocker, don't start. Offer to resolve the blocker first.
 
-### 3. Implement slice
+### 3. Build the slice
 
-Explore as needed: read-only `explore` sub-agent via `Agent` tool if available, else `read`/`grep`/`find`/`ls` — prefer LSP (`lsp_definition`, `lsp_references`) over grep when available. Domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin vertical slice — every layer, demoable alone. Acceptance criteria = definition of done. Code comments caveman-terse: minimal words, explain non-obvious WHY only, never narrate WHAT — an obvious comment is worse than none (cf. `caveman` skill register, applied to code).
+Explore as needed — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice** — every layer, demoable alone. Acceptance criteria = definition of done. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
 
-`todo_write`/`todo_read` available -> break slice into steps, exactly one `in_progress`, mark `completed` as each criterion met -> long implementation stays legible.
+Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, `completed` as each criterion is met — a long implementation stays legible. (No todo tools available: keep the step list in your working notes.)
 
-**HITL** -> surface decision/review point before committing — `question` tool if available, else prose (2–4 options, `(recommended)`, one-line reason, stop). **AFK** -> proceed unattended.
+**Delegate outsized steps.** A step too big to hold alongside the rest — and separable, meaning it has its own acceptance criterion and no dependence on the conversation's working state — goes to a sub-agent: one `Agent` call, `subagent_type: "general"`, brief = the ticket, that step's criterion, the relevant files (and the red-green-refactor loop when `tdd` is driving). Prefer delegating **repetitive** steps — the same change across many sites, where you write the brief once and fan out in parallel when the chunks are independent — and **context-heavy** ones, whose reads would fill the main context with material only that step needs. Verify each result against its criterion yourself before flipping the task `completed`: delegation moves the work, not the responsibility. One level only — sub-agents don't re-delegate; you stay the integrator.
+
+**HITL** -> surface the decision or review point before committing (`question` tool (prose if unavailable)). **AFK** -> proceed unattended.
 
 ### 4. Verify
 
-Run project tests/build for touched area. `lsp_diagnostics` on touched files = fast first check if available. Confirm every acceptance box checkable. No resolve on red.
+Run the project's tests/build for the touched area. Confirm every acceptance box is genuinely checkable. No resolve on red.
 
 ### 5. Set status
 
-Frontmatter `status: open` -> `status: resolved`. Tick acceptance checkboxes. Rest of file intact.
+Frontmatter `status: open` -> `status: resolved`. Tick the acceptance checkboxes. Rest of the file intact.
 
-Report: what built, what verified, resolved issue path, follow-up issues now unblocked.
+Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked.
