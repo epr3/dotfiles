@@ -2,7 +2,7 @@
 
 **Code repo:** `<origin-url>` (`<slug>`) — filled by `setup-context` on write.
 
-How the engineering skills should consume this code repo's domain documentation. This doc lives as `domain.md` — globally at `.agents/domain.md` — written once per context repo, used by all of its branches, edit-in-place, or at `docs/agents/domain.md` when context is in-repo (committed with the code). Either way it lives in the config home; skills resolve it there when orienting. Repo-wide choices live separately at the config home (`.agents/` at the store root — see CONTEXT-FORMAT.md).
+How the engineering skills should consume this code repo's domain documentation. It lives in the **config home** — `.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context** (committed with the code) — one copy per **context repo**, used by all its branches, edit-in-place; skills resolve it there when orienting, beside the repo-wide convention docs (see CONTEXT-FORMAT.md).
 
 ## Before exploring, read
 

@@ -24,3 +24,7 @@ The `wayfinder` map is a single issue titled `wayfinder: <effort>`; child ticket
 ## When a skill says "fetch the relevant issue"
 
 Run `glab issue view <number> --comments`.
+
+## MRs as a request surface
+
+**Off.** Flip to on to have `triage` pull *external* merge requests into the same queue, roles, and states as issues (collaborators' in-flight MRs are left alone) — useful in open-source projects that receive feature requests as MRs.

@@ -5,7 +5,7 @@ description: The reusable discipline for building and sharpening the project's d
 
 # Domain Modeling
 
-The *active* discipline of building + sharpening the domain model. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill does. This is for when you're *changing* the model.)
+The *active* discipline of building + sharpening the domain model — for when you're *changing* it. (Merely *reading* `CONTEXT.md` for vocabulary is a one-line habit any skill does, not this skill.)
 
 ## Four moves
 

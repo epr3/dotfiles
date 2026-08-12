@@ -1,6 +1,6 @@
 # HTML Report Format
 
-Single self-contained HTML in OS temp dir. Tailwind + Mermaid via CDN. Mix Mermaid (graph-shaped: call graphs, sequences) with hand-built divs/inline SVG (editorial: mass diagrams, cross-sections). Don't lean on Mermaid for everything — it looks generic.
+Single self-contained HTML in OS temp dir. Tailwind + Mermaid via CDN. Mix Mermaid (graph-shaped: call graphs, sequences) with hand-built divs/inline SVG (editorial: mass diagrams, cross-sections) — an all-Mermaid report looks generic.
 
 ## Scaffold
 
@@ -43,12 +43,12 @@ Each candidate is one `<article>`:
 
 - **Title** — short, names the deepening ("Collapse the Order intake pipeline")
 - **Badge row** — strength (`Strong` emerald / `Worth exploring` amber / `Speculative` slate) + dependency category tag (`in-process` / `local-substitutable` / `ports & adapters` / `mock`)
-- **Files** — `font-mono text-sm`
-- **Before/After diagram** — two columns, side by side. Centrepiece.
-- **Problem** — one sentence
-- **Solution** — one sentence
-- **Wins** — bullets ≤6 words: "Tests hit one interface", "Pricing stops leaking", "Delete 4 wrappers"
-- **ADR callout** (if applicable) — one line, amber-tinted box
+- **Files** — involved files/modules, `font-mono text-sm`
+- **Before/After diagram** — two columns, side by side, shallowness -> depth. Centrepiece.
+- **Problem** — the friction, one sentence
+- **Solution** — the change, one sentence
+- **Wins** — bullets ≤6 words, in glossary terms (locality/leverage, how tests improve): "Tests hit one interface", "Pricing stops leaking", "Delete 4 wrappers"
+- **ADR callout** — only where the friction warrants revisiting a decision. One line, amber-tinted box: _"contradicts ADR `2026-01-12-event-sourced-orders` — but worth reopening because…"_
 
 If a diagram needs a paragraph to be understood, redraw it.
 
@@ -105,4 +105,4 @@ Plain English, concise. Architectural nouns and verbs from [codebase-design](../
 
 **Wins** name the gain: *"locality: bugs concentrate"*, *"leverage: one interface, N call sites"*, *"interface shrinks; implementation absorbs the wrappers"*. Not *"easier to maintain"* or *"cleaner code"*.
 
-No hedging. No throat-clearing. No "it's worth noting that…". If a sentence could be a bullet, make it a bullet. If a bullet could be cut, cut it.
+Open every sentence on its claim. If a sentence could be a bullet, make it a bullet; if a bullet could be cut, cut it.

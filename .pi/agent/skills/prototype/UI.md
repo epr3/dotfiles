@@ -14,7 +14,7 @@ Variants are easiest to judge **butting up against the real app** — real heade
 ## Process
 
 1. **State the question, pick N.** Default **3 variants**, cap 5 (beyond that = noise). One-line plan in a top-of-file comment: "Three variants of settings, `?variant=`, on existing `/settings`."
-2. **Generate radically different variants.** Each holds to: the page's purpose and available data; the project's component/styling system; a clear export (`VariantA`…). **Structurally** different — layout, information hierarchy, primary affordance — not colours. Two drafts too similar → redo one with explicit "no card grid"-style constraints. If the `Agent` tool is available, spawn one `general` sub-agent per variant in parallel (`run_in_background: true`, collect via `get_subagent_result`), each briefed with a different structural constraint — cf. [codebase-design's design-it-twice](../codebase-design/DESIGN-IT-TWICE.md); else generate sequentially.
+2. **Generate radically different variants.** Each holds to: the page's purpose and available data; the project's component/styling system; a clear export (`VariantA`…). **Structurally** different — layout, information hierarchy, primary affordance — not colours. Two drafts too similar → redo one with explicit "no card grid"-style constraints. Spawn one `general` sub-agent per variant via `Agent` calls in a single message (they run in parallel), each briefed with a different structural constraint — cf. [codebase-design's design-it-twice](../codebase-design/DESIGN-IT-TWICE.md); if already running inside a sub-agent (they can't spawn more), generate sequentially.
 3. **Wire a single switcher** on the route:
 
    ```tsx
@@ -30,11 +30,10 @@ Variants are easiest to judge **butting up against the real app** — real heade
    Sub-shape A: existing data fetching stays above the switcher. Sub-shape B: throwaway route mounts the same switcher.
 4. **Floating switcher**: fixed bottom-centre pill — ← prev (wraps) · `B — Sidebar layout` label · → next. Arrows update the URL param via the framework's router (shareable, reload-stable); `←`/`→` keys also cycle, except when an input/textarea/contenteditable is focused. Visually distinct from the design under evaluation. **Hidden in production** (`NODE_ENV !== 'production'` gate) so a stray merge can't ship it. One shared component, located with the project's shared UI.
 5. **Hand it over** — surface the URL and variant keys. The gold feedback is "header from B with the sidebar from C" — that's the actual design.
-6. **Capture + clean up.** Record which variant won and why (commit/ADR/issue, or `NOTES.md` if AFK). A: delete losers + switcher, fold winner in. B: promote winner to a real route, delete the throwaway. Don't leave variants rotting.
+6. **Capture, then clean up.** Record which variant won, why, and which bits were stolen from the losers (commit/ADR/issue, or `NOTES.md` if AFK) — that record is the primary source for the design, and it has to outlive the code it came from. Then: A — fold the winner into the page, remove losers + switcher. B — rebuild the winner as a real route, retire the prototype one.
 
 ## Anti-patterns
 
 - **Colour/copy-only variants** — that's a tweak. Real variants disagree about structure.
 - **Sharing too much** — shared `<Header>` fine; shared `<Layout>` defeats the point.
 - **Real mutations** — read-only or stubs; the question is looks, not backend.
-- **Promoting prototype code to production** — it was written under prototype constraints; rewrite when folding in.

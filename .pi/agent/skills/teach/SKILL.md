@@ -7,15 +7,13 @@ argument-hint: "What would you like to learn about?"
 
 # Teach
 
-Stateful: the user learns over multiple sessions. The current directory is the teaching workspace.
-
 ## Workspace files
 
 - `MISSION.md` — *why* they're learning; grounds all teaching. [MISSION-FORMAT.md](./MISSION-FORMAT.md).
 - `GLOSSARY.md` — canonical terms; adhere to it in every lesson. [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `RESOURCES.md` — trusted sources for knowledge + communities for wisdom. [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
 - `./lessons/0001-<slug>.html` — the primary teaching unit, incrementing.
-- `./reference/*.html` — compressed learnings: cheat sheets, syntax, sequences, glossary printouts. Beautiful, print-friendly, quick-reference.
+- `./reference/*.html` — compressed learnings, created alongside lessons: cheat sheets, syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossary printouts. Beautiful, print-friendly, quick-reference — lessons are rarely revisited, references are.
 - `./learning-records/0001-<slug>.md` — the ADRs of learning. [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
 - `NOTES.md` — scratchpad for teaching preferences and working notes.
 
@@ -27,7 +25,7 @@ Deep learning = **knowledge** (from high-trust resources — never trust paramet
 
 ## The mission
 
-Everything ties to the mission. `MISSION.md` missing or vague → first job is interviewing the user on *why* (`question` tool if available). No mission → abstract lessons and no basis for what's next. Missions shift as skills grow — normal; confirm with the user, update `MISSION.md`, add a learning record.
+`MISSION.md` missing or vague → first job is interviewing the user on *why*. No mission → abstract lessons and no basis for what's next. Missions shift as skills grow — normal; confirm with the user, update `MISSION.md`, add a learning record.
 
 ## Zone of proximal development
 
@@ -42,7 +40,3 @@ Teach knowledge first, then practice the skill through a **tight feedback loop**
 ## Wisdom
 
 Questions needing wisdom: attempt an answer, then delegate to a **community** — high-reputation forum, subreddit, class, local group. Find them; respect an opt-out (note it in `RESOURCES.md`).
-
-## Reference docs
-
-Created alongside lessons; lessons are rarely revisited, references are. Compressed essence, quick-reference format: syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossaries. The glossary is essential — once created, every lesson adheres to it.

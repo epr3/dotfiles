@@ -18,23 +18,23 @@ Implement one ticket end-to-end, mark it resolved.
 
 Arg names a spec, or is omitted with a single spec in play -> don't pick arbitrarily: take the open ticket with the lowest `<NNNN>` for that `parent` whose blockers are all resolved. That's what the filename number is for — implement a spec's tickets in sequence.
 
-`status: resolved` already -> stop, tell the user, don't redo. No `status` field -> treat as `open`.
+`status: resolved` already -> stop and tell the user. No `status` field -> treat as `open`.
 
 Read the full body: what to build, acceptance criteria, blocked-by.
 
 ### 2. Check unblocked
 
-Read each "Blocked by" issue. Any not `status: resolved` -> stop: report the open blocker, don't start. Offer to resolve the blocker first.
+Read each "Blocked by" issue. Any not `status: resolved` -> stop, report the open blocker, and offer to resolve it first.
 
 ### 3. Build the slice
 
 Explore as needed — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice** — every layer, demoable alone. Acceptance criteria = definition of done. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
 
-Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, `completed` as each criterion is met — a long implementation stays legible. (No todo tools available: keep the step list in your working notes.)
+Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, mark completed as each criterion is met; `todo_read` re-reads the set, so a long implementation stays legible.
 
-**Delegate outsized steps.** A step too big to hold alongside the rest — and separable, meaning it has its own acceptance criterion and no dependence on the conversation's working state — goes to a sub-agent: one `Agent` call, `subagent_type: "general"`, brief = the ticket, that step's criterion, the relevant files (and the red-green-refactor loop when `tdd` is driving). Prefer delegating **repetitive** steps — the same change across many sites, where you write the brief once and fan out in parallel when the chunks are independent — and **context-heavy** ones, whose reads would fill the main context with material only that step needs. Verify each result against its criterion yourself before flipping the task `completed`: delegation moves the work, not the responsibility. One level only — sub-agents don't re-delegate; you stay the integrator.
+**Delegate outsized steps.** A step too big to hold alongside the rest — and separable, meaning it has its own acceptance criterion and no dependence on the conversation's working state — goes to a sub-agent: one `Agent` call, `subagent_type: "general"`, brief = the ticket, that step's criterion, the relevant files (and the red-green-refactor loop when `tdd` is driving). Prefer delegating **repetitive** steps — the same change across many sites, where you write the brief once and fan out in parallel when the chunks are independent — and **context-heavy** ones, whose reads would fill the main context with material only that step needs. Verify each result against its criterion yourself before marking the todo item `completed`: delegation moves the work, not the responsibility. One level only — sub-agents don't re-delegate; you stay the integrator.
 
-**HITL** -> surface the decision or review point before committing (`question` tool (prose if unavailable)). **AFK** -> proceed unattended.
+**HITL** -> surface the decision or review point before committing, as one **round** in the `grilling` skill's question format. **AFK** -> proceed unattended.
 
 ### 4. Verify
 

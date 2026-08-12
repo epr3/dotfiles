@@ -15,7 +15,7 @@ Every comment posted to the tracker during triage starts with this disclaimer:
 
 ## Roles
 
-Two **category** roles: `bug`, `enhancement`. Five **state** roles: `needs-triage` (maintainer evaluates), `needs-info` (waiting on reporter), `ready-for-agent` (fully specified, AFK-ready), `ready-for-human` (needs human implementation), `wontfix`. These are canonical names — apply the actual strings from `triage-labels.md` (config home). Every triaged issue carries exactly one category role and one state role; conflicting state roles -> flag and ask before doing anything else.
+Two **category** roles: `bug`, `enhancement`. Five **state** roles: `needs-triage` (maintainer evaluates), `needs-info` (waiting on reporter), `ready-for-agent` (fully specified, AFK-ready), `ready-for-human` (needs human implementation), `wontfix`. These are canonical names — apply the actual strings from `triage-labels.md`. Every triaged issue carries exactly one category role and one state role; conflicting state roles -> flag and ask before doing anything else.
 
 For a PR the states read against the attached code: `ready-for-agent` means a brief is attached and an agent takes the next step on the diff; `ready-for-human` means it's ready for a human to merge.
 
@@ -23,14 +23,14 @@ For a PR the states read against the attached code: `ready-for-agent` means a br
 
 ## Process
 
-The maintainer invokes triage and describes what they want in natural language. Interpret and act.
+Interpret what the maintainer asked for and act.
 
 **"What needs attention"** -> query the tracker and present three buckets, oldest first, counts + a one-line summary per item: **Unlabeled** (never triaged), **needs-triage** (evaluation in progress), **needs-info with reporter activity** (replied since the last triage notes). PRs in scope -> external PRs join the buckets, lines tagged `[PR]`/`[issue]`. Discovery surfaces *external* PRs only (tracker config defines external) — a collaborator's in-flight PR isn't triage work; but the filter is discovery-only, an explicitly named PR is always triaged. Let the maintainer pick.
 
 **A specific issue** -> per-issue flow:
 
 1. **Gather.** Read the full issue — body, comments, labels, reporter, dates (for a PR, the diff too). Parse prior triage notes; check whether the reporter answered outstanding questions and present the updated picture — never re-ask resolved questions. Explore the codebase using the project's glossary, respecting ADRs in the area: does the requested behaviour already exist? Read `out-of-scope/*.md` in the config home and surface any prior rejection resembling this issue.
-2. **Recommend.** Category + state recommendation with reasoning, plus a brief codebase summary relevant to the issue. Wait for direction (`question` tool if available, else prose).
+2. **Recommend.** Category + state recommendation with reasoning, plus a brief codebase summary relevant to the issue. Wait for direction.
 3. **Reproduce** (bugs only, before any grilling). Follow the reporter's steps, trace the relevant code, run tests or commands. Report: confirmed repro with code path, failed repro, or insufficient detail (a strong `needs-info` signal). For a PR: check out the code and run the tests to confirm the diff does what it claims. A confirmed repro makes a much stronger brief.
 4. **Grill** (if the issue needs fleshing out). Run the `grilling` loop with `domain-modeling` — sharpen the terms, record what crystallises.
 5. **Apply the state:**
@@ -54,4 +54,4 @@ The maintainer invokes triage and describes what they want in natural language. 
 - question
 ```
 
-Capture everything resolved during grilling under "established so far" so the work isn't lost. Questions must be specific and actionable, never "please provide more info".
+Capture everything resolved during grilling under "established so far" so the work isn't lost. Each question names the exact fact that's missing.

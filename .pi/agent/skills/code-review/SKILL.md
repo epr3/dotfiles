@@ -11,17 +11,17 @@ Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
 - **Standards** — does the code conform to this repo's documented coding standards?
 - **Spec** — does the code faithfully implement the originating issue, ticket, or spec?
 
-Both axes run as **two parallel sub-agents** — one per axis, no more — so they don't pollute each other's context, then this skill aggregates their findings.
+A change can follow every standard and implement the wrong thing, or do exactly what the issue asked and break every convention. So each axis runs as its own sub-agent, and the two reports stay separate — reporting them apart stops one from masking the other.
 
 ## Process
 
 ### 1. Pin the fixed point
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. Reviewing a PR or branch? The fixed point is the base it targets (or its merge-base with `main`). If they didn't specify one, ask for it.
+Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`. Reviewing a PR or branch? The fixed point is the base it targets (or its merge-base with `main`). If they didn't specify one, ask for it.
 
 Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here — not inside two parallel sub-agents.
+Confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty — a bad ref or empty diff should fail here, not inside two parallel sub-agents.
 
 ### 2. Identify the spec source
 
@@ -43,13 +43,13 @@ On top of whatever the repo documents, the Standards axis always carries the **s
 
 Send a single message with two `Agent` tool calls — `subagent_type: "general"` for both — so they run in parallel with isolated context.
 
-**Exactly two top-level sub-agents — one per axis.** Don't scale that number to the diff or fan out a sub-agent per file or per standard. Each axis sub-agent may, within its own work, spawn read-only **explore** sub-agents to navigate the code; what to avoid is the review itself multiplying into a swarm of dynamic reviewers.
+**Exactly two top-level sub-agents — one per axis**, whatever the diff's size. Each may spawn read-only `explore` sub-agents within its own work to navigate the code.
 
 **Standards sub-agent prompt** — include:
 
 - The full diff command and commit list.
 - The standards-source files you found in step 3, and the **absolute path** to `SMELLS.md` in this skill folder, with the instruction to read it first.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, baseline smells never are. Under 400 words."
 
 **Spec sub-agent prompt** — include:
 
@@ -61,10 +61,6 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see *Why two axes*).
+Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned, findings neither merged nor reranked.
 
-End with a one-line summary: total findings per axis, and the worst issue *within each axis* (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
-
-## Why two axes
-
-A change can follow every standard and implement the wrong thing, or do exactly what the issue asked and break every convention. Reporting the axes separately stops one from masking the other.
+End with a one-line summary: total findings per axis, and the worst issue *within each axis* (if any) — no single winner across axes.

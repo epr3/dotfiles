@@ -6,7 +6,7 @@ Tickets and specs for this repo live as markdown files under `.scratch/` at the 
 
 - One feature per directory: `.scratch/<feature-slug>/` — a feature dir carries a `SPEC.md`; a dir carrying a `MAP.md` instead is a `wayfinder` effort (its `tickets/` are investigation tickets, not implementation slices)
 - The spec is `.scratch/<feature-slug>/SPEC.md`
-- Implementation tickets are `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, zero-padded build order from `0001`; each records its parent spec path/slug and its `blocked_by` ticket numbers
+- Implementation tickets are one file per ticket at `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, zero-padded build order from `0001` — never a single combined tickets file; each records its parent spec path/slug and its `blocked_by` ticket numbers
 - Triage state, when triage is on, is a `Status:` line near the top of each issue file (role strings per `triage-labels.md`, beside this file)
 - Comments and conversation history append to the bottom of the file under a `## Comments` heading
 

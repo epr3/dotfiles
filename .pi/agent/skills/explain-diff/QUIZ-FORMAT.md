@@ -1,6 +1,6 @@
 # Quiz Format
 
-Discipline for multiple-choice quizzes (`explain-diff` explainers, `teach` lessons). The failure mode this exists to kill: **the correct answer is guessable without understanding** — longer, more precise, more hedged, or the only option using the material's vocabulary, while the distractors are obviously fabricated.
+Discipline for multiple-choice quizzes (`explain-diff` explainers, `teach` lessons). The failure mode this exists to kill: **the correct answer is guessable without understanding**.
 
 ## Options
 

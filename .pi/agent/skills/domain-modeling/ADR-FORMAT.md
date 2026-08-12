@@ -3,12 +3,10 @@
 Personal, in the context worktree alongside `CONTEXT.md` (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md` — date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to) — write the ADR where the decision lives.
 Create dir lazily. Like context, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle — skipped when context is in-repo, where they commit with the code (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)).
 
-> **Why not `NNNN-` sequence numbers.** In a multi-developer repo, two branches
-> both grab the next number and collide on merge, or renumber each other in
-> review. A date prefix is collision-free across branches, still sorts
-> chronologically, and never needs you to read the rest of the directory to pick
-> an ID. Pick the slug from the decision; never derive an identifier by counting
-> existing ADRs.
+> **Why not `NNNN-` sequence numbers.** Two branches both grab the next number and
+> collide on merge; a date prefix is collision-free, still sorts chronologically, and
+> needs no directory listing to pick an ID. Take the slug from the decision — never
+> derive an identifier by counting existing ADRs.
 
 ## Template
 
@@ -28,12 +26,11 @@ A single paragraph is fine. Value is recording *that* a decision was made and *w
 
 ## Finding related ADRs
 
-Don't enumerate the directory and treat the listing as the authoritative set —
-on a shared repo it's partial (ADRs live on unmerged branches) and racy. Instead
-**search by topic**: grep `docs/adr/` (plus any `<dir>/adr/`) for the terms of the decision at hand
-(module names, the seam, the technology) and read only the matches. Treat the
-result as "the ADRs I could find on this topic," never "all ADRs." If none match,
-proceed — absence of a matching ADR is not proof none exists elsewhere.
+**Search by topic**, don't enumerate the directory — on a shared repo a listing is
+partial (ADRs live on unmerged branches) and racy. Grep `docs/adr/` (plus any
+`<dir>/adr/`) for the terms of the decision at hand — module names, the seam, the
+technology — and read only the matches. That is "the ADRs I could find on this
+topic", never "all ADRs"; none matching is not proof none exists elsewhere, so proceed.
 
 ## ADR test — all three or skip
 

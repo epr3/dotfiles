@@ -28,18 +28,6 @@ See [tests.md](./tests.md) for examples and [mocking.md](./mocking.md) for mocki
 
 **Correct approach**: vertical slices via tracer bullets. One test -> one implementation -> repeat. Each test responds to what you learned from the previous cycle. Because you just wrote the code, you know exactly what behaviour matters and how to verify it.
 
-```
-WRONG (horizontal):
-  RED:   test1, test2, test3, test4, test5
-  GREEN: impl1, impl2, impl3, impl4, impl5
-
-RIGHT (vertical):
-  RED->GREEN: test1->impl1
-  RED->GREEN: test2->impl2
-  RED->GREEN: test3->impl3
-  ...
-```
-
 ## Workflow
 
 When the work is a tracked issue, `tdd` runs on top of `implement`: follow its flow — load the ticket, build the slice, verify, set status — and iterate on the build step with the loop below. Standalone, with no ticket in play, run the loop directly.
@@ -54,7 +42,7 @@ Before writing any code:
 - Identify opportunities for [deep modules](./deep-modules.md) — see `codebase-design` for the full module/seam/adapter/leverage/locality vocabulary.
 - Design interfaces for [testability](./interface-design.md).
 - List the behaviours to test (not implementation steps) and prioritise them.
-- Get approval on the plan (`question` tool; prose if unavailable): the public interface, and which behaviours matter most.
+- Get approval on the plan — the public interface, and which behaviours matter most — as one **round** in the `grilling` skill's question format.
 
 **You can't test everything.** Focus effort on critical paths and complex logic, not every possible edge case.
 
@@ -66,12 +54,6 @@ GREEN: write the minimal code to pass        -> it passes
 ```
 
 The first pass through is your **tracer bullet** — it proves the path works end-to-end. Then repeat, one behaviour at a time, each test responding to what the last cycle taught you.
-
-Rules:
-
-- One test at a time, only enough code to pass it.
-- Don't anticipate future tests.
-- Keep tests focused on observable behaviour.
 
 ### 3. Refactor
 

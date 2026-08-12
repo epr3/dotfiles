@@ -5,11 +5,11 @@ description: Investigate a question against high-trust primary sources and captu
 
 # Research
 
-Spin up a **background agent** to do the reading — `Agent` with `subagent_type: "general"` and `run_in_background: true`; it carries the web tools (`web_search` / `web_fetch`) and writes the note itself, so you stay unblocked while it works. Poll with `get_subagent_result`.
+Spin up a **background agent** to do the reading — `Agent` with `subagent_type: "general"` and `run_in_background: true`, with web access (`web_search` / `web_fetch`); poll it with `get_subagent_result` — so you stay unblocked while it works.
 
 Its job:
 
-1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs — not a secondary write-up of them. Follow every claim back to the source that owns it.
+1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs. Follow every claim back to the source that owns it.
 2. Write the findings to a single Markdown note, citing each claim's source.
 3. Save it into the context home alongside your other notes — this branch's context worktree by default, or the repo's context location if the repo's `## Agent skills` block puts context in-repo (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Match the existing convention there; if there's none, put it somewhere sensible and say where.
 

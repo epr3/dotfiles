@@ -24,3 +24,7 @@ The `wayfinder` map is a single issue titled `wayfinder: <effort>`; child ticket
 ## When a skill says "fetch the relevant issue"
 
 Run `gh issue view <number> --comments`.
+
+## PRs as a request surface
+
+**Off.** Flip to on to have `triage` pull *external* pull requests into the same queue, roles, and states as issues (collaborators' in-flight PRs are left alone) — useful in open-source repos that receive feature requests as PRs.
