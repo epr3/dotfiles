@@ -1,6 +1,6 @@
 ---
 name: writing-for-agents
-description: Reference for writing any document an agent consumes — the vocabulary and levers that make an agent's behaviour predictable. Use when creating or editing a skill, when modifying AGENTS.md or CLAUDE.md, when a document an agent reads has grown too long or fires unreliably, and when another skill needs the vocabulary of context load, progressive disclosure, or leading words.
+description: Reference for writing any document an agent consumes — the vocabulary and levers that make an agent's behaviour predictable. Use when creating or editing a skill, when modifying AGENTS.md or CLAUDE.md, when a document an agent reads has grown too long or fires unreliably.
 ---
 
 # Writing for Agents

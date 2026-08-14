@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: Shared vocabulary and principles for designing deep modules — a lot of behaviour behind a small interface, at a clean seam, testable through that interface. Use when designing or restructuring a module's interface or seam, and when another skill (tdd, improve-codebase-architecture) needs the deep-module vocabulary.
+description: Shared vocabulary and principles for designing deep modules — a lot of behaviour behind a small interface, at a clean seam, testable through that interface. Use when designing or restructuring a module's interface or seam.
 ---
 
 # Codebase Design

@@ -31,7 +31,7 @@ A model-invoked description does two jobs — state what the skill is, and list 
 
 - **Front-load the skill's leading word** — the description is where it does its invocation work.
 - **One trigger per branch.** Synonyms renaming a single branch are **duplication** — "build features using TDD … asks for test-first development" is one branch written twice. Keep only genuinely distinct branches.
-- **Cut identity that's already in the body.** Keep it to triggers, plus any "when another skill needs…" reach clause.
+- **Cut identity that's already in the body.** Keep it to triggers — a description carries the branches that should fire it, while cross-skill reach belongs in the referring skill's body, where it names the dependency.
 
 ## Splitting by invocation
 

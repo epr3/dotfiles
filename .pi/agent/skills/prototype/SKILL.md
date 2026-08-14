@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: Build a prototype that answers a design question with runnable code, then capture what it taught. Use when the user wants to prototype, sanity-check a data model or state machine, or see several UI options — or when another skill (e.g. wayfinder) needs a design question answered by running something.
+description: Build a prototype that answers a design question with runnable code, then capture what it taught. Use when the user wants to prototype, sanity-check a data model or state machine, or see several UI options.
 ---
 
 # Prototype

@@ -1,6 +1,6 @@
 ---
 name: domain-modeling
-description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Reach for it when actively pinning down domain terms or recording a decision, inside a grill or outside one.
+description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Use while actively pinning down codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR — inside a grill or outside one.
 ---
 
 # Domain Modeling
