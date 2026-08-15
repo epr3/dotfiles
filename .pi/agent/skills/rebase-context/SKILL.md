@@ -25,7 +25,7 @@ In the source **context worktree**, replay onto the target: `git rebase <onto>`.
 
 ### 3. Resolve each conflict by meaning
 
-At each stop git marks the conflicted files. Resolve by **meaning**, not just markers, running `merge-context`'s classify-and-interview discipline over the conflicted glossary and unioning ADRs by date-slug (superseding, never deleting). **AFK** -> resolve the unambiguous (adds, dedupes, ADR unions); pause the rebase on any divergence, alias clash, or ADR contradiction for review — never auto-pick meaning.
+At each stop git marks the conflicted files. Resolve by **meaning**, not just markers, running `merge-context`'s classify-and-interview discipline over the conflicted glossary and unioning ADRs by date-slug (superseding, never deleting). Ask them as **round**s in the `grilling` skill's question format, one question per conflict. **AFK** -> resolve the unambiguous (adds, dedupes, ADR unions); pause the rebase on any divergence, alias clash, or ADR contradiction for review — never auto-pick meaning.
 
 Stage the resolved files (`git add`) and `git rebase --continue`; repeat until the rebase finishes.
 
