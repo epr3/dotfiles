@@ -1,5 +1,5 @@
 -- plugins.lua -- standalone Neovim plugin declarations
--- Declare repos for pack to install, ensure they're cloned, then configure.
+-- Declare repos for pack to install, then configure those already on the runtime path.
 
 local pack = require 'pack'
 
@@ -9,11 +9,11 @@ local pack = require 'pack'
 
 pack.use 'tpope/vim-sleuth'
 pack.use 'numToStr/Comment.nvim'
-pack.use 'catppuccin/nvim'
+pack.use('catppuccin/nvim', { name = 'catppuccin' })
 pack.use 'nvim-tree/nvim-web-devicons'
 pack.use 'lewis6991/gitsigns.nvim'
 pack.use 'folke/which-key.nvim'
-pack.use 'nvim-telescope/telescope.nvim'
+pack.use('nvim-telescope/telescope.nvim', { version = '0.1.x' })
 pack.use 'nvim-lua/plenary.nvim'
 pack.use('nvim-telescope/telescope-fzf-native.nvim', { build = 'make' })
 pack.use 'nvim-telescope/telescope-ui-select.nvim'
@@ -34,8 +34,9 @@ pack.use 'saadparwaiz1/cmp_luasnip'
 pack.use 'hrsh7th/cmp-path'
 pack.use 'folke/todo-comments.nvim'
 pack.use 'echasnovski/mini.nvim'
-pack.use 'nvim-treesitter/nvim-treesitter'
-pack.use 'ThePrimeagen/harpoon'
+-- The config below uses the legacy API, which is maintained on master.
+pack.use('nvim-treesitter/nvim-treesitter', { version = 'master' })
+pack.use('ThePrimeagen/harpoon', { version = 'harpoon2' })
 pack.use 'mfussenegger/nvim-dap'
 pack.use 'rcarriga/nvim-dap-ui'
 pack.use 'nvim-neotest/nvim-nio'

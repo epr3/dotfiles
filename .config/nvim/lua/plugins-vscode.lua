@@ -9,7 +9,7 @@ local pack = require 'pack'
 
 pack.use 'tpope/vim-repeat'
 pack.use 'gbprod/yanky.nvim'
-pack.use 'ggandor/leap.nvim'
+pack.use 'https://codeberg.org/andyg/leap.nvim'
 pack.use 'ggandor/flit.nvim'
 pack.use 'echasnovski/mini.move'
 pack.use 'echasnovski/mini.comment'
@@ -18,7 +18,8 @@ pack.use 'echasnovski/mini.surround'
 pack.use 'echasnovski/mini.ai'
 
 -- Treesitter works in VS Code for syntax, but highlight is off.
-pack.use 'nvim-treesitter/nvim-treesitter'
+-- This profile uses the legacy nvim-treesitter.configs API.
+pack.use('nvim-treesitter/nvim-treesitter', { version = 'master' })
 pack.use 'nvim-treesitter/nvim-treesitter-context'
 
 -- ---------------------------------------------------------------------------
@@ -31,7 +32,7 @@ pack.ensure()
 -- Plugin configuration
 -- ---------------------------------------------------------------------------
 
-require('leap').create_default_mappings()
+require('leap').add_default_mappings()
 
 require('mini.move').setup {}
 require('mini.comment').setup {}
