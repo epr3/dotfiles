@@ -10,4 +10,11 @@ return {
       },
     },
   },
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+  on_attach = function(client)
+    local semantic_tokens = client.server_capabilities.semanticTokensProvider
+    if semantic_tokens then
+      semantic_tokens.full = vim.bo.filetype ~= 'vue'
+    end
+  end,
 }
