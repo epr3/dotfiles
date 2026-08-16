@@ -28,7 +28,7 @@ Read each "Blocked by" issue. Any not `status: resolved` -> stop, report the ope
 
 ### 3. Build the slice
 
-Explore as needed — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice** — every layer, demoable alone. Acceptance criteria = definition of done. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
+Explore as needed — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice** — every layer, demoable alone. Acceptance criteria = definition of done. Drive the build with the `tdd` red-green-refactor loop where the seams are pre-agreed. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
 
 Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, mark completed as each criterion is met; `todo_read` re-reads the set, so a long implementation stays legible.
 
@@ -38,7 +38,7 @@ Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progres
 
 ### 4. Verify
 
-Run the project's tests/build for the touched area. Confirm every acceptance box is genuinely checkable. No resolve on red.
+Run the project's tests/build for the touched area — typecheck and focused tests as you go, the full suite once at the end. Confirm every acceptance box is genuinely checkable. No resolve on red.
 
 ### 5. Set status
 

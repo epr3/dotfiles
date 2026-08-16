@@ -3,9 +3,10 @@
 -- Usage:
 --   local pack = require 'pack'
 --   pack.use('author/repo', { name = 'custom-name', version = 'branch', build = 'make' })
+--   pack.lockfile('profile-pack-lock.json')
 --   pack.ensure()
 
-local M = { plugins = {}, builds = {} }
+local M = { plugins = {}, builds = {}, lockfile_path = 'nvim-pack-lock.json' }
 
 local function source(repo)
   if repo:match '^[%w+.-]+://' or repo:match '^git@' then
@@ -49,16 +50,19 @@ local function run_build(event)
   vim.system({ 'sh', '-c', build }, { cwd = event.data.path }, function(result)
     if result.code ~= 0 then
       vim.schedule(function()
-        vim.notify(
-          ('pack: build failed for %s\n%s'):format(event.data.spec.name, result.stderr),
-          vim.log.levels.ERROR
-        )
+        vim.notify(('pack: build failed for %s\n%s'):format(event.data.spec.name, result.stderr), vim.log.levels.ERROR)
       end)
     end
   end)
 end
 
 vim.api.nvim_create_autocmd('PackChanged', { callback = run_build })
+
+--- Set the lockfile path for this profile's resolved plugin revisions.
+---@param path string
+function M.lockfile(path)
+  M.lockfile_path = path
+end
 
 --- Install and load all declared plugins for this session.
 function M.ensure()

@@ -1,3 +1,0 @@
--- MDX syntax highlighting (requires treesitter)
--- Configuration is minimal; treesitter grammar handles highlighting.
--- vim: ts=2 sts=2 sw=2 et

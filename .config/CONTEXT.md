@@ -20,6 +20,34 @@ _Avoid_: extras, kitchen sink.
 
 - **Neovim configuration** has a **VS Code Neovim profile** for embedded editing.
 - **Kickstart alignment** shapes the **Neovim configuration** without replacing the **Personal plugin set**.
+- A **Mini profile adapter** serves both the **Neovim configuration** and its **VS Code Neovim profile**.
+- **Core-first Treesitter configuration** is part of the **Neovim configuration**.
+
+## Glossary
+
+**Per-server declaration**: A pure, complete Neovim LSP configuration plus Mason package identity for one enabled language server, owned by one module under `.config/nvim/lua/nvim/servers/`.
+_Avoid_: server configs, LSP setup files.
+
+**Optional adapter**: A declarative extension inside a per-server declaration that activates only when the Mason package it names is installed — currently the Vue adapter for TypeScript on `ts_ls`.
+_Avoid_: plugin wiring, vue plugin.
+
+**Deferred resolution**: Resolving optional adapters at registry setup rather than while declarations load; declarations never query Mason state at load time.
+_Avoid_: load-time lookup, eager resolution.
+
+**Repair command**: The concrete command the health interface prints so missing optional tooling can be restored (for example `:MasonInstall vue-language-server`).
+_Avoid_: repair steps, install hint.
+
+**Keystroke interface**: A Neovim mapping's mode and key sequence, which must resolve to one action in every buffer where it is available.
+_Avoid_: keybind, shortcut.
+
+**Mini profile adapter**: The shared Mini configuration that gives the standalone **Neovim configuration** and **VS Code Neovim profile** one package identity while allowing each to select its own Mini modules.
+_Avoid_: duplicated mini config, mini split.
+
+**Core-first Treesitter configuration**: Neovim-0.12 Treesitter behavior implemented with Neovim core APIs, using a plugin adapter only for behavior core does not provide.
+_Avoid_: legacy Treesitter setup, configs.setup.
+
+**Plugin declaration interface**: A plugin declaration and its configuration module considered as one truthful interface, with no inert declarations or comment-only wrapper modules.
+_Avoid_: plugin list, plugin stub.
 
 ## Example dialogue
 

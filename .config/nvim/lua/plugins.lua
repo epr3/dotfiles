@@ -24,7 +24,6 @@ pack.use 'Bilal2453/luvit-meta'
 pack.use 'neovim/nvim-lspconfig'
 pack.use 'williamboman/mason.nvim'
 pack.use 'WhoIsSethDaniel/mason-tool-installer.nvim'
-pack.use 'j-hui/fidget.nvim'
 pack.use 'hrsh7th/cmp-nvim-lsp'
 pack.use 'stevearc/conform.nvim'
 pack.use 'windwp/nvim-autopairs'
@@ -34,8 +33,10 @@ pack.use 'saadparwaiz1/cmp_luasnip'
 pack.use 'hrsh7th/cmp-path'
 pack.use 'folke/todo-comments.nvim'
 pack.use 'echasnovski/mini.nvim'
--- The config below uses the legacy API, which is maintained on master.
-pack.use('nvim-treesitter/nvim-treesitter', { version = 'master' })
+-- Core-first treesitter: keep nvim-treesitter (main branch) for parser
+-- installation and indentation, which are not provided by Neovim core.
+pack.use('nvim-treesitter/nvim-treesitter', { version = 'main' })
+pack.use 'windwp/nvim-ts-autotag'
 pack.use('ThePrimeagen/harpoon', { version = 'harpoon2' })
 pack.use 'mfussenegger/nvim-dap'
 pack.use 'rcarriga/nvim-dap-ui'
@@ -51,7 +52,6 @@ pack.use 'folke/trouble.nvim'
 pack.use 'nvim-lualine/lualine.nvim'
 pack.use 'christoomey/vim-tmux-navigator'
 pack.use 'kylechui/nvim-surround'
-pack.use 'nvim-treesitter/nvim-treesitter-context'
 pack.use 'wintermute-cell/gitignore.nvim'
 pack.use 'stevearc/oil.nvim'
 pack.use 'davidmh/mdx.nvim'
@@ -76,22 +76,16 @@ require 'nvim.plugins.conform'
 require 'nvim.plugins.autopairs'
 require 'nvim.plugins.cmp'
 require 'nvim.plugins.todo-comments'
-require 'nvim.plugins.mini'
-require 'nvim.plugins.treesitter'
+require('nvim.plugins.mini-profile').setup 'standalone'
+require('nvim.plugins.treesitter').setup 'standalone'
 require 'nvim.plugins.harpoon'
 require 'nvim.plugins.debug'
 require 'nvim.plugins.indent-line'
 require 'nvim.plugins.neotest'
 require 'nvim.plugins.trouble'
 require 'nvim.plugins.lualine'
-require 'nvim.plugins.tmux'
 require 'nvim.plugins.surround'
-require 'nvim.plugins.treesitter-context'
 require 'nvim.plugins.gitignore'
 require 'nvim.plugins.oil'
-require 'nvim.plugins.mdx'
-
--- Note: vim-sleuth, Comment.nvim, and LuaSnip (for snippets) are
--- configured implicitly via built-in defaults or init.lua inline config.
 
 -- vim: ts=2 sts=2 sw=2 et

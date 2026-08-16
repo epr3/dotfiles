@@ -5,6 +5,8 @@ description: Test-driven development via a red-green-refactor loop, one vertical
 
 # Test-Driven Development
 
+TDD is the red → green loop. Every section below applies on every cycle — use it before and during the loop, not only after.
+
 ## Philosophy
 
 **Core principle**: tests verify behaviour through public interfaces, not implementation details. The code can change entirely; the tests shouldn't.
@@ -38,7 +40,7 @@ Orient to the project's domain model first: test names and interface vocabulary 
 
 Before writing any code:
 
-- Confirm what interface changes are needed.
+- Confirm what interface changes are needed and which public seams the tests will cross; write no test at an unconfirmed seam.
 - Identify opportunities for [deep modules](./deep-modules.md) — see `codebase-design` for the full module/seam/adapter/leverage/locality vocabulary.
 - Design interfaces for [testability](./interface-design.md).
 - List the behaviours to test (not implementation steps) and prioritise them.

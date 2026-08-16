@@ -1,4 +1,7 @@
 return {
+  mason = 'lua-language-server',
+  cmd = { 'lua-language-server' },
+  filetypes = { 'lua' },
   settings = {
     Lua = {
       completion = {

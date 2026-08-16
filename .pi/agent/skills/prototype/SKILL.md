@@ -5,7 +5,7 @@ description: Build a prototype that answers a design question with runnable code
 
 # Prototype
 
-A prototype is **runnable code that answers a design question**. Once it has answered, it is the **primary source** for that answer: the real code that follows is **secondary**, derived from what the prototype showed. The question decides the shape.
+A prototype is **throwaway, runnable code that answers a design question**. Once it has answered, it is the **primary source** for that answer: the real code that follows is **secondary**, derived from what the prototype showed. The question decides the shape.
 
 ## Pick a branch
 
@@ -18,7 +18,7 @@ Wrong branch wastes the whole prototype. Genuinely ambiguous + user unreachable 
 
 ## Rules (both branches)
 
-1. **Marked as a prototype from day one.** Locate next to the module/page it serves; name it so it's obviously a prototype. UI routes follow the project's existing routing convention.
+1. **Throwaway and clearly marked from day one.** Locate it next to the module/page it serves; name it so a casual reader can see it is a prototype, not production code. UI routes follow the project's existing routing convention.
 2. **One command to run** via the project's task runner (`pnpm <name>`, `python <path>`, …).
 3. **No persistence by default.** State in memory. If the question *is* persistence, use a scratch DB/file named "PROTOTYPE — wipe me".
 4. **Skip the polish.** No tests, no error handling beyond runnable, no abstractions.

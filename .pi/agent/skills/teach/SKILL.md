@@ -21,7 +21,7 @@ Create everything lazily.
 
 ## Philosophy
 
-Deep learning = **knowledge** (from high-trust resources — never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills.
+Deep learning = **knowledge** (from high-trust resources — never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength**, not mere **fluency**: build long-term retention through desirable difficulty — retrieval practice, spacing, and, for skills, interleaving.
 
 ## The mission
 

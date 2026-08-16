@@ -7,14 +7,14 @@ description: The reusable discipline for building and sharpening the project's d
 
 The *active* discipline of building + sharpening the domain model — for when you're *changing* it. (Merely *reading* `CONTEXT.md` for vocabulary is a one-line habit any skill does, not this skill.)
 
-## Four moves
+## During the session
 
-Layer these onto a grilling pass, or apply directly when modeling:
+Layer these moves onto a grilling pass, or apply them directly when modeling:
 
-- **Glossary conflict** -> `Keep glossary definition (recommended)` / `Update glossary` / `Two distinct terms`
-- **Fuzzy term** -> candidate canonical terms (`Customer` / `User` / `Both — needs splitting`)
-- **Scenario edge case** -> concrete branches (`Cancel whole order` / `Cancel line item` / `Not allowed`). Invent scenarios — probe edges forcing precision about concept boundaries; don't wait for the user to supply.
-- **Code contradiction** -> `Code is right, update plan` / `Plan is right, code is wrong` / `Both partially right`
+- **Challenge glossary conflicts.** When a term conflicts with the glossary, call it out immediately: `Keep glossary definition (recommended)` / `Update glossary` / `Two distinct terms`.
+- **Sharpen fuzzy language.** Propose candidate canonical terms for vague or overloaded words: `Customer` / `User` / `Both — needs splitting`.
+- **Discuss concrete scenarios.** Invent edge cases that force precision about concept boundaries: `Cancel whole order` / `Cancel line item` / `Not allowed`. Do not wait for the user to supply them.
+- **Cross-reference the code.** When the user's account conflicts with the code, surface the contradiction: `Code is right, update plan` / `Plan is right, code is wrong` / `Both partially right`.
 
 ## Writing it down
 

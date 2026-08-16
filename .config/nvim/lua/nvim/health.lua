@@ -32,6 +32,39 @@ local check_external_reqs = function()
   return true
 end
 
+-- Reports the deferred optional Vue/TypeScript adapter declared by ts_ls.
+-- The adapter only activates when the optional tooling is installed; a missing
+-- package must not break TypeScript, so this makes it visible with a concrete
+-- repair command instead.
+local function check_optional_vue_adapter()
+  local ok, declaration = pcall(require, 'nvim.servers.ts_ls')
+  if not ok or type(declaration) ~= 'table' or type(declaration.optional) ~= 'table' then
+    return
+  end
+  for _, adapter in ipairs(declaration.optional) do
+    local package = adapter.package
+    if type(package) ~= 'string' then
+      goto continue
+    end
+    local registry_ok, mason_registry = pcall(require, 'mason-registry')
+    if not registry_ok then
+      vim.health.warn(string.format("Optional Vue/TypeScript integration: status unknown ('%s' cannot be checked)", package))
+    elseif mason_registry.is_installed(package) then
+      vim.health.ok(string.format("Optional Vue/TypeScript integration active (uses installed '%s')", package))
+    else
+      vim.health.warn(string.format(
+        [[
+Optional Vue/TypeScript integration inactive: '%s' is not installed.
+  TypeScript editing still works; the Vue adapter is skipped. To restore it:
+  Repair: run `:MasonInstall %s`]],
+        package,
+        package
+      ))
+    end
+    ::continue::
+  end
+end
+
 return {
   check = function()
     vim.health.start 'nvim'
@@ -47,5 +80,6 @@ return {
 
     check_version()
     check_external_reqs()
+    check_optional_vue_adapter()
   end,
 }

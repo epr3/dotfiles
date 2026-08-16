@@ -11,21 +11,17 @@ pack.use 'tpope/vim-repeat'
 pack.use 'gbprod/yanky.nvim'
 pack.use 'https://codeberg.org/andyg/leap.nvim'
 pack.use 'ggandor/flit.nvim'
-pack.use 'echasnovski/mini.move'
-pack.use 'echasnovski/mini.comment'
-pack.use 'echasnovski/mini.pairs'
-pack.use 'echasnovski/mini.surround'
-pack.use 'echasnovski/mini.ai'
+pack.use 'echasnovski/mini.nvim'
 
--- Treesitter works in VS Code for syntax, but highlight is off.
--- This profile uses the legacy nvim-treesitter.configs API.
-pack.use('nvim-treesitter/nvim-treesitter', { version = 'master' })
-pack.use 'nvim-treesitter/nvim-treesitter-context'
+-- Core-first treesitter: keep nvim-treesitter (main branch) for parser
+-- installation, which is not provided by Neovim core.
+pack.use('nvim-treesitter/nvim-treesitter', { version = 'main' })
 
 -- ---------------------------------------------------------------------------
 -- Ensure plugins are installed
 -- ---------------------------------------------------------------------------
 
+pack.lockfile 'vscode-pack-lock.json'
 pack.ensure()
 
 -- ---------------------------------------------------------------------------
@@ -34,27 +30,10 @@ pack.ensure()
 
 require('leap').add_default_mappings()
 
-require('mini.move').setup {}
-require('mini.comment').setup {}
-require('mini.pairs').setup {}
-require('mini.surround').setup {
-  mappings = {
-    add = 'gza',
-    delete = 'gzd',
-    find = 'gzf',
-    find_left = 'gzF',
-    highlight = 'gzh',
-    replace = 'gzr',
-    update_n_lines = 'gzn',
-  },
-}
-require('mini.ai').setup { n_lines = 500 }
+require('nvim.plugins.mini-profile').setup 'vscode'
 
 -- Treesitter: syntax highlighting off inside VS Code; keep parsing for context.
-require('nvim-treesitter.configs').setup {
-  highlight = { enable = false },
-  context_commentstring = { enable = true },
-}
+require('nvim.plugins.treesitter').setup 'vscode'
 
 -- yanky.nvim defaults (no further opts needed)
 require('yanky').setup {}

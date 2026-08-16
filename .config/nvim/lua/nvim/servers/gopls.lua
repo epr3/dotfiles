@@ -1,9 +1,10 @@
-local util = require 'lspconfig/util'
-
 return {
+  mason = 'gopls',
   cmd = { 'gopls' },
   filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
-  root_dir = util.root_pattern('go.work', 'go.mod', '.git'),
+  root_dir = function(fname)
+    return vim.fs.root(fname, { 'go.work', 'go.mod', '.git' })
+  end,
   settings = {
     gopls = {
       completeUnimported = true,

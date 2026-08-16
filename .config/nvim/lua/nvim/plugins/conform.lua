@@ -1,13 +1,24 @@
--- Autoformat on save
+-- Autoformat on save.
+-- Prettier owns the web filetypes also served by cssls, jsonls, ts_ls, eslint,
+-- tailwindcss, emmet_ls, vue_ls, and astro; keep their LSP fallback disabled.
 local util = require 'conform.util'
 require('conform').setup {
   formatters = {
     prettier = {
       require_cwd = true,
       cwd = util.root_file {
-        '.prettierrc', '.prettierrc.json', '.prettierrc.yml', '.prettierrc.yaml', '.prettierrc.json5',
-        '.prettierrc.js', '.prettierrc.cjs', '.prettierrc.mjs', '.prettierrc.toml', 'prettier.config.js',
-        'prettier.config.cjs', 'prettier.config.mjs',
+        '.prettierrc',
+        '.prettierrc.json',
+        '.prettierrc.yml',
+        '.prettierrc.yaml',
+        '.prettierrc.json5',
+        '.prettierrc.js',
+        '.prettierrc.cjs',
+        '.prettierrc.mjs',
+        '.prettierrc.toml',
+        'prettier.config.js',
+        'prettier.config.cjs',
+        'prettier.config.mjs',
       },
     },
   },
@@ -30,16 +41,22 @@ require('conform').setup {
   },
   notify_on_error = false,
   format_on_save = function(bufnr)
+    -- Keep Conform, rather than the enabled LSP servers, as formatter authority.
     local disable_filetypes = {
       c = true,
       cpp = true,
+      css = true,
+      html = true,
       vue = true,
+      astro = true,
       typescript = true,
       typescriptreact = true,
       javascript = true,
       javascriptreact = true,
       json = true,
       jsonc = true,
+      markdown = true,
+      ['markdown.mdx'] = true,
     }
     return {
       timeout_ms = 500,

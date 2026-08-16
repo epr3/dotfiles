@@ -7,13 +7,13 @@ description: Find deepening opportunities in a codebase — refactors that turn 
 
 Surface architectural friction, propose **deepening opportunities** — refactors turning shallow modules deep. Aim: testability + AI-navigability.
 
-Every suggestion is phrased in the `codebase-design` vocabulary — **module, interface, depth, seam, adapter, leverage, locality** — and judged by its principles. Invoke that skill and use its terms; domain language from `CONTEXT.md` names good seams, and ADRs record decisions not to re-litigate.
+Every suggestion is phrased in the `codebase-design` vocabulary — **module, interface, depth, seam, adapter, leverage, locality** — and judged by its principles; don't drift into "component", "service", "API", or "boundary". Invoke that skill and use its terms; domain language from `CONTEXT.md` names good seams, and ADRs record decisions not to re-litigate.
 
 ## Process
 
 ### 1. Scope, then explore
 
-Scan **where change is actually landing** — a deepening in code nobody is touching is a suggestion nobody will act on. Take the area from the user when they name one; otherwise derive it from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
+Scan **where change is actually landing** — YAGNI: a deepening in code nobody is touching is a suggestion nobody will act on, so extra weight goes on the parts that have recently changed. Take the area from the user when they name one; otherwise derive it from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
 
 Read `CONTEXT.md` for that area first — in the relevant folder (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). ADRs: grep `docs/adr/` + `<dir>/adr/` (see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)) for area terms, read matches — treat the grep as partial and racy rather than an authoritative list.
 
@@ -25,7 +25,7 @@ Explore the scoped area with a read-only `explore` sub-agent (`Agent` tool, `sub
 - Tightly-coupled modules leaking across seams
 - Untested / hard-to-test through current interface
 
-Run the **deletion test** on suspected shallow modules. "Concentrates" = signal.
+Run the **deletion test** on anything you suspect is shallow: would deleting it concentrate complexity, or just move it? "Concentrates" = signal.
 
 ### 2. HTML report
 

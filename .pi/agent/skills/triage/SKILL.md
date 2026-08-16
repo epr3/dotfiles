@@ -29,7 +29,7 @@ Interpret what the maintainer asked for and act.
 
 **A specific issue** -> per-issue flow:
 
-1. **Gather.** Read the full issue — body, comments, labels, reporter, dates (for a PR, the diff too). Parse prior triage notes; check whether the reporter answered outstanding questions and present the updated picture — never re-ask resolved questions. Explore the codebase using the project's glossary, respecting ADRs in the area: does the requested behaviour already exist? Read `out-of-scope/*.md` in the config home and surface any prior rejection resembling this issue.
+1. **Gather.** Read the full issue — body, comments, labels, reporter, dates (for a PR, the diff too). Parse prior triage notes; check whether the reporter answered outstanding questions and present the updated picture — never re-ask resolved questions. Explore the codebase using the project's glossary, respecting ADRs in the area: does the requested behaviour already exist — search by **domain concept**, not just the request's wording, and report where you looked? If it does, it's an already-implemented `wontfix` (step 5). Read `out-of-scope/*.md` in the config home and surface any prior rejection resembling this issue.
 2. **Recommend.** Category + state recommendation with reasoning, plus a brief codebase summary relevant to the issue. Wait for direction.
 3. **Reproduce** (bugs only, before any grilling). Follow the reporter's steps, trace the relevant code, run tests or commands. Report: confirmed repro with code path, failed repro, or insufficient detail (a strong `needs-info` signal). For a PR: check out the code and run the tests to confirm the diff does what it claims. A confirmed repro makes a much stronger brief.
 4. **Grill** (if the issue needs fleshing out). Run the `grilling` loop with `domain-modeling` — sharpen the terms, record what crystallises.
@@ -37,7 +37,10 @@ Interpret what the maintainer asked for and act.
    - `ready-for-agent` — attach an agent brief ([AGENT-BRIEF.md](./AGENT-BRIEF.md)); moving here without a grilling session -> ask whether to write the brief anyway.
    - `ready-for-human` — same structure as a brief, plus why it can't be delegated (judgment calls, external access, design decisions, manual testing).
    - `needs-info` — post triage notes (template below).
-   - `wontfix` (enhancement) — record the rejection as `out-of-scope/<slug>.md` in the config home (what was asked, why it's out of scope), link it from a closing comment, close.
+   - `wontfix` — close, the comment depending on *why*:
+     - **Already implemented** — the change already exists in the codebase: point to where it lives; do **not** write to `out-of-scope/` (that knowledge base is for *rejected* requests, not built ones).
+     - **Rejected (bug)** — polite explanation, then close.
+     - **Rejected (enhancement)** — record the rejection as `out-of-scope/<slug>.md` in the config home (what was asked, why it's out of scope), link it from a closing comment, close.
    - `needs-triage` — apply the role; optional comment if there's partial progress.
 
 **A direct order** ("move #42 to ready-for-agent") -> trust it: confirm what's about to happen (role changes, comment, close), apply directly, skip grilling. Offer the brief if moving to `ready-for-agent` without one.

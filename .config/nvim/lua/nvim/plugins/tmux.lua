@@ -1,3 +1,0 @@
--- Tmux navigation (C-hjkl across panes)
--- No setup needed, keymaps are all defined by the plugin.
--- vim: ts=2 sts=2 sw=2 et

@@ -7,18 +7,20 @@ local function toggle_telescope(harpoon_files)
   for _, item in ipairs(harpoon_files.items) do
     table.insert(file_paths, item.value)
   end
-  require('telescope.pickers').new({}, {
-    prompt_title = 'Harpoon',
-    finder = require('telescope.finders').new_table { results = file_paths },
-    previewer = require('telescope.config').values.file_previewer {},
-    sorter = require('telescope.config').values.generic_sorter {},
-  }):find()
+  require('telescope.pickers')
+    .new({}, {
+      prompt_title = 'Harpoon',
+      finder = require('telescope.finders').new_table { results = file_paths },
+      previewer = require('telescope.config').values.file_previewer {},
+      sorter = require('telescope.config').values.generic_sorter {},
+    })
+    :find()
 end
 
 vim.keymap.set('n', '<leader>ha', function()
   harpoon:list():add()
 end, { desc = '[A]ppend to Harpoon' })
-vim.keymap.set('n', '<leader>hd', function()
+vim.keymap.set('n', '<leader>hx', function()
   harpoon:list():remove()
 end, { desc = '[D]elete from Harpoon' })
 vim.keymap.set('n', '<C-a>', function()

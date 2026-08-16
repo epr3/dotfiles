@@ -18,7 +18,7 @@ Work from conversation. Path arg (spec/plan `.md`) -> read fully. Default source
 
 ### 2. Explore (optional)
 
-Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
+Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area. Look for prefactoring that makes the implementation easier — make the change easy, then make the easy change.
 
 ### 3. Draft vertical slices
 
@@ -28,8 +28,11 @@ Type: **HITL** (needs human — architectural decision, design review) or **AFK*
 
 While drafting, capture each slice's **blocked-by** deps — they determine step-5 build order. Keep the working breakdown in the conversation; step 4 presents it as the numbered list.
 
+**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**: first expand — add the new form beside the old so nothing breaks; then migrate call sites in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, CI staying green batch to batch because the old form still exists; finally contract — delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket — green is promised only there.
+
 <vertical-slice-rules>
 - Completed slice demoable/verifiable alone
+- Each slice sized for a single fresh context window
 - Many thin slices > few thick ones
 </vertical-slice-rules>
 

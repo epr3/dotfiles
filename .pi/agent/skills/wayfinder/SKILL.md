@@ -13,6 +13,10 @@ It **plans, it doesn't build**: every decision ticket resolves one decision.
 
 The destination varies per effort, and naming it is the first act of charting — it shapes every ticket. It might be a spec to hand off, a decision to lock before planning starts, or a change made in place.
 
+## Refer by name
+
+Every map and ticket has a **name** — its title. In everything the human reads — narration, Decisions-so-far entries — refer to tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
+
 **Where the map, its child decision tickets, blocking, and frontier queries physically live is tracker-specific.** Consult `issue-tracker.md` in the config home (the "Wayfinding operations" section) for how *this* repo expresses them. If that doc is absent, default to the local-markdown form (`.scratch/<effort-slug>/MAP.md` + `tickets/`, at the context home).
 
 ## The map body
@@ -32,13 +36,16 @@ The whole map at low resolution, loaded once per session. Open tickets stay off 
 
 ## Not yet specified
 <!-- fog of war: in-scope decisions you can feel coming but can't yet state precisely -->
+
+## Out of scope
+<!-- work consciously ruled beyond the destination — scope, not sharpness; closed, never graduates -->
 ```
 
-The map is an **index, not a store**: each decision lives in exactly one place (its ticket); the map only gists and links, never restates.
+The map is an **index, not a store**: each decision lives in exactly one place (its ticket); the map only gists and links, never restates. What's ruled beyond the destination belongs under **Out of scope**, never in Decisions so far — a scope boundary isn't a step on the route.
 
 ## Fog of war
 
-Beyond the live tickets lies fog — decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now?** Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". Resolving tickets converts fog into new tickets.
+Beyond the live tickets lies fog — decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now** — not whether you can answer it now? Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". Resolving tickets converts fog into new tickets.
 
 ## Research tickets
 

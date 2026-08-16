@@ -9,8 +9,8 @@ Spin up a **background agent** to do the reading — `Agent` with `subagent_type
 
 Its job:
 
-1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs. Follow every claim back to the source that owns it.
-2. Write the findings to a single Markdown note, citing each claim's source.
+1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs — not secondary write-ups. Follow every claim back to the source that owns it.
+2. Write the findings to a single Markdown note, citing the primary source for each claim.
 3. Save it into the context home alongside your other notes — this branch's context worktree by default, or the repo's context location if the repo's `## Agent skills` block puts context in-repo (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Match the existing convention there; if there's none, put it somewhere sensible and say where.
 
 **Already running inside a sub-agent** (sub-agents can't spawn further)? Do the research yourself, directly, to the same brief — primary sources, cited note, same destination.

@@ -1,3 +1,5 @@
 return {
-  filetypes = { 'html', 'typescriptreact', 'typescript.tsx', 'javascript.tsx', 'javascriptreact', 'svelte', 'vue', 'css', 'sass', 'scss', 'less' },
+  mason = 'emmet-ls',
+  cmd = { 'emmet-language-server', '--stdio' },
+  filetypes = { 'html', 'css', 'typescriptreact', 'typescript.tsx', 'javascriptreact', 'javascript.tsx', 'svelte', 'vue', 'sass', 'scss', 'less' },
 }

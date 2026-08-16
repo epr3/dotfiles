@@ -29,6 +29,10 @@ Use these terms exactly; each *Avoid* names the wording it displaces.
 
 **Locality** — what maintainers get from depth: change, bugs, knowledge, and verification concentrate in one place rather than spreading across callers. Fix once, fixed everywhere.
 
+## Deep vs shallow
+
+A **deep module** has a small interface and hides substantial behaviour. A **shallow module** exposes nearly as much complexity as it hides. When designing an interface, ask: can it have fewer methods, simpler parameters, or more complexity hidden inside?
+
 ## Principles
 
 - **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small, mockable, swappable parts — they just aren't part of the interface. A module can have **internal seams** (private to its implementation, used by its own tests) as well as the **external seam** at its interface.

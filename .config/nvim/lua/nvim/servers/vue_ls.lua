@@ -1,2 +1,5 @@
--- Recent nvim-lspconfig forwards Vue TypeScript requests automatically.
-return {}
+return {
+  mason = 'vue-language-server',
+  cmd = { 'vue-language-server', '--stdio' },
+  filetypes = { 'vue' },
+}

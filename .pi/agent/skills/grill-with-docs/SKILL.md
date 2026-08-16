@@ -19,6 +19,6 @@ Run the **grill** loop (see the `grilling` skill), applying the **domain-modelin
 
 ### 3. Stop at the modeling boundary
 
-The deliverable is *understanding and recorded decisions* — a stress-tested plan plus a sharpened glossary and any ADRs in the context worktree — not code. Once the grill settles and the user confirms it, hand the result onward as its own deliberate step: `to-spec` -> `to-tickets` -> `implement`; rolling straight into writing code is the failure mode here. Implement directly only when the user explicitly asks, now, as a separate action.
+The deliverable is *understanding and recorded decisions* — a stress-tested plan plus a sharpened glossary and any ADRs in the context worktree — not code. Once the grill settles and the user confirms it, planning may flow onward as the workflow requires: `to-spec` -> `to-tickets`, with no second request. Implementation and code changes stay a separate boundary — never roll into writing code without an explicit implementation request, as its own distinct action.
 
 Close by reporting: what crystallised, where it was recorded, and the suggested next step.

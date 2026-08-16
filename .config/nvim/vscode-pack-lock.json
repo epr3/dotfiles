@@ -1,0 +1,29 @@
+{
+  "plugins": {
+    "flit.nvim": {
+      "rev": "ef18183b22377741e154cffb5b914516381d3870",
+      "src": "https://github.com/ggandor/flit.nvim.git"
+    },
+    "leap.nvim": {
+      "rev": "3e6b4be90b227479aab2c124de0664878cf47ec9",
+      "src": "https://codeberg.org/andyg/leap.nvim"
+    },
+    "mini.nvim": {
+      "rev": "e58ad4b0c9e9376096b9704f98fc00d4c9448870",
+      "src": "https://github.com/echasnovski/mini.nvim.git"
+    },
+    "nvim-treesitter": {
+      "rev": "074aa4422bf029908338e855d0c0f71470a971bb",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter.git",
+      "version": "'main'"
+    },
+    "vim-repeat": {
+      "rev": "65846025c15494983dafe5e3b46c8f88ab2e9635",
+      "src": "https://github.com/tpope/vim-repeat.git"
+    },
+    "yanky.nvim": {
+      "rev": "dd6689fdda85f66cab7d9b1a1664625f3be0920d",
+      "src": "https://github.com/gbprod/yanky.nvim.git"
+    }
+  }
+}
