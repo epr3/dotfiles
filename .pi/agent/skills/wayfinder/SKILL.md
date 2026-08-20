@@ -7,58 +7,58 @@ argument-hint: "the effort to chart, or the ticket to resolve next"
 
 # Wayfinder
 
-A loose idea has arrived — too big for one agent session, and wrapped in fog: the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its **decision ticket**s one at a time until the route is clear.
+A loose idea has arrived: too big for one agent session, and wrapped in fog; the way from here to the **destination** isn't visible yet. Wayfinding is about finding that way, not charging at the destination. This skill charts the way as a **shared map** on the repo's issue tracker, then works its **decision ticket**s one at a time until the route is clear.
 
 It **plans, it doesn't build**: every decision ticket resolves one decision.
 
-The destination varies per effort, and naming it is the first act of charting — it shapes every ticket. It might be a spec to hand off, a decision to lock before planning starts, or a change made in place.
+The destination varies per effort, and naming it is the first act of charting; it shapes every ticket. It might be a spec to hand off, a decision to lock before planning starts, or a change made in place.
 
 ## Refer by name
 
-Every map and ticket has a **name** — its title. In everything the human reads — narration, Decisions-so-far entries — refer to tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
+Every map and ticket has a **name**: its title. In everything the human reads (narration, Decisions-so-far entries), refer to tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
 
 **Where the map, its child decision tickets, blocking, and frontier queries physically live is tracker-specific.** Consult `issue-tracker.md` in the config home (the "Wayfinding operations" section) for how *this* repo expresses them. If that doc is absent, default to the local-markdown form (`.scratch/<effort-slug>/MAP.md` + `tickets/`, at the context home).
 
 ## The map body
 
-The whole map at low resolution, loaded once per session. Open tickets stay off it — they live as open child tickets, found by query.
+The whole map at low resolution, loaded once per session. Open tickets stay off it; they live as open child tickets, found by query.
 
 ```markdown
 ## Destination
-<what reaching the end of this map looks like — the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
+<what reaching the end of this map looks like: the spec, decision, or change this effort is finding its way to. One or two lines; every session orients to it before choosing a ticket.>
 
 ## Notes
 <domain; skills every session should consult; standing preferences for this effort>
 
 ## Decisions so far
-<!-- the index — one line per closed decision ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
-- [<closed decision ticket title>](link) — <one-line gist of the answer>
+<!-- the index: one line per closed decision ticket: enough to judge relevance, then zoom the link for the detail the ticket holds -->
+- [<closed decision ticket title>](link): <one-line gist of the answer>
 
 ## Not yet specified
 <!-- fog of war: in-scope decisions you can feel coming but can't yet state precisely -->
 
 ## Out of scope
-<!-- work consciously ruled beyond the destination — scope, not sharpness; closed, never graduates -->
+<!-- work consciously ruled beyond the destination: scope, not sharpness; closed, never graduates -->
 ```
 
-The map is an **index, not a store**: each decision lives in exactly one place (its ticket); the map only gists and links, never restates. What's ruled beyond the destination belongs under **Out of scope**, never in Decisions so far — a scope boundary isn't a step on the route.
+The map is an **index, not a store**: each decision lives in exactly one place (its ticket); the map only gists and links, never restates. What's ruled beyond the destination belongs under **Out of scope**, never in Decisions so far; a scope boundary isn't a step on the route.
 
 ## Fog of war
 
-Beyond the live tickets lies fog — decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now** — not whether you can answer it now? Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". Resolving tickets converts fog into new tickets.
+Beyond the live tickets lies fog: decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now** (not whether you can answer it now)? Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". Resolving tickets converts fog into new tickets.
 
 ## Research tickets
 
-A ticket whose answer is *found* rather than *decided* — reading, code archaeology, an API's real behaviour — is a **research ticket**, and it exists to unblock a decision ticket. Burn them down in parallel: one `general` sub-agent per research ticket (`Agent` tool, all dispatched in a single message), each briefed to capture its findings where the decision ticket can point at them — `research`'s cited note, or a file beside the ticket. Findings feed a decision; they never make it.
+A ticket whose answer is *found* rather than *decided* (reading, code archaeology, an API's real behaviour) is a **research ticket**, and it exists to unblock a decision ticket. Burn them down in parallel: one `general` sub-agent per research ticket (`Agent` tool, all dispatched in a single message), each briefed to capture its findings where the decision ticket can point at them (`research`'s cited note, or a file beside the ticket). Findings feed a decision; they never make it.
 
 ## A session
 
-1. **Orient** — load the map (destination, notes, decisions index). Zoom into linked tickets only where relevant.
-2. **Pick from the frontier** — an open ticket whose blockers are all resolved (or the one the user named).
-3. **Resolve it** — one decision, sized to one session. Lean on `grilling` + `domain-modeling` to sharpen it; `prototype` where running code answers the question. **The user decides**: put the question to them and wait — the answers are theirs to give, not yours to supply.
-4. **Record** — the full decision in the ticket (close it per the tracker conventions); a one-line gist + link under "Decisions so far"; new tickets or fog lines the decision revealed.
-5. **Stop cleanly** — the map is the handoff; the next session re-orients from it.
+1. **Orient**: load the map (destination, notes, decisions index). Zoom into linked tickets only where relevant.
+2. **Pick from the frontier**: an open ticket whose blockers are all resolved (or the one the user named).
+3. **Resolve it**: one decision, sized to one session. Lean on `grilling` + `domain-modeling` to sharpen it; `prototype` where running code answers the question. **The user decides**: put the question to them and wait; the answers are theirs to give, not yours to supply.
+4. **Record**: the full decision in the ticket (close it per the tracker conventions); a one-line gist + link under "Decisions so far"; new tickets or fog lines the decision revealed.
+5. **Stop cleanly**: the map is the handoff; the next session re-orients from it.
 
 ## Done
 
-The map is cleared when nothing is left to decide before someone goes and builds the thing. Hand the way found to `to-spec` to schedule the build — or, if the effort turned out small, straight to `implement`.
+The map is cleared when nothing is left to decide before someone goes and builds the thing. Hand the way found to `to-spec` to schedule the build; or, if the effort turned out small, straight to `implement`.

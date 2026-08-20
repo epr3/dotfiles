@@ -1,6 +1,6 @@
 ---
 name: zoom-out
-description: Zoom out — ask for a map of the surrounding modules and callers instead of a close reading.
+description: "Zoom out: ask for a map of the surrounding modules and callers instead of a close reading."
 disable-model-invocation: true
 ---
 

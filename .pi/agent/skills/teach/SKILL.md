@@ -9,23 +9,23 @@ argument-hint: "What would you like to learn about?"
 
 ## Workspace files
 
-- `MISSION.md` — *why* they're learning; grounds all teaching. [MISSION-FORMAT.md](./MISSION-FORMAT.md).
-- `GLOSSARY.md` — canonical terms; adhere to it in every lesson. [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
-- `RESOURCES.md` — trusted sources for knowledge + communities for wisdom. [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
-- `./lessons/0001-<slug>.html` — the primary teaching unit, incrementing.
-- `./reference/*.html` — compressed learnings, created alongside lessons: cheat sheets, syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossary printouts. Beautiful, print-friendly, quick-reference — lessons are rarely revisited, references are.
-- `./learning-records/0001-<slug>.md` — the ADRs of learning. [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
-- `NOTES.md` — scratchpad for teaching preferences and working notes.
+- `MISSION.md`: *why* they're learning; grounds all teaching. [MISSION-FORMAT.md](./MISSION-FORMAT.md).
+- `GLOSSARY.md`: canonical terms; adhere to it in every lesson. [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
+- `RESOURCES.md`: trusted sources for knowledge + communities for wisdom. [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
+- `./lessons/0001-<slug>.html`: the primary teaching unit, incrementing.
+- `./reference/*.html`: compressed learnings, created alongside lessons (cheat sheets, syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossary printouts). Beautiful, print-friendly, quick-reference; lessons are rarely revisited, references are.
+- `./learning-records/0001-<slug>.md`: the ADRs of learning. [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
+- `NOTES.md`: scratchpad for teaching preferences and working notes.
 
 Create everything lazily.
 
 ## Philosophy
 
-Deep learning = **knowledge** (from high-trust resources — never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength**, not mere **fluency**: build long-term retention through desirable difficulty — retrieval practice, spacing, and, for skills, interleaving.
+Deep learning = **knowledge** (from high-trust resources; never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength**, not mere **fluency**: build long-term retention through desirable difficulty (retrieval practice, spacing, and, for skills, interleaving).
 
 ## The mission
 
-`MISSION.md` missing or vague → first job is interviewing the user on *why*. No mission → abstract lessons and no basis for what's next. Missions shift as skills grow — normal; confirm with the user, update `MISSION.md`, add a learning record.
+`MISSION.md` missing or vague → first job is interviewing the user on *why*. No mission → abstract lessons and no basis for what's next. Missions shift as skills grow; normal. Confirm with the user, update `MISSION.md`, add a learning record.
 
 ## Zone of proximal development
 
@@ -33,10 +33,10 @@ Each lesson should challenge "just enough". User names a topic → teach it. Oth
 
 ## Lessons
 
-One self-contained HTML file in `./lessons/`, beautiful (clean typography — the user reviews these later), teaching **ONE thing**, completable quickly, ending in a tangible win the user can build on, mission-tied, in the zone. Opening = one CLI command. Lessons anchor-link to other lessons and reference docs. Litter with citations to `RESOURCES.md` sources — trustworthy claims, deeper paths. Each lesson reminds the user to ask the agent follow-ups.
+One self-contained HTML file in `./lessons/`, beautiful (clean typography; the user reviews these later), teaching **ONE thing**, completable quickly, ending in a tangible win the user can build on, mission-tied, in the zone. Opening = one CLI command. Lessons anchor-link to other lessons and reference docs. Litter with citations to `RESOURCES.md` sources: trustworthy claims, deeper paths. Each lesson reminds the user to ask the agent follow-ups.
 
-Teach knowledge first, then practice the skill through a **tight feedback loop** — ideally immediate and automatic: in-browser quizzes and light tasks, guided real-world steps (e.g. poses), or in-agent scenario quizzes. Multiple-choice options follow [QUIZ-FORMAT.md](../explain-diff/QUIZ-FORMAT.md) — no giveaway length, terminology, or fabricated distractors.
+Teach knowledge first, then practice the skill through a **tight feedback loop** (ideally immediate and automatic: in-browser quizzes and light tasks, guided real-world steps like poses, or in-agent scenario quizzes). Multiple-choice options follow [QUIZ-FORMAT.md](../explain-diff/QUIZ-FORMAT.md); no giveaway length, terminology, or fabricated distractors.
 
 ## Wisdom
 
-Questions needing wisdom: attempt an answer, then delegate to a **community** — high-reputation forum, subreddit, class, local group. Find them; respect an opt-out (note it in `RESOURCES.md`).
+Questions needing wisdom: attempt an answer, then delegate to a **community** (high-reputation forum, subreddit, class, local group). Find them; respect an opt-out (note it in `RESOURCES.md`).

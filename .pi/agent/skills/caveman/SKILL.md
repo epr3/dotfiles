@@ -1,7 +1,7 @@
 ---
 name: caveman
 description: >
-  Caveman mode — ultra-compressed responses. Use when the user says
+  Caveman mode: ultra-compressed responses. Use when the user says
   "caveman", or asks for fewer tokens / maximum brevity.
 ---
 

@@ -1,6 +1,6 @@
 # HTML Report Format
 
-Single self-contained HTML in OS temp dir. Tailwind + Mermaid via CDN. Mix Mermaid (graph-shaped: call graphs, sequences) with hand-built divs/inline SVG (editorial: mass diagrams, cross-sections) — an all-Mermaid report looks generic.
+Single self-contained HTML in OS temp dir. Tailwind + Mermaid via CDN. Mix Mermaid (graph-shaped: call graphs, sequences) with hand-built divs/inline SVG (editorial: mass diagrams, cross-sections); an all-Mermaid report looks generic.
 
 ## Scaffold
 
@@ -9,7 +9,7 @@ Single self-contained HTML in OS temp dir. Tailwind + Mermaid via CDN. Mix Merma
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Architecture review — {{repo}}</title>
+    <title>Architecture review: {{repo}}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module">
       import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
@@ -41,20 +41,20 @@ Diagrams carry the weight. Prose sparse. Glossary terms ([codebase-design](../co
 
 Each candidate is one `<article>`:
 
-- **Title** — short, names the deepening ("Collapse the Order intake pipeline")
-- **Badge row** — strength (`Strong` emerald / `Worth exploring` amber / `Speculative` slate) + dependency category tag (`in-process` / `local-substitutable` / `ports & adapters` / `mock`)
-- **Files** — involved files/modules, `font-mono text-sm`
-- **Before/After diagram** — two columns, side by side, shallowness -> depth. Centrepiece.
-- **Problem** — the friction, one sentence
-- **Solution** — the change, one sentence
-- **Wins** — bullets ≤6 words, in glossary terms (locality/leverage, how tests improve): "Tests hit one interface", "Pricing stops leaking", "Delete 4 wrappers"
-- **ADR callout** — only where the friction warrants revisiting a decision. One line, amber-tinted box: _"contradicts ADR `2026-01-12-event-sourced-orders` — but worth reopening because…"_
+- **Title**: short, names the deepening ("Collapse the Order intake pipeline")
+- **Badge row**: strength (`Strong` emerald / `Worth exploring` amber / `Speculative` slate) + dependency category tag (`in-process` / `local-substitutable` / `ports & adapters` / `mock`)
+- **Files**: involved files/modules, `font-mono text-sm`
+- **Before/After diagram**: two columns, side by side, shallowness -> depth. Centrepiece.
+- **Problem**: the friction, one sentence
+- **Solution**: the change, one sentence
+- **Wins**: bullets ≤6 words, in glossary terms (locality/leverage, how tests improve): "Tests hit one interface", "Pricing stops leaking", "Delete 4 wrappers"
+- **ADR callout**: only where the friction warrants revisiting a decision. One line, amber-tinted box: _"contradicts ADR `2026-01-12-event-sourced-orders`; worth reopening because…"_
 
 If a diagram needs a paragraph to be understood, redraw it.
 
-## Diagram patterns — pick one, mix them
+## Diagram patterns: pick one, mix them
 
-**Mermaid graph** — workhorse for dependencies/call flow. `flowchart` or sequence. Style with `classDef` (red leakage, dark deep module).
+**Mermaid graph**: workhorse for dependencies/call flow. `flowchart` or sequence. Style with `classDef` (red leakage, dark deep module).
 
 ```html
 <div class="rounded-lg border border-slate-200 bg-white p-4">
@@ -69,20 +69,20 @@ If a diagram needs a paragraph to be understood, redraw it.
 </div>
 ```
 
-**Hand-built boxes-and-arrows** — when Mermaid's layout fights you. Modules as `<div>` with borders. Arrows as inline `<svg>` `<line>`/`<path>` over a relative container. Use for "after" diagrams with one thick-bordered deep module + greyed internals.
+**Hand-built boxes-and-arrows**: when Mermaid's layout fights you. Modules as `<div>` with borders. Arrows as inline `<svg>` `<line>`/`<path>` over a relative container. Use for "after" diagrams with one thick-bordered deep module + greyed internals.
 
-**Cross-section** — layered shallowness. Stack horizontal bands (`h-12 border-l-4`). Before: 6 thin layers doing nothing. After: 1 thick band, consolidated responsibility.
+**Cross-section**: layered shallowness. Stack horizontal bands (`h-12 border-l-4`). Before: 6 thin layers doing nothing. After: 1 thick band, consolidated responsibility.
 
-**Mass diagram** — interface vs implementation surface area. Two rectangles per module. Before: interface ≈ implementation (shallow). After: short interface, tall implementation (deep).
+**Mass diagram**: interface vs implementation surface area. Two rectangles per module. Before: interface ≈ implementation (shallow). After: short interface, tall implementation (deep).
 
-**Call-graph collapse** — before: nested-box tree. After: one box, faded internal calls inside.
+**Call-graph collapse**: before: nested-box tree. After: one box, faded internal calls inside.
 
 ## Style
 
 - Editorial, not corporate-dashboard. Generous whitespace. `font-serif` optional for headings.
 - Colour: one accent (emerald or indigo) + red for leakage + amber for warnings.
 - Diagrams ~320px tall for side-by-side fit.
-- Module labels: `text-xs uppercase tracking-wider` — schematic, not UI.
+- Module labels: `text-xs uppercase tracking-wider`: schematic, not UI.
 - Static. No app code. Only scripts: Tailwind CDN + Mermaid ESM.
 
 ## Top recommendation
@@ -98,7 +98,7 @@ Plain English, concise. Architectural nouns and verbs from [codebase-design](../
 **Never substitute:** component/service/unit (for module) · API/signature (for interface) · boundary (for seam) · layer/wrapper (for module).
 
 **Phrasings:**
-- "Order intake module is shallow — interface nearly matches implementation."
+- "Order intake module is shallow; interface nearly matches implementation."
 - "Pricing leaks across the seam."
 - "Deepen: one interface, one place to test."
 - "Two adapters justify the seam: HTTP in prod, in-memory in tests."

@@ -4,11 +4,11 @@ Tickets and specs for this repo live as markdown files under `.scratch/` at the 
 
 ## Conventions
 
-- One feature per directory: `.scratch/<feature-slug>/` — a feature dir carries a `SPEC.md`; a dir carrying a `MAP.md` instead is a `wayfinder` effort (its `tickets/` are investigation tickets, not implementation slices)
-- The spec is `.scratch/<feature-slug>/SPEC.md`
-- Implementation tickets are one file per ticket at `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, zero-padded build order from `0001` — never a single combined tickets file; each records its parent spec path/slug and its `blocked_by` ticket numbers
+- One feature per directory: `.scratch/<feature-slug>/`. A feature dir carries a `SPEC.md`; a dir carrying a `MAP.md` instead is a `wayfinder` effort (its `tickets/` are investigation tickets, not implementation slices).
+- The spec lives at `.scratch/<feature-slug>/SPEC.md`.
+- Implementation tickets are one file per ticket at `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, zero-padded build order from `0001`. Never a single combined tickets file; each records its parent spec path/slug and its `blocked_by` ticket numbers.
 - Triage state, when triage is on, is a `Status:` line near the top of each issue file (role strings per `triage-labels.md`, beside this file)
-- Comments and conversation history append to the bottom of the file under a `## Comments` heading
+- Comments and conversation history append to the bottom of the file under a `## Comments` heading.
 
 ## When a skill says "publish to the issue tracker"
 
@@ -20,4 +20,4 @@ The `wayfinder` map is `.scratch/<effort-slug>/MAP.md`; child tickets are ticket
 
 ## When a skill says "fetch the relevant issue"
 
-Read the matching `.scratch/*/tickets/*.md` file (feature dirs — skip effort dirs, i.e. those with a `MAP.md`).
+Read the matching `.scratch/*/tickets/*.md` file (feature dirs, skip effort dirs: those with a `MAP.md`).

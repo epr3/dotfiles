@@ -4,13 +4,13 @@ description: Turn the current conversation into a spec file. Use when the user w
 argument-hint: "optional topic/slug for the filename"
 ---
 
-Synthesize the spec from current conversation + codebase understanding. **No interview** — use what you already know.
+Synthesize the spec from current conversation + codebase understanding. **No interview**: use what you already know.
 
 ## Process
 
-1. Explore the repo if you haven't — broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary's vocabulary throughout (`CONTEXT.md` in the context worktree — see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
+1. Explore the repo if you haven't: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary's vocabulary throughout (`CONTEXT.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
 
-2. Sketch the **seams** to test the feature at. Prefer existing seams, at the highest point available; new ones only if needed. Fewer seams is better — the ideal number is one. Confirm they match the user's expectations — put them as one **round** in the `grilling` skill's question format.
+2. Sketch the **seams** to test the feature at. Prefer existing seams, at the highest point available; new ones only if needed. Fewer seams is better; the ideal number is one. Confirm they match the user's expectations; put them as one **round** in the `grilling` skill's question format.
 
 3. Write the spec to `.scratch/<feature-slug>/SPEC.md` **at the context home** ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md), *Context home*). `<feature-slug>` = the arg if given, else kebab-case the topic; `to-tickets` writes this feature's tickets beside it. Specs stay local files even when issues live in a tracker. Open or report the path.
 
@@ -32,7 +32,7 @@ A long, numbered list. Format: `As an <actor>, I want <feature>, so that <benefi
 
 Modules built/modified · their interfaces · technical clarifications · architectural decisions · schema changes · API contracts · specific interactions.
 
-No file paths or code snippets — they go stale. Exception: a prototype snippet that encodes a decision more precisely than prose (state machine, reducer, schema, type shape) — inline the decision-rich parts, note it came from a prototype.
+No file paths or code snippets; they go stale. Exception: a prototype snippet that encodes a decision more precisely than prose (state machine, reducer, schema, type shape): inline the decision-rich parts, note it came from a prototype.
 
 ## Testing Decisions
 

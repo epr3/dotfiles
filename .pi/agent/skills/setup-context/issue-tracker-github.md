@@ -11,7 +11,7 @@ Issues for this repo live as GitHub issues; specs stay local files under `.scrat
 - **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
 - **Close**: `gh issue close <number> --comment "..."`
 
-Infer the repo from `git remote -v` — `gh` does this automatically when run inside a clone.
+Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
 
 ## When a skill says "publish to the issue tracker"
 
@@ -27,4 +27,4 @@ Run `gh issue view <number> --comments`.
 
 ## PRs as a request surface
 
-**Off.** Flip to on to have `triage` pull *external* pull requests into the same queue, roles, and states as issues (collaborators' in-flight PRs are left alone) — useful in open-source repos that receive feature requests as PRs.
+**Off.** Flip to on to have `triage` pull *external* pull requests into the same queue, roles, and states as issues (collaborators' in-flight PRs are left alone); useful in open-source repos that receive feature requests as PRs.

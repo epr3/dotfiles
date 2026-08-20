@@ -4,13 +4,13 @@ Discipline for multiple-choice quizzes (`explain-diff` explainers, `teach` lesso
 
 ## Options
 
-- **Wrong options are real misconceptions** — the answer someone would give if they skimmed, still held the old mental model, or confused two adjacent concepts in *this* material. Never invented absurdities; each is false but well-formed and plausible here. Can't find three real misconceptions? Ask a different question.
+- **Wrong options are real misconceptions**: the answer someone would give if they skimmed, still held the old mental model, or confused two adjacent concepts in *this* material. Never invented absurdities; each is false but well-formed and plausible here. Can't find three real misconceptions? Ask a different question.
 - **Indistinguishable in form.** All options: same length (±20%), same register, same specificity, same grammatical shape, same share of the material's terminology. The correct answer must not be the longest, the most qualified, the most technical, or the only one echoing the source's exact wording.
 - **Uniform placement.** Shuffle the correct position; across a quiz, no position bias.
 
 ## The blind test
 
-Before shipping, read only the options — material and questions covered. If a pattern (length, precision, keyword match, "sounds most careful") points at the answer, a reader who understood nothing scores anyway: rewrite the options, not the question.
+Before shipping, read only the options (material and questions covered). If a pattern (length, precision, keyword match, "sounds most careful") points at the answer, a reader who understood nothing scores anyway: rewrite the options, not the question.
 
 ## Feedback
 

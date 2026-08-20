@@ -1,11 +1,11 @@
 # ADR Format
 
-Personal, in the context worktree alongside `CONTEXT.md` (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md` — date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to) — write the ADR where the decision lives.
-Create dir lazily. Like context, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle — skipped when context is in-repo, where they commit with the code (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)).
+Personal, in the context worktree alongside `CONTEXT.md` (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md`, date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to); write the ADR where the decision lives.
+Create dir lazily. Like context, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle; skipped when context is in-repo, where they commit with the code (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)).
 
 > **Why not `NNNN-` sequence numbers.** Two branches both grab the next number and
 > collide on merge; a date prefix is collision-free, still sorts chronologically, and
-> needs no directory listing to pick an ID. Take the slug from the decision — never
+> needs no directory listing to pick an ID. Take the slug from the decision; never
 > derive an identifier by counting existing ADRs.
 
 ## Template
@@ -16,27 +16,27 @@ Create dir lazily. Like context, ADRs live in the context worktree; `offload-con
 {1–3 sentences: context, decision, why.}
 ```
 
-A single paragraph is fine. Value is recording *that* a decision was made and *why* — not filling sections.
+A single paragraph is fine. Value is recording *that* a decision was made and *why*; not filling sections.
 
 ## Optional (only if they add value)
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded`) — when decisions are revisited. To point at the superseding decision, reference it by its `YYYY-MM-DD-slug` filename, not by number.
-- **Considered Options** — when rejected alternatives are worth remembering
-- **Consequences** — when non-obvious downstream effects need calling out
+- **Status** frontmatter (`proposed | accepted | deprecated | superseded`): when decisions are revisited. To point at the superseding decision, reference it by its `YYYY-MM-DD-slug` filename, not by number.
+- **Considered Options**: when rejected alternatives are worth remembering
+- **Consequences**: when non-obvious downstream effects need calling out
 
 ## Finding related ADRs
 
-**Search by topic**, don't enumerate the directory — on a shared repo a listing is
+**Search by topic**, don't enumerate the directory; on a shared repo a listing is
 partial (ADRs live on unmerged branches) and racy. Grep `docs/adr/` (plus any
-`<dir>/adr/`) for the terms of the decision at hand — module names, the seam, the
-technology — and read only the matches. That is "the ADRs I could find on this
+`<dir>/adr/`) for the terms of the decision at hand (module names, the seam, the
+technology) and read only the matches. That is "the ADRs I could find on this
 topic", never "all ADRs"; none matching is not proof none exists elsewhere, so proceed.
 
-## ADR test — all three or skip
+## ADR test: all three or skip
 
-1. **Hard to reverse** — cost of changing your mind is meaningful
-2. **Surprising without context** — future reader wonders "why?"
-3. **Real trade-off** — genuine alternatives, specific reasons
+1. **Hard to reverse**: cost of changing your mind is meaningful
+2. **Surprising without context**: future reader wonders "why?"
+3. **Real trade-off**: genuine alternatives, specific reasons
 
 Easy to reverse → skip. Not surprising → nobody wonders. No alternative → nothing to record.
 
@@ -44,8 +44,8 @@ Easy to reverse → skip. Not surprising → nobody wonders. No alternative → 
 
 - Architectural shape (monorepo, event-sourced, CQRS)
 - Cross-context integration patterns (events vs sync HTTP)
-- Lock-in tech (DB, message bus, auth, deploy target — quarter-to-swap level)
-- Boundary/scope decisions (ownership, ID-only references — the explicit no-s are as valuable as the yes-s)
-- Deliberate deviations from the obvious path (manual SQL over ORM — stops the next engineer "fixing" something deliberate)
+- Lock-in tech (DB, message bus, auth, deploy target; quarter-to-swap level)
+- Boundary/scope decisions (ownership, ID-only references; the explicit no-s are as valuable as the yes-s)
+- Deliberate deviations from the obvious path (manual SQL over ORM; stops the next engineer "fixing" something deliberate)
 - Invisible constraints (compliance, partner SLAs)
 - Rejected alternatives when rejection is non-obvious (REST over GraphQL for subtle reasons)

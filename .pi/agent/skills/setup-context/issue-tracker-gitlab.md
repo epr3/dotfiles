@@ -11,7 +11,7 @@ Issues for this repo live as GitLab issues; specs stay local files under `.scrat
 - **Apply / remove labels**: `glab issue update <number> --label "..."` / `--unlabel "..."`
 - **Close**: `glab issue close <number>`
 
-Infer the project from `git remote -v` — `glab` does this automatically when run inside a clone (works for gitlab.com and self-hosted hosts it's authenticated against).
+Infer the project from `git remote -v`; `glab` does this automatically when run inside a clone (works for gitlab.com and self-hosted hosts it's authenticated against).
 
 ## When a skill says "publish to the issue tracker"
 
@@ -27,4 +27,4 @@ Run `glab issue view <number> --comments`.
 
 ## MRs as a request surface
 
-**Off.** Flip to on to have `triage` pull *external* merge requests into the same queue, roles, and states as issues (collaborators' in-flight MRs are left alone) — useful in open-source projects that receive feature requests as MRs.
+**Off.** Flip to on to have `triage` pull *external* merge requests into the same queue, roles, and states as issues (collaborators' in-flight MRs are left alone); useful in open-source projects that receive feature requests as MRs.

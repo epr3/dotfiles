@@ -10,10 +10,13 @@ _Avoid_: installation, local state, cache.
 **Curated Pi assets**: The non-secret Pi agent files, skills, themes, and extensions that define the agent environment without including credentials, sessions, installed packages, or context worktrees.
 _Avoid_: whole .pi mirror, Pi cache.
 
-**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: ported `068b6e0c62393147daf03530149cdce209c93da8` (2026-08-16).
+**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `885e2ca4d842d139e9aef4e48d366c63cb1b8013` (2026-08-20).
 
 **Agent context store**: The tool-neutral directory pointed to by `AGENT_CONTEXT_HOME`, shared by agent harnesses for branch-aware context worktrees.
 _Avoid_: Pi context, Claude context.
+
+**Out-of-scope knowledge base**: Per-repository records in the config home that preserve rejected enhancement decisions and let triage identify equivalent later requests.
+_Avoid_: rejected-issue list, feature backlog.
 
 **Bootstrap**: The repeatable entrypoint that links dotfiles and runs guarded setup stages for package managers, packages, shell tools, editor extensions, and git identity.
 _Avoid_: install script, setup script.
