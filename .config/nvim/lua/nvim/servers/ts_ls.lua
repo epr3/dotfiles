@@ -19,11 +19,13 @@ return {
           },
         },
       },
-      on_attach = function(client)
+      -- Called by the registry as behavior.on_attach(event, client) from the
+      -- LspAttach autocmd; the event comes first, the client second.
+      on_attach = function(event, client)
         -- Volar (vue_ls) owns semantic tokens for .vue; keep ts_ls tokens off to avoid duplication.
         local semantic_tokens = client.server_capabilities.semanticTokensProvider
         if semantic_tokens then
-          semantic_tokens.full = vim.bo.filetype ~= 'vue'
+          semantic_tokens.full = vim.bo[event.buf].filetype ~= 'vue'
         end
       end,
     },
