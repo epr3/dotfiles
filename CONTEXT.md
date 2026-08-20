@@ -10,6 +10,12 @@ _Avoid_: installation, local state, cache.
 **Curated Pi assets**: The non-secret Pi agent files, skills, themes, and extensions that define the agent environment without including credentials, sessions, installed packages, or context worktrees.
 _Avoid_: whole .pi mirror, Pi cache.
 
+**Dumb-zone contract**: The Pi statusline's fixed token thresholds that move an agent through sharp, fading, risky, and caveman response modes.
+_Avoid_: model limit, context-window budget.
+
+**Caveman boundary**: The inclusive dumb-zone threshold at which Pi enters caveman mode, independent of a model's advertised context window.
+_Avoid_: overflow limit, remaining-context warning.
+
 **Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `885e2ca4d842d139e9aef4e48d366c63cb1b8013` (2026-08-20).
 
 **Agent context store**: The tool-neutral directory pointed to by `AGENT_CONTEXT_HOME`, shared by agent harnesses for branch-aware context worktrees.
