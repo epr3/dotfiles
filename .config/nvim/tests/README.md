@@ -13,7 +13,8 @@ for test in \
   mappings-harpoon-gitsigns.lua \
   plugin-declarations-contract.lua \
   mini-profile-adapter.lua \
-  profile-lockfiles.lua; do
+  profile-lockfiles.lua \
+  treesitter-core-first.lua; do
   nvim --headless -u tests/minimal-init.lua -l "tests/$test"
 done
 ```

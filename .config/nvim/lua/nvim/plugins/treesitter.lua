@@ -8,6 +8,7 @@
 -- feature.
 
 local M = {}
+local installer = require 'nvim-treesitter.install'
 
 --- Parsers to keep installed for both profiles.
 M.grammars = {
@@ -49,7 +50,7 @@ end
 ---@param lang string
 local function maybe_install(lang)
   if is_supported(lang) then
-    require('nvim-treesitter').install { lang }
+    installer.ensure_installed(lang)
   end
 end
 
@@ -94,7 +95,7 @@ local function enable_indent(buf)
     return
   end
 
-  vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  vim.bo[buf].indentexpr = 'nvim_treesitter#indent()'
 end
 
 --- Configure treesitter for the given profile.
@@ -108,7 +109,7 @@ function M.setup(profile)
   vim.treesitter.language.register('json', 'jsonc')
 
   -- Ensure the declared grammar set is installed asynchronously.
-  require('nvim-treesitter').install(M.grammars)
+  installer.ensure_installed(M.grammars)
 
   if profile == 'standalone' then
     vim.api.nvim_create_autocmd('FileType', {

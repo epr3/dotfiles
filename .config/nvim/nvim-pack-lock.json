@@ -32,10 +32,6 @@
       "rev": "016802de402556da54c36bd7359b441266b01cdd",
       "src": "https://github.com/stevearc/conform.nvim.git"
     },
-    "flit.nvim": {
-      "rev": "ef18183b22377741e154cffb5b914516381d3870",
-      "src": "https://github.com/ggandor/flit.nvim.git"
-    },
     "gitignore.nvim": {
       "rev": "0344f643768c4d64af4add8c1bdddf6f7d4c9010",
       "src": "https://github.com/wintermute-cell/gitignore.nvim.git"
@@ -56,10 +52,6 @@
     "lazydev.nvim": {
       "rev": "ff2cbcba459b637ec3fd165a2be59b7bbaeedf0d",
       "src": "https://github.com/folke/lazydev.nvim.git"
-    },
-    "leap.nvim": {
-      "rev": "3e6b4be90b227479aab2c124de0664878cf47ec9",
-      "src": "https://codeberg.org/andyg/leap.nvim"
     },
     "lualine.nvim": {
       "rev": "221ce6b2d999187044529f49da6554a92f740a96",
@@ -85,29 +77,9 @@
       "rev": "6c3dc7c4a4b58b5d86404c21a9b4655282ca08c5",
       "src": "https://github.com/davidmh/mdx.nvim.git"
     },
-    "mini.ai": {
-      "rev": "25248c6aa002391936a6200f12d1466015987133",
-      "src": "https://github.com/echasnovski/mini.ai.git"
-    },
-    "mini.comment": {
-      "rev": "27a29d6b949b9497f80a0a03421e89fed71d8c37",
-      "src": "https://github.com/echasnovski/mini.comment.git"
-    },
-    "mini.move": {
-      "rev": "48fcaac289a19b8eff2fd5fe203267d478a8abdc",
-      "src": "https://github.com/echasnovski/mini.move.git"
-    },
     "mini.nvim": {
       "rev": "e58ad4b0c9e9376096b9704f98fc00d4c9448870",
       "src": "https://github.com/echasnovski/mini.nvim.git"
-    },
-    "mini.pairs": {
-      "rev": "b1c5a726921b7a8c9321e9a7a208aa0571de5810",
-      "src": "https://github.com/echasnovski/mini.pairs.git"
-    },
-    "mini.surround": {
-      "rev": "8d5d0c5aa92449368ac251e85451d79d8f69d296",
-      "src": "https://github.com/echasnovski/mini.surround.git"
     },
     "neotest": {
       "rev": "27bf921498043f7ecd821d6db68d05de244bbd02",
@@ -195,10 +167,6 @@
       "rev": "bd67efe408d4816e25e8491cc5ad4088e708a69a",
       "src": "https://github.com/folke/trouble.nvim.git"
     },
-    "vim-repeat": {
-      "rev": "65846025c15494983dafe5e3b46c8f88ab2e9635",
-      "src": "https://github.com/tpope/vim-repeat.git"
-    },
     "vim-sleuth": {
       "rev": "be69bff86754b1aa5adcbb527d7fcd1635a84080",
       "src": "https://github.com/tpope/vim-sleuth.git"
@@ -210,10 +178,6 @@
     "which-key.nvim": {
       "rev": "3aab2147e74890957785941f0c1ad87d0a44c15a",
       "src": "https://github.com/folke/which-key.nvim.git"
-    },
-    "yanky.nvim": {
-      "rev": "dd6689fdda85f66cab7d9b1a1664625f3be0920d",
-      "src": "https://github.com/gbprod/yanky.nvim.git"
     }
   }
 }

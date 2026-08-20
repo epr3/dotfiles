@@ -75,12 +75,9 @@ local captured = {
   starts = {},
 }
 
-package.loaded['nvim-treesitter'] = {
-  install = function(grammars)
+package.loaded['nvim-treesitter.install'] = {
+  ensure_installed = function(grammars)
     table.insert(captured.install_calls, vim.deepcopy(grammars))
-  end,
-  indentexpr = function()
-    return 42
   end,
 }
 
@@ -156,14 +153,14 @@ local html_buf = vim.api.nvim_create_buf(false, true)
 vim.bo[html_buf].filetype = 'html'
 local html_start = find_start(html_buf)
 assert(html_start and html_start.lang == 'html', 'html must start treesitter highlight')
-assert(vim.bo[html_buf].indentexpr == "v:lua.require'nvim-treesitter'.indentexpr()", 'html must use treesitter indentexpr')
+assert(vim.bo[html_buf].indentexpr == 'nvim_treesitter#indent()', 'html must use treesitter indentexpr')
 
 captured.starts = {}
 local ruby_buf = vim.api.nvim_create_buf(false, true)
 vim.bo[ruby_buf].filetype = 'ruby'
 local ruby_start = find_start(ruby_buf)
 assert(ruby_start and ruby_start.lang == 'ruby', 'ruby must start treesitter highlight')
-assert(vim.bo[ruby_buf].indentexpr ~= "v:lua.require'nvim-treesitter'.indentexpr()", 'ruby must not use treesitter indentexpr')
+assert(vim.bo[ruby_buf].indentexpr ~= 'nvim_treesitter#indent()', 'ruby must not use treesitter indentexpr')
 
 captured.starts = {}
 local md_buf = vim.api.nvim_create_buf(false, true)
