@@ -14,9 +14,6 @@ return {
     'markdown',
     'markdown.mdx',
   },
-  settings = {
-    useFlatConfig = true,
-  },
   behavior = {
     on_attach = function(event)
       local group = vim.api.nvim_create_augroup('nvim-lsp-eslint-fix', { clear = false })
