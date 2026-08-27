@@ -135,7 +135,7 @@ check_ticket_schema() {
     elif [ -n "$type" ]; then
       # Legacy schema: type is HITL|AFK (read as mode, kind defaults to task).
       case "$type" in
-        HITL|AFK) ;;
+        HITL|AFK) info "$f legacy schema: type '$type' read as mode, kind defaults to 'task'" ;;
         *) fail "$f" "legacy schema: type must be HITL or AFK, got '$type' (check 3)" ;;
       esac
     else

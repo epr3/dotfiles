@@ -12,15 +12,17 @@ Implement one ticket end-to-end, mark it resolved.
 
 ### 1. Load the ticket
 
-**Tracker configured** (the recorded `## Agent skills` block / `issue-tracker.md` in the config home) -> fetch the issue there per its conventions; a bare `#42` resolves in the tracker. With triage on, `ready-for-agent` is the pick-up signal, and an attached Agent Brief (`triage`'s output, see [AGENT-BRIEF.md](../triage/AGENT-BRIEF.md)) *is* the spec: its acceptance criteria are the definition of done and its out-of-scope line is binding. Everything below is unchanged.
+**Tracker configured** (the recorded `## Agent skills` block / `issue-tracker.md` in the config home) -> fetch the issue there per its conventions; a bare `#42` resolves in the tracker. With triage on, `ready-for-agent` is the pick-up signal, and an attached Agent Brief (`triage`'s output, see [AGENT-BRIEF.md](../triage/AGENT-BRIEF.md)) *is* the spec: its acceptance criteria are the definition of done and its out-of-scope line is binding. Claim the issue as the first write after selection: self-assign plus a claim comment (prefixed with the AI disclaimer on GitHub / GitLab), then re-read to confirm. Everything below is unchanged.
 
 **Default: local files.** Resolve the arg (slug, numbered filename, or full path) by slug match against `.scratch/*/tickets/*.md` **at the context home**, skipping effort dirs (those with a `MAP.md`), since wayfinder tickets are decisions to make, not slices to build. Ambiguous -> list candidates, ask.
 
-Arg names a spec, or is omitted with a single spec in play -> don't pick arbitrarily: take the open ticket with the lowest `<NNNN>` for that `parent` whose blockers are all resolved. That's what the filename number is for; implement a spec's tickets in sequence.
+Arg names a spec, or is omitted with a single spec in play -> don't pick arbitrarily: take the open ticket with the lowest `<NNNN>` for that `parent` whose blockers are all resolved. That's what the filename number is for; implement a spec's tickets in sequence. That set is the **frontier**: open, blockers resolved, and *unclaimed*; a claimed ticket is off the frontier for every other session. Claim before any work: the first write after selection sets `claimed_by: pi:$PI_SESSION_ID` in the ticket's frontmatter, then re-read to confirm it landed. Cooperative and best-effort: no silent steal; explicit takeover or release is a comment on the ticket; no auto-expiry; the claim is retained on resolve.
 
 `status: resolved` already -> stop and tell the user. No `status` field -> treat as `open`.
 
 Read the full body: what to build, acceptance criteria, blocked-by.
+
+Read the frontmatter with legacy compatibility: `type: HITL | AFK` is the older schema that conflated kind and mode, so read that `type` as `mode` with `type` defaulting to `task`. Unified tickets carry `type` (research | prototype | grilling | task) beside `mode` (HITL | AFK); old tickets keep loading either way.
 
 ### 2. Check unblocked
 
@@ -28,7 +30,7 @@ Read each "Blocked by" issue. Any not `status: resolved` -> stop, report the ope
 
 ### 3. Build the slice
 
-Explore as needed: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice**: every layer, demoable alone. Acceptance criteria = definition of done. Drive the build with the `tdd` red-green-refactor loop where the seams are pre-agreed. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
+Explore as needed: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`CONTEXT.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs. Build the thin **vertical slice**: every layer, demoable alone. Acceptance criteria = definition of done. Where the ticket names seams, drive the build with the `tdd` skill's red-green-refactor loop at those seams. Code comments stay *caveman*-terse (see the `caveman` skill): non-obvious WHY only, never narrating WHAT.
 
 Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, mark completed as each criterion is met; `todo_read` re-reads the set, so a long implementation stays legible.
 
@@ -40,8 +42,12 @@ Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progres
 
 Run the project's tests/build for the touched area: typecheck and focused tests as you go, the full suite once at the end. Confirm every acceptance box is genuinely checkable. No resolve on red.
 
-### 5. Set status
+### 5. Review
+
+Hand the work to the `code-review` skill, with the ticket's start commit (where `HEAD` pointed when the ticket was claimed) as the fixed point. Fix every finding before resolving; no resolve on open findings.
+
+### 6. Set status
 
 Frontmatter `status: open` -> `status: resolved`. Tick the acceptance checkboxes. Rest of the file intact.
 
-Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked.
+Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked. Offer a commit as a closing line; never perform it.

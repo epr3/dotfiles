@@ -24,7 +24,7 @@ Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agen
 
 Each issue = thin vertical slice through ALL layers end-to-end (schema, API, UI, tests); NOT horizontal slice of one layer.
 
-Type: **HITL** (needs human: architectural decision, design review) or **AFK** (implementable + mergeable unattended). Prefer AFK.
+Type each ticket with the unified schema: `type` is the kind (**research** read-and-report, **prototype** throwaway answering a design question, **grilling** stress-testing a plan with the user, **task** an implementation slice) and `mode` is **HITL** (needs a human: architectural decision, design review) or **AFK** (implementable + mergeable unattended). Mode constraints: `research` -> AFK; `prototype` -> HITL; `grilling` -> HITL; `task` -> either. Prefer `type: task`, `mode: AFK`.
 
 While drafting, capture each slice's **blocked-by** deps; they determine step-5 build order. Keep the working breakdown in the conversation; step 4 presents it as the numbered list.
 
@@ -38,7 +38,7 @@ While drafting, capture each slice's **blocked-by** deps; they determine step-5 
 
 ### 4. Quiz user
 
-Present breakdown as numbered list **in proposed build order**. Per slice: order · title · type (HITL/AFK) · blocked-by · user stories covered.
+Present breakdown as numbered list **in proposed build order**. Per slice: order · title · type/mode · blocked-by · user stories covered.
 
 Review as **round**s in the `grilling` skill's question format. Cover: granularity (coarse/fine/right) · dependency correctness · **build order itself** (anything sequenced before its dependency?) · merge/split · HITL/AFK assignment. Iterate until approved.
 
@@ -50,12 +50,13 @@ Compute **build order per spec** from dependency graph: topological sort, every 
 
 Write each slice to `.scratch/<feature-slug>/tickets/<NNNN>-<slug>.md`, where `<feature-slug>` is **the parent spec's directory** (tickets live beside their SPEC.md, one dir per feature). No spec (conversation-sourced) -> mint a fresh `<feature-slug>` at the same context home (location rule at the top; never bare CWD). `<NNNN>` = zero-padded build position in this spec (`0001`, `0002`, …), so **order lives in the filename** and `ls tickets/` reads as the build sequence with nothing re-derived later. Order is per-spec: a different spec starts again at `0001`, the slug keeps filenames unique. Create blockers-first so `blocked_by` references real ticket numbers. New ticket starts `status: open`.
 
-**Incremental runs:** tickets with this `parent` exist -> continuation, not fresh sequence. Read them; continue after highest `<NNNN>`. New slice must precede still-open work -> renumber (`git mv`) only open tail; never resolved issues, whose number = history. Read numbering from own parent's tickets only: avoided race = *global* sequential numbering across specs/branches (same reason ADRs not numbered); one spec's ticket set normally lives on one branch.
+**Incremental runs:** tickets with this `parent` exist -> continuation, not fresh sequence. Read them, with legacy compatibility: `type: HITL | AFK` is the older schema, read that `type` as `mode` with `type` defaulting to `task`; continue after highest `<NNNN>`. New slice must precede still-open work -> renumber (`git mv`) only open tail; never resolved issues, whose number = history. Read numbering from own parent's tickets only: avoided race = *global* sequential numbering across specs/branches (same reason ADRs not numbered); one spec's ticket set normally lives on one branch.
 
 <issue-template>
 ---
 status: open
-type: HITL | AFK
+type: research | prototype | grilling | task
+mode: HITL | AFK
 parent: <path or slug of the source spec/plan, or "none">
 blocked_by: [<NNNN>, ...]   # ticket numbers; [] when unblocked
 ---
@@ -72,6 +73,8 @@ No file paths or code snippets; they go stale. Exception: a prototype snippet en
 - [ ] Criterion 2
 
 </issue-template>
+
+`claimed_by:` is omitted on a new ticket (unclaimed); a session claims one by writing `claimed_by: pi:$PI_SESSION_ID` as its first work write (claim rules in the `implement` skill).
 
 Keep numbering and `blocked_by` in agreement; a numbering that violates `blocked_by` is a bug.
 
