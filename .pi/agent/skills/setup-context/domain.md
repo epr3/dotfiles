@@ -10,8 +10,9 @@ Context is personal, living **in the context worktree** by default; you edit it 
 
 - `CONTEXT.md` at the worktree root, **or**
 - `CONTEXT-MAP.md` at the worktree root if it exists: points at per-context `CONTEXT.md` files (mirroring the code's dirs). Read each one relevant to the topic.
+- `docs/adr/`: read ADRs that touch the area you are about to work in. In multi-context repos, also check `<dir>/adr/` for context-scoped decisions.
 
-If neither exists, **proceed silently**. Don't flag the absence; don't suggest creating files upfront. `grill-with-docs` creates them lazily when terms or decisions actually resolve.
+If none of these exist, **proceed silently**. Don't flag the absence; don't suggest creating files upfront. `grill-with-docs` creates them lazily when terms or decisions actually resolve.
 
 ## File structure
 
