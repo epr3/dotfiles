@@ -1,6 +1,7 @@
 ---
 name: handoff
-description: "Handoff: compact the current conversation into a document a fresh agent can pick the work up from. Use when the user wants to hand off, or context is running out."
+description: "Handoff: compact the current conversation into a document a fresh agent can pick the work up from."
+disable-model-invocation: true
 argument-hint: "What will the next session be used for?"
 ---
 
