@@ -19,6 +19,14 @@ TDD is the red → green loop. Every section below applies on every cycle; use i
 
 See [tests.md](./tests.md) for examples and [mocking.md](./mocking.md) for mocking guidelines.
 
+## Seams: where tests live
+
+A **seam** is the public boundary behaviour is observed at: the interface where you watch the system without reaching inside. Tests live at seams, never against internals.
+
+**Test only at pre-agreed seams.** Before any test is written, the seams under test are written down and confirmed with the user. No test is written at a seam the user has not confirmed. Agreeing the seams up front is also how testing effort lands on critical paths and complex logic instead of every edge case.
+
+When the shape of that interface is itself in question (how deep the module is, where the seam belongs, what it should expose), use the `codebase-design` skill as reference for the module/interface/depth/seam/adapter/leverage/locality vocabulary; it is a reference to consult, not a separate session.
+
 ## Anti-pattern: horizontal slices
 
 **DO NOT write all tests first, then all implementation.** That is "horizontal slicing": treating RED as "write all tests" and GREEN as "write all code." It produces **crap tests**:
@@ -40,8 +48,8 @@ Orient to the project's domain model first: test names and interface vocabulary 
 
 Before writing any code:
 
-- Confirm what interface changes are needed and which public seams the tests will cross; write no test at an unconfirmed seam.
-- Identify opportunities for [deep modules](./deep-modules.md); see `codebase-design` for the full module/seam/adapter/leverage/locality vocabulary.
+- Ask the user: "What's the public interface, and which seams should we test?" (see Seams above); write no test at an unconfirmed seam.
+- Identify opportunities for [deep modules](./deep-modules.md).
 - Design interfaces for [testability](./interface-design.md).
 - List the behaviours to test (not implementation steps) and prioritise them.
 - Get approval on the plan (the public interface, and which behaviours matter most) as one **round** in the `grilling` skill's question format.
@@ -68,6 +76,8 @@ After all tests pass, look for [refactor candidates](./refactoring.md):
 - Run tests after each refactor step.
 
 **Never refactor while RED.** Get to GREEN first.
+
+Candidates beyond the slice (code the ticket didn't touch) route to the `code-review` skill instead of widening this phase.
 
 ## Checklist per cycle
 
