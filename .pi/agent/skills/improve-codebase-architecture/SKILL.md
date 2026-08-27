@@ -7,7 +7,7 @@ description: Find deepening opportunities in a codebase (refactors that turn sha
 
 Surface architectural friction, propose **deepening opportunities** (refactors turning shallow modules deep). Aim: testability + AI-navigability.
 
-Every suggestion is phrased in the `codebase-design` vocabulary: **module, interface, depth, seam, adapter, leverage, locality**, and judged by its principles; don't drift into "component", "service", "API", or "boundary". Invoke that skill and use its terms; domain language from `CONTEXT.md` names good seams, and ADRs record decisions not to re-litigate.
+Every suggestion is phrased in the `codebase-design` vocabulary: **module, interface, depth, seam, adapter, leverage, locality**, and judged by its principles; don't drift into "component", "service", "API", or "boundary". Invoke that skill and use its terms; domain language from `CONTEXT.md` names good seams, and ADRs record decisions not to re-litigate. A candidate contradicting an ADR is surfaced only when the friction is real enough to warrant reopening the ADR, marked with the ADR callout [HTML-REPORT.md](HTML-REPORT.md) already defines; don't list every theoretical refactor an ADR forbids.
 
 ## Process
 

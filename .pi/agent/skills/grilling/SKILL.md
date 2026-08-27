@@ -5,12 +5,18 @@ description: The reusable relentless-interview loop. Reach for it whenever a pla
 
 **Grill** the user: be **relentless**. Map the plan as a **design tree**: every decision branches into the decisions that hang off it. Work the tree in **round**s until every branch is resolved or the user calls it. A branch the user settled stays settled; reopen one only when new information contradicts it, and say so when you do.
 
-**Frontier.** The **frontier** is every decision whose prerequisites are already settled (the questions you can ask _now_, without guessing at answers you haven't heard yet). A question depending on one still open belongs to a _later_ round, not this one, which is what keeps a round answerable in a single pass. Ask the whole frontier in one round: number each question and give your recommended answer, in this format:
+**Frontier.** The **frontier** is every decision whose prerequisites are already settled (the questions you can ask _now_, without guessing at answers you haven't heard yet). A question depending on one still open belongs to a _later_ round, not this one, which is what keeps a round answerable in a single pass. Ask the whole frontier in one round: number each question and give your recommended answer, a horizontal rule between questions, in this format:
 
 ```
 ❓ **Q1**: **Per-user cache or one global cache?** The data is already scoped per-user; a global cache would need invalidation we'd have to build.
 
 ➡️ **Per-user.** Same shape as the data; nothing new to invalidate.
+
+---
+
+❓ **Q2**: **Evict eagerly or lazily?** Eager eviction needs a background sweep we don't otherwise run.
+
+➡️ **Lazily.** Stale entries are harmless; the sweep is not.
 ```
 
 Wait for the user's answers before the next round.
