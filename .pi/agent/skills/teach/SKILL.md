@@ -12,6 +12,7 @@ argument-hint: "What would you like to learn about?"
 - `MISSION.md`: *why* they're learning; grounds all teaching. [MISSION-FORMAT.md](./MISSION-FORMAT.md).
 - `GLOSSARY.md`: canonical terms; adhere to it in every lesson. [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
 - `RESOURCES.md`: trusted sources for knowledge + communities for wisdom. [RESOURCES-FORMAT.md](./RESOURCES-FORMAT.md).
+- `./assets/`: shared reusables (stylesheet, templates, components). Read before authoring any lesson. Write reusables here, never inline them in lessons. The shared stylesheet is the first component.
 - `./lessons/0001-<slug>.html`: the primary teaching unit, incrementing.
 - `./reference/*.html`: compressed learnings, created alongside lessons (cheat sheets, syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossary printouts). Beautiful, print-friendly, quick-reference; lessons are rarely revisited, references are.
 - `./learning-records/0001-<slug>.md`: the ADRs of learning. [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
@@ -21,7 +22,7 @@ Create everything lazily.
 
 ## Philosophy
 
-Deep learning = **knowledge** (from high-trust resources; never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength**, not mere **fluency**: build long-term retention through desirable difficulty (retrieval practice, spacing, and, for skills, interleaving).
+Deep learning = **knowledge** (from high-trust resources; never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength** (durable retention), not mere **fluency** (fast but fleeting recognition). Three levers: **retrieval practice** (recall, not re-read), **spacing** (distribute sessions over time), **interleaving** (mix topics, don't block-practice). Apply desirable difficulty asymmetrically: remove it while acquiring knowledge (clear explanations, worked examples), add it while acquiring skill (harder prompts, mixed practice).
 
 ## The mission
 
