@@ -6,7 +6,7 @@ For an issue, it states the change to build. For a PR, it states what remains to
 
 Three principles bind it:
 
-- **Durable**: no file paths or line numbers that go stale. Reference types, function signatures, configuration shapes, and behavioural contracts instead.
+- **Durable**: the issue may sit in `ready-for-agent` for days or weeks; the codebase will change in the meantime. No file paths or line numbers that go stale. Reference types, function signatures, configuration shapes, and behavioural contracts instead.
 - **Behavioural**: describe what the system should do, not how to code it.
 - **Testable**: acceptance criteria are independently verifiable checkboxes.
 
