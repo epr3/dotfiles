@@ -11,7 +11,7 @@ Skill-specific mechanics (frontmatter, the invocation choice, splitting by invoc
 
 ## Context pointers and the two loads
 
-A **context pointer** is a reference held in the agent's context that names out-of-context material and encodes the condition for reaching it. A skill's description and an `AGENTS.md` line naming a document are both context pointers. Its *wording*, not its target, decides when the agent reaches and how reliably. A must-have target behind a weakly worded pointer is a variance bug: sharpen the wording first, and inline the material only if that fails.
+A **context pointer** is a reference held in the agent's context that names out-of-context material and encodes the condition for reaching it. A skill's description, an `AGENTS.md` line naming a document, and a disclosed-reference link are all context pointers; the rules below govern every pointer, not only descriptions. A pointer's *wording*, not its target, decides when the agent reaches and how reliably. A must-have target behind a weakly worded pointer is a variance bug: sharpen the wording first, and inline the material only if that fails.
 
 A pointer names its material and the **branches** that should reach it: distinct cases the document handles. Every always-loaded word earns hard pruning:
 
@@ -23,6 +23,8 @@ Every document is paid for in one of two currencies:
 
 - **Context load**: the cost of always-loaded material on the agent's window, spent every turn whether or not it fires. An `AGENTS.md` or `CLAUDE.md` is pure context load; a skill's `description` is its always-loaded slice.
 - **Cognitive load**: the cost on the human of remembering the document exists and when to reach for it. Not a cost to minimise: it is the price of human agency. Spend it where human judgement matters; remove it where it doesn't.
+
+**Corollary**: pointer-reached material costs the pointer's line; unpointed material rides on cognitive load.
 
 ## Information hierarchy
 
@@ -80,7 +82,7 @@ Treat the **environment** as a source of truth in its own right. Config files, s
 
 Check every line for **relevance**: does it still bear on what the document does? A line loses relevance by never bearing on the task (mere exposition, or a branch that should be disclosed) or by going stale as the world it describes changes. Shorter documents stay relevant more easily, because each line is cheaper to check.
 
-Then hunt the failure modes below sentence by sentence, not line by line: run each test on a sentence in isolation, and when one fails, delete the whole sentence rather than trim words from it. Be aggressive; most prose that fails should go, not be rewritten.
+Then hunt the failure modes below sentence by sentence, not line by line: run each test on a sentence in isolation, and when one fails, delete the whole sentence rather than trim words from it. Be aggressive; most prose that fails should go, not be rewritten. Compression prunes wording, never mechanisms (compression ADR).
 
 ## Failure modes
 
