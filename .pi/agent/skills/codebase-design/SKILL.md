@@ -42,6 +42,20 @@ A **deep module** has a small interface and hides substantial behaviour. A **sha
 - **Accept dependencies, don't create them.** A module handed its collaborators is exercisable through its interface; one that constructs them internally is not.
 - **Return results, don't produce side effects.** A value crossing the interface is assertable; a mutation is reachable only past it.
 
+## Relationships
+
+- A **Module** has exactly one **Interface** (the surface it presents to callers and tests).
+- **Depth** is a property of a **Module**, measured against its **Interface**.
+- A **Seam** is where a **Module**'s **Interface** lives.
+- An **Adapter** sits at a **Seam** and satisfies the **Interface**.
+- **Depth** produces **Leverage** for callers and **Locality** for maintainers.
+
+## Rejected framings
+
+- **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
+- **"Interface" as the TypeScript `interface` keyword or a class's public methods**: too narrow; interface here includes every fact a caller must know.
+- **"Boundary"**: overloaded with DDD's bounded context. Say **seam** or **interface**.
+
 ## Going deeper
 
 - **Deepening a cluster given its dependencies**: [DEEPENING.md](./DEEPENING.md). Dependency categories, seam discipline, and replace-don't-layer testing.
