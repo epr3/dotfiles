@@ -16,7 +16,7 @@ _Avoid_: model limit, context-window budget.
 **Caveman boundary**: The inclusive dumb-zone threshold at which Pi enters caveman mode, independent of a model's advertised context window.
 _Avoid_: overflow limit, remaining-context warning.
 
-**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `885e2ca4d842d139e9aef4e48d366c63cb1b8013` (2026-08-20).
+**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `6654f6b` (2026-08-25).
 
 **Agent context store**: The tool-neutral directory pointed to by `AGENT_CONTEXT_HOME`, shared by agent harnesses for branch-aware context worktrees.
 _Avoid_: Pi context, Claude context.
