@@ -82,7 +82,7 @@ Treat the **environment** as a source of truth in its own right. Config files, s
 
 Check every line for **relevance**: does it still bear on what the document does? A line loses relevance by never bearing on the task (mere exposition, or a branch that should be disclosed) or by going stale as the world it describes changes. Shorter documents stay relevant more easily, because each line is cheaper to check.
 
-Then hunt the failure modes below sentence by sentence, not line by line: run each test on a sentence in isolation, and when one fails, delete the whole sentence rather than trim words from it. Be aggressive; most prose that fails should go, not be rewritten. Compression prunes wording, never mechanisms (compression ADR).
+Then hunt the failure modes below sentence by sentence, not line by line: run each test on a sentence in isolation, and when one fails, delete the whole sentence rather than trim words from it. Be aggressive; most prose that fails should go, not be rewritten. Compression prunes wording, never mechanisms (compression ADR). Guard each deletion against **Trigger loss**: judge it by whether the action's prerequisites, activation conditions, and timing remain reachable, not by the action words or invocation pointers left on the page.
 
 ## Failure modes
 
