@@ -16,13 +16,13 @@ argument-hint: "What would you like to learn about?"
 - `./lessons/0001-<slug>.html`: the primary teaching unit, incrementing.
 - `./reference/*.html`: compressed learnings, created alongside lessons (cheat sheets, syntax/snippets, algorithms/flowcharts, pose sequences, routines, glossary printouts). Beautiful, print-friendly, quick-reference; lessons are rarely revisited, references are.
 - `./learning-records/0001-<slug>.md`: the ADRs of learning. [LEARNING-RECORD-FORMAT.md](./LEARNING-RECORD-FORMAT.md).
-- `NOTES.md`: scratchpad for teaching preferences and working notes.
+- `NOTES.md`: record expressed teaching preferences and keep-in-mind points; consult them when designing lessons or working with the user.
 
 Create everything lazily.
 
 ## Philosophy
 
-Deep learning = **knowledge** (from high-trust resources; never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength** (durable retention), not mere **fluency** (fast but fleeting recognition). Three levers: **retrieval practice** (recall, not re-read), **spacing** (distribute sessions over time), **interleaving** (mix topics, don't block-practice). Apply desirable difficulty asymmetrically: remove it while acquiring knowledge (clear explanations, worked examples), add it while acquiring skill (harder prompts, mixed practice).
+Deep learning = **knowledge** (from high-trust resources; never trust parametric knowledge; populate `RESOURCES.md` first), **skills** (interactive lessons you design from that knowledge), **wisdom** (real-world interaction with practitioners). Topic sets the mix: theoretical physics skews knowledge, yoga skews skills. Design for **storage strength** (durable retention), not mere **fluency** (fast but fleeting recognition). Three levers: **retrieval practice** (recall, not re-read), **spacing** (distribute sessions over time), **interleaving** (mix different but related topics in practice, for skills practice only). Apply desirable difficulty asymmetrically: remove it while acquiring knowledge (clear explanations, worked examples), add it while acquiring skill (harder prompts, mixed practice).
 
 ## The mission
 
@@ -34,7 +34,7 @@ Each lesson should challenge "just enough". User names a topic → teach it. Oth
 
 ## Lessons
 
-One self-contained HTML file in `./lessons/`, beautiful (clean typography; the user reviews these later), teaching **ONE thing**, completable quickly, ending in a tangible win the user can build on, mission-tied, in the zone. Opening = one CLI command. Lessons anchor-link to other lessons and reference docs. Litter with citations to `RESOURCES.md` sources: trustworthy claims, deeper paths. Each lesson reminds the user to ask the agent follow-ups.
+One self-contained HTML file in `./lessons/`, beautiful (clean typography; the user reviews these later), teaching **ONE thing**, completable quickly, ending in a tangible win the user can build on, mission-tied, in the zone. Opening = one CLI command. Lessons anchor-link to other lessons and reference docs. Litter with citations to `RESOURCES.md` sources: trustworthy claims, deeper paths. Each lesson also recommends one primary source the learner should read or watch next: the highest-quality, high-trust resource found on the topic. Citations alone do not satisfy the recommendation. Each lesson reminds the user to ask the agent follow-ups.
 
 Teach knowledge first, then practice the skill through a **tight feedback loop** (ideally immediate and automatic: in-browser quizzes and light tasks, guided real-world steps like poses, or in-agent scenario quizzes). Multiple-choice options follow [QUIZ-FORMAT.md](../explain-diff/QUIZ-FORMAT.md); no giveaway length, terminology, or fabricated distractors.
 
