@@ -14,7 +14,7 @@ Layer these moves onto a grilling pass, or apply them directly when modeling:
 - **Challenge glossary conflicts.** When a term conflicts with the glossary, call it out immediately: `Keep glossary definition (recommended)` / `Update glossary` / `Two distinct terms`.
 - **Sharpen fuzzy language.** Propose candidate canonical terms for vague or overloaded words: `Customer` / `User` / `Both: needs splitting`.
 - **Discuss concrete scenarios.** Invent edge cases that force precision about concept boundaries: `Cancel whole order` / `Cancel line item` / `Not allowed`. Do not wait for the user to supply them.
-- **Cross-reference the code.** When the user's account conflicts with the code, surface the contradiction: `Code is right, update plan` / `Plan is right, code is wrong` / `Both partially right`.
+- **Cross-reference the code.** When the user states how something works, check whether the code agrees. If you find a contradiction, surface it using the existing choices: `Code is right, update plan` / `Plan is right, code is wrong` / `Both partially right`.
 
 ## Writing it down
 
