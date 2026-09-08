@@ -17,7 +17,7 @@ Wayfinder **plans, it doesn't build**: every decision ticket resolves one decisi
 
 ## Refer by name
 
-Every map and ticket has a **name**: its title. In everything the human reads (narration, Decisions-so-far entries), refer to tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
+Every map and ticket has a **name**: its title. In everything the human reads (narration, Decisions-so-far entries), refer to maps and tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
 
 **Where the map, its child decision tickets, blocking, and frontier queries physically live is tracker-specific.** Consult `issue-tracker.md` in the config home (the "Wayfinding operations" section) for how *this* repo expresses them. If that doc is absent, default to the local-markdown form (`.scratch/<effort-slug>/MAP.md` + `tickets/`, at the context home).
 
@@ -49,6 +49,8 @@ The map is an **index, not a store**: each decision lives in exactly one place (
 
 Every decision ticket carries a **type** and a **mode**. The mode is **HITL** (worked with a human who speaks for themselves) or **AFK** (driven by the agent alone). A HITL ticket only resolves through the live exchange; an agent that answers its own grilling questions has broken it.
 
+A ticket's body is one precise **Question**, sized to one session: the decision or investigation this ticket resolves. The answer is not part of the body; it is recorded on resolution per the tracker's comment conventions. Assets created while resolving a ticket (prototypes, research notes) are **linked** from it, never pasted in.
+
 | Type | Mode | Reach for it when | Resolved by |
 | --- | --- | --- | --- |
 | `grilling` | HITL | The default: the question can be settled by talking it through. | the `grilling` skill plus the `domain-modeling` skill, in conversation |
@@ -56,7 +58,7 @@ Every decision ticket carries a **type** and a **mode**. The mode is **HITL** (w
 | `research` | AFK | A fact outside the working directory is blocking a decision. | a `general` sub-agent running the `research` skill, burned down in parallel |
 | `task` | HITL or AFK | Nothing to decide, but manual work blocks a decision: provisioning access, signing up for a service, moving data so its shape can be seen. | the agent alone where it can; otherwise a precise checklist for the human |
 
-`task` is the only type that *does* rather than decides, and it earns its place by unblocking a decision, never by delivering a piece of the destination. This is the type that goes wrong most often: an agent reads it as an implementation step and starts writing product code inside the map.
+`task` is the only type that *does* rather than decides, and it earns its place by unblocking a decision, never by delivering a piece of the destination. It resolves only when the work is actually done, and its answer records what was done and the resulting facts later decisions depend on (new URLs, counts, where credentials are kept) - non-secret references, never secret values. This is the type that goes wrong most often: an agent reads it as an implementation step and starts writing product code inside the map.
 
 ## Claims
 
@@ -64,7 +66,7 @@ A session **claims** a decision ticket before any work: the first write after se
 
 ## Fog of war
 
-Beyond the live tickets lies fog: decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now** (not whether you can answer it now)? Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". Resolving tickets converts fog into new tickets. Don't pre-slice the fog into ticket-sized pieces: one patch may graduate into several tickets, or none, once the frontier reaches it.
+Beyond the live tickets lies fog: decisions you can tell are coming but can't yet pin down. The test for ticket vs fog: **can you state the question precisely now** (not whether you can answer it now)? Precise question -> decision ticket (with its blocking edges). Only a shape -> a line under "Not yet specified". What is already decided, already a live ticket, or out of scope doesn't belong under "Not yet specified". Resolving tickets converts fog into new tickets. Don't pre-slice the fog into ticket-sized pieces: one patch may graduate into several tickets, or none, once the frontier reaches it.
 
 ## Out of scope
 
@@ -88,7 +90,7 @@ User invokes with a loose idea.
 2. **Map the frontier**: grill again, breadth-first, fanning out across the whole space rather than deep on any thread, surfacing the open decisions and the first steps takeable now. **If this surfaces no fog**, the way to the destination is already clear and the whole journey fits one session: stop, and ask the user how to proceed (no map needed).
 3. **Create the map**: Destination and Notes filled in, Decisions so far empty, the fog sketched into "Not yet specified".
 4. **Create the tickets you can specify now**, then wire blocking edges in a **second pass**: a ticket needs to exist before another can name it. Wiring sorts them into the frontier and the blocked; everything still too vague stays in the fog.
-5. **Fire the research sub-agents**: one `general` sub-agent per research ticket (the `Agent` tool, all dispatched in a single message), each briefed with its ticket and capture path, running in parallel.
+5. **Fire the research sub-agents**: one `general` sub-agent per research ticket (the `Agent` tool), each dispatched in the background (`run_in_background: true`) and briefed with its ticket, its capture path, the `research` discipline, and claim-before-work responsibility. Charting stops without waiting on them (step 6). Dispatch them in a single message so they run in parallel, but worker parallelism is not the parent staying unblocked - only background mode keeps the session free.
 6. **Stop**: charting is one session's work; it hand-resolves nothing.
 
 ### Work through the map
@@ -97,9 +99,11 @@ User invokes with a map. A ticket is optional: without one, pick the next decisi
 
 1. **Orient**: load the map (destination, notes, decisions index). Zoom into linked tickets only where relevant.
 2. **Claim**: take the first frontier ticket in order (or the one the user named), and record the claim as the first write before any work.
-3. **Resolve it**: one decision, sized to one session. Call the `grilling` and `domain-modeling` skills for conversation; the `prototype` skill where a concrete artifact answers the question; the `research` skill for source-backed reading. **The user decides**: put the question to them and wait; the answers are theirs to give, not yours to supply. A HITL ticket only resolves through that exchange.
-4. **Record**: the full decision in the ticket (close it per the tracker conventions); a one-line gist + link under "Decisions so far"; new tickets or fog lines the decision revealed. If the answer shows a ticket sits beyond the destination, rule it out of scope instead.
+3. **Resolve it**: one decision, sized to one session. Call whichever skills the Notes block names and apply them before resolving; call the `grilling` and `domain-modeling` skills for conversation, the `prototype` skill where a concrete artifact answers the question, the `research` skill for source-backed reading. **The user decides**: put the question to them and wait; the answers are theirs to give, not yours to supply. A HITL ticket only resolves through that exchange.
+4. **Record**: the full decision in the ticket (close it per the tracker conventions); a one-line gist + link under "Decisions so far". Add any newly surfaced tickets first, then wire their blocking edges; graduate fog the answer made specifiable, clearing each graduated patch from "Not yet specified" so each decision lives in only one place. If the answer invalidates another open ticket, update or delete that ticket and its blocking edges; resolved history is never silently rewritten. If it shows a ticket sits beyond the destination, rule it out of scope instead.
 5. **Stop cleanly**: the map is the handoff; the next session re-orients from it.
+
+Unblocked tickets may be run in parallel, so expect other sessions to be editing the map and tickets concurrently. Re-read the relevant shared state (map, ticket files, blocking edges) before each update so their edits survive; the claim is cooperative, not a lock - preserve, never clobber.
 
 ## Done
 
