@@ -13,7 +13,7 @@ Every suggestion is phrased in the `codebase-design` vocabulary: **module, inter
 
 ### 1. Scope, then explore
 
-Scan **where change is actually landing**: YAGNI; a deepening in code nobody is touching is a suggestion nobody will act on, so extra weight goes on the parts that have recently changed. Take the area from the user when they name one; otherwise derive it from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
+Scan **where change is actually landing**: YAGNI; a deepening in code nobody is touching is a suggestion nobody will act on, so extra weight goes on the parts that have recently changed. Take the area from the user when they name one; otherwise derive it from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. When no scope is named and recent changes are scattered with no clear hot spot, widen the net before scanning. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
 
 Read `CONTEXT.md` for that area first, in the relevant folder (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). ADRs: grep `docs/adr/` + `<dir>/adr/` (see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)) for area terms, read matches; treat the grep as partial and racy rather than an authoritative list.
 
