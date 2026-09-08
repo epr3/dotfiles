@@ -1,12 +1,12 @@
 ---
 name: code-review
 description: "Review the changes since a fixed point along two axes: Standards (does the code follow this repo's documented coding standards?) and Spec (does it match what the originating issue, spec, or PR asked for?). Use when the user wants to review a branch, a PR, or work-in-progress changes."
-argument-hint: "PR or fixed point to review (commit, branch, tag, PR; default: main)"
+argument-hint: "PR or fixed point to review (commit, branch, tag, PR; default: main), or the working tree for uncommitted work"
 ---
 
 # Code Review
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Two-axis review of the change set since a fixed point the user supplies, covering committed changes and, for WIP reviews, the staged, unstaged, and relevant untracked work on top of it:
 
 - **Standards**: does the code conform to this repo's documented coding standards?
 - **Spec**: does the code faithfully implement the originating issue, ticket, or spec?
@@ -15,13 +15,27 @@ A change can follow every standard and implement the wrong thing, or do exactly 
 
 ## Process
 
-### 1. Pin the fixed point
+### 1. Pin the review scope
 
-Whatever the user said is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`. Reviewing a PR or branch? The fixed point is the base it targets (or its merge-base with `main`). If they didn't specify one, ask for it.
+Clarify what to review: **committed-only** (the default: everything between a fixed point and `HEAD`) or **WIP** (committed changes plus working-tree work: staged, unstaged, and relevant untracked additions). "Review my work", "review the current changes", or a review-before-commit handoff means WIP; "review the branch/PR" or a named range means committed-only. Preserve committed-only when that is the requested scope.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+Whatever the user said is the fixed point: a commit SHA, branch name, tag, `main`, `HEAD~5`, or (for a PR/branch) the base it targets, resolved to its merge-base with `main`. Ask for the fixed point when none is given; for WIP with no fixed point, the base is current `HEAD` and the review covers the uncommitted work on top of it. Resolve the base once to a full SHA (`git rev-parse`) and record it in the final report; a bad ref fails here, not inside two parallel sub-agents.
 
-Confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty; a bad ref or empty diff should fail here, not inside two parallel sub-agents.
+Capture the change evidence once, in this order, and hand the same evidence to both axes:
+
+- Committed: `git diff <base>...HEAD` (three-dot, so the comparison is against the merge-base) plus `git log <base>..HEAD --oneline`.
+- Staged against `HEAD`: `git diff --cached`.
+- Unstaged against the index: `git diff`.
+- Relevant untracked: `git ls-files --others --exclude-standard` (ignored files are irrelevant). Their contents are in no diff; list the paths and read each file.
+
+The non-empty check applies to the whole change set, not the committed diff alone: fail here only on a bad ref or a genuinely empty scope (no commits in range, clean index, clean tree, and no relevant untracked). A WIP review must show staged, unstaged, and untracked additions even when the committed diff is empty.
+
+**Baseline exclusion.** A review-before-commit handoff carries a recorded baseline: a start commit plus a pre-existing dirty-work snapshot, one `<status> <hash> <path>` line per dirty path (status from `git status --porcelain`, the hash the path's `git hash-object` at claim time; see implement's claim). Without a baseline, every path in the change evidence is the requested review by default. With one, classify every path in the change evidence, and check every recorded baseline path against the current state too: a recorded path that has vanished since (deleted, or reverted to the base) is not silently dropped.
+
+- **Slice**: the paths the handoff names as the work under review. Include.
+- **Workflow record**: ticket, spec, and claim-record paths. Exclude without asking; they are the workflow's trace, not code under review.
+- **Pre-existing, unchanged**: in the baseline, with a content marker equal to the current content (same `git hash-object`), still outside the index and the committed range, or untracked and still exactly as recorded. Exclude, and report the excluded paths; never drop them silently.
+- **Ambiguous**: in the baseline but with different content now, or touched by the slice's own git actions (staged, or present in the committed range), or changed with no baseline entry and not named as slice. Stop and ask the user, one round in the `grilling` skill's question format: is the difference the slice, continued user work, or both? Never guess, include silently, drop silently, stage, or commit. Proceed only on the decision.
 
 ### 2. Identify the spec source
 
@@ -43,11 +57,11 @@ On top of whatever the repo documents, the Standards axis always carries the **s
 
 Send a single message with two `Agent` tool calls (`subagent_type: "general"` for both) so they run in parallel with isolated context.
 
-**Exactly two top-level sub-agents, one per axis**, whatever the diff's size. Each may spawn read-only `explore` sub-agents within its own work to navigate the code.
+**Exactly two top-level sub-agents, one per axis**, whatever the change set's size. Each may spawn read-only `explore` sub-agents within its own work to navigate the code.
 
 **Standards sub-agent prompt**: include:
 
-- The full diff command and commit list.
+- The full change evidence: the committed diff command and commit list, plus the staged, unstaged, and relevant untracked path lists (read each untracked path's content; it is in no diff).
 - The standards-source files you found in step 3.
 - The smell baseline, pasted in full:
 
@@ -77,7 +91,7 @@ Send a single message with two `Agent` tool calls (`subagent_type: "general"` fo
 
 **Spec sub-agent prompt**: include:
 
-- The diff command and commit list.
+- The full change evidence (the committed diff command and commit list, plus the staged, unstaged, and relevant untracked paths).
 - The path or fetched contents of the spec.
 - The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
 
