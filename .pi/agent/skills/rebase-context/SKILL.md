@@ -29,9 +29,11 @@ At each stop git marks the conflicted files. Resolve by **meaning**, not just ma
 
 Stage the resolved files (`git add`) and `git rebase --continue`; repeat until the rebase finishes.
 
-### 4. Ground against onto's code
+### 4. Ground against the source's code
 
-The rebased context now sits on `onto`, so it has to hold in **onto**'s code. Take onto's path universe (`<skill-dir>/manifest.sh`, `<skill-dir>` = the `setup-context` skill's folder, run with **cwd anywhere inside onto's code worktree** — answers are repo-root-relative for that worktree); a `<dir>/CONTEXT.md`, a term keyed to a missing module, or an ADR about absent code that `onto` lacks is **dangling**; flag it, don't silently keep it.
+The authoritative universe after a rebase is the **source code worktree**, not onto's. Take its path universe via `<skill-dir>/manifest.sh` (`<skill-dir>` = the `setup-context` skill's folder, invoked by path with **cwd anywhere inside the source code worktree** — answers are repo-root-relative for that worktree). A `<dir>/CONTEXT.md`, a term keyed to a missing module, or an ADR about absent code that the source's manifest lacks is **dangling**: surface it as a report + question and keep all context content until the user decides — never silently keep or drop anything. A dangling base-inherited path (present on onto, absent from the source) says "context rebased before code".
+
+Source-only feature paths stay valid — they exist on the source, just not on the base. This step completes once every dangling reference is surfaced and decided; grounding alone drops nothing.
 
 ### 5. Finish
 
