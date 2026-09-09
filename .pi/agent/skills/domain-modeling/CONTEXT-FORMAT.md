@@ -84,7 +84,7 @@ Every skill saying "context home" or "config home" means the row this resolves t
 
 **What sits in the config home:** the `## Agent skills` block and the convention docs (issue tracker, triage labels, out-of-scope) plus `domain.md`: rules for the whole repo, not one branch. Under a **context repo** that is `.agents/` at the context repo root: one copy shared by every **context worktree**, never duplicated into them; plain files, edit in place; never imported into global or repo instructions files; skills read them at orientation. Under **in-repo context** it is `docs/agents/`, committed with the code, and the block sits in the repo's instructions file (auto-loaded; its lines may reference the `docs/agents/` files directly).
 
-**Running the helper scripts** (stated once, here): invoke each **by its path, with cwd inside the code repo** (`ctx-init.sh`, `offload-context.sh`, and `manifest.sh` read the repo + branch from the cwd to resolve the worktree / manifest, and locate their siblings via `$(dirname "$0")`); never `cd` into the skill folder. `ctx-index.sh` scans the whole **context root** and is cwd-independent.
+**Running the helper scripts** (stated once, here): invoke each **by its path, with cwd inside the code repo** (`ctx-init.sh`, `offload-context.sh`, and `manifest.sh` read the repo + branch from the cwd to resolve the worktree / manifest, and locate their siblings via `$(dirname "$0")`); never `cd` into the skill folder. `manifest.sh` answers are repo-root-relative no matter which subdirectory you run it from. `ctx-index.sh` scans the whole **context root** and is cwd-independent.
 
 ### Layout
 
@@ -109,7 +109,7 @@ A **context repo** is a **bare git repo**, one per code repo, with a **team remo
 
 ### Grounded mirror: no concepts that don't exist yet
 
-The structure is **generated from the code, not invented by agents**. Allowed paths come from a manifest of the code repo (`git ls-files`, via `manifest.sh`), branch-accurate by construction.
+The structure is **generated from the code, not invented by agents**. Allowed paths come from a manifest of the code repo (`git ls-files`, via `manifest.sh`), branch-accurate by construction. Directory mode is the root plus every ancestor directory of a tracked path — never root filenames, never untracked-only directories; `--has` treats a supplied path literally.
 
 - Context attaches **only at a path the manifest contains**; a `CONTEXT.md` or a `CONTEXT-MAP.md` link pointing at a path not in the manifest is **flagged dangling, not created**.
 - `setup-context` scaffolds the skeleton from the manifest; agents extend it only along real paths.

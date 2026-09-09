@@ -31,7 +31,7 @@ Stage the resolved files (`git add`) and `git rebase --continue`; repeat until t
 
 ### 4. Ground against onto's code
 
-The rebased context now sits on `onto`, so it has to hold in **onto**'s code. Take onto's path universe (`<skill-dir>/manifest.sh`, `<skill-dir>` = the `setup-context` skill's folder, run with **cwd in onto's code worktree**, over its `git ls-files`); a `<dir>/CONTEXT.md`, a term keyed to a missing module, or an ADR about absent code that `onto` lacks is **dangling**; flag it, don't silently keep it.
+The rebased context now sits on `onto`, so it has to hold in **onto**'s code. Take onto's path universe (`<skill-dir>/manifest.sh`, `<skill-dir>` = the `setup-context` skill's folder, run with **cwd anywhere inside onto's code worktree** — answers are repo-root-relative for that worktree); a `<dir>/CONTEXT.md`, a term keyed to a missing module, or an ADR about absent code that `onto` lacks is **dangling**; flag it, don't silently keep it.
 
 ### 5. Finish
 
