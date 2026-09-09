@@ -11,6 +11,7 @@
     ~/.pi/: .pi/*
     ~/.zshrc: .zshrc
     ~/.fvmrc: .fvmrc
+    ~/git-clone-bare-for-worktrees.sh: scripts/git-clone-bare-for-worktrees.sh
 
 - shell:
   -
@@ -18,6 +19,11 @@
     stdin: true
     stdout: true
     description: Set git identity
+  -
+    command: bash scripts/setup-git-clone-for-worktrees-alias.sh
+    description: Register git clone-for-worktrees alias
+    stdout: true
+    stderr: true
   -
     command: bash scripts/install-homebrew.sh
     description: Install Homebrew
