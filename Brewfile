@@ -22,7 +22,7 @@ brew "worktrunk"
 brew "gh"
 brew "rtk"
 
-cask "alacritty"
+cask "ghostty"
 cask "amethyst"
 cask "flutter"
 cask "font-inconsolata"

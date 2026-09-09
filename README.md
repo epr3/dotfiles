@@ -20,7 +20,9 @@ git submodule update --init dotbot
 
 | Directory | What |
 |---|---|
-| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, tmux, alacritty, btop, yazi |
+| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, tmux, ghostty, btop, yazi |
+
+> **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.
 | `.pi/` | pi coding agent config, skills, themes, extensions |
 | `vscode/` | VS Code settings, keybindings, snippets |
 | `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
