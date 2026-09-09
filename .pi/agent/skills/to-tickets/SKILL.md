@@ -1,20 +1,20 @@
 ---
 name: to-tickets
 description: Break a plan, spec, or conversation into independently-grabbable tracer-bullet tickets, each numbered with its build position. Use when the user wants work sliced into tickets or issues. Third step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
-argument-hint: "optional path to a spec/plan .md file"
+argument-hint: "optional spec/plan .md path, issue number, or issue URL"
 ---
 
 # To Tickets
 
-If the recorded `## Agent skills` block / `issue-tracker.md` (config home) designates a tracker, publish each issue there per its conventions (labels included when triage is on) instead of local files; everything else below is unchanged. Default:
+If the recorded `## Agent skills` block / `issue-tracker.md` (config home) designates a tracker, publish each issue there per its conventions instead of local files; everything else below is unchanged. Default: break the plan into independently-grabbable tickets = vertical slices (**tracer bullets**) -> local files under `.scratch/<feature-slug>/tickets/` **at the context home** ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md), *Context home*).
 
-Break the plan into independently-grabbable tickets = vertical slices (**tracer bullets**) -> local files under `.scratch/<feature-slug>/tickets/` **at the context home** ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md), *Context home*).
+**Triage on -> publish approved slices in the configured ready state.** A slice approved in step 4 is fully specified (What-to-build + checkable acceptance criteria), so it goes out agent-grabbable by construction: apply the ready role string from [triage-labels.md](../setup-context/triage-labels.md) (`ready-for-agent` in the canonical vocabulary) unless the user explicitly overrides - no `triage` re-run is implied over freshly approved work. A slice left underspecified publishes `needs-triage` instead. The role rides the destination's convention: a label on hosted issues, a `Status:` line in local ticket files (see the `issue-tracker.md` conventions in the config home). **No triage** -> plain open tickets/issues with no role anywhere.
 
 ## Process
 
 ### 1. Gather context
 
-Work from conversation. Path arg (spec/plan `.md`) -> read fully. Default source: newest `.scratch/*/SPEC.md` in the context home. Note parent spec path/slug; every issue records it, and step-5 ordering is scoped to it.
+Work from whatever the conversation already holds. Path arg (spec/plan `.md`) -> read fully, comments included. Tracker-reference arg (issue number, bare `#NN`, or issue URL) -> resolve through the configured tracker's read operation per the `issue-tracker.md` conventions in the config home, **comments included**, and read the full body and comments before slicing; the supplied reference is the source - never fall back to an unrelated local spec. No arg -> default source: newest `.scratch/*/SPEC.md` in the context home. Note the parent: the spec path/slug, or the tracker reference when one was supplied. Every issue records it, and step-5 ordering is scoped to it.
 
 ### 2. Explore (optional)
 
@@ -44,7 +44,7 @@ Review as **round**s in the `grilling` skill's question format. Cover: granulari
 
 ### 5. Order and write issue files
 
-Each ticket **declares its blocking edges**: a `blocked_by:` frontmatter list of ticket numbers (empty when unblocked). The linear `<NNNN>` order is the flattened default; the edges are the truth. On a real tracker, express edges as native blocking links where the tracker supports them; then the **frontier** (tickets whose blockers are all done) is queryable and multiple agents can work it in parallel. In local files, work top-to-bottom by `<NNNN>`.
+Each ticket **declares its blocking edges**: a `blocked_by:` frontmatter list of ticket numbers (empty when unblocked). The linear `<NNNN>` order is the flattened default; the edges are the truth. On a real tracker, express edges as native blocking links where the tracker supports them; then the **frontier** (tickets whose blockers are all done) is queryable and multiple agents can work it in parallel. Slices of an existing issue stay attached to it: each new issue's body records the step-1 parent under `## Parent` when the source was a tracker issue. In local files, work top-to-bottom by `<NNNN>`.
 
 Compute **build order per spec** from dependency graph: topological sort, every blocker ahead of what it blocks. Ties: foundational first (schema/contracts before features built on them), then delivered value.
 
@@ -78,4 +78,4 @@ No file paths or code snippets; they go stale. Exception: a prototype snippet en
 
 Keep numbering and `blocked_by` in agreement; a numbering that violates `blocked_by` is a bug.
 
-Leave the parent spec/plan file untouched.
+Leave the parent spec/plan file untouched; never close or modify the source issue a slice came from.

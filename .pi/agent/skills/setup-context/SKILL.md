@@ -64,7 +64,7 @@ The GitHub/GitLab seeds carry a **PRs (MRs) as a request surface** flag, default
 > When issues live in a tracker, a small label vocabulary lets `to-tickets` mark what it creates, `implement` know what's safe to pick up, and the `triage` skill run its state machine. Skip it if you don't triage.
 
 - **No triage** (default): skills create/read tickets and issues with no label conventions.
-- **Yes**: record the five canonical roles, each overridable to match existing labels (seed table: [triage-labels.md](./triage-labels.md)): `needs-triage` (maintainer evaluates), `needs-info` (waiting on reporter), `ready-for-agent` (fully specified, AFK-ready), `ready-for-human`, `wontfix`. `to-tickets` labels what it creates `needs-triage` (or `ready-for-agent` when fully specified); `implement` treats `ready-for-agent` as the pick-up signal.
+- **Yes**: record the five canonical roles, each overridable to match existing labels (seed table: [triage-labels.md](./triage-labels.md)): `needs-triage` (maintainer evaluates), `needs-info` (waiting on reporter), `ready-for-agent` (fully specified, AFK-ready), `ready-for-human`, `wontfix`. `to-tickets` publishes approved fully specified slices straight to `ready-for-agent` (agent-grabbable by construction, no re-triage); only slices left underspecified open `needs-triage`. `implement` treats `ready-for-agent` as the pick-up signal.
 
 **Section D: Domain docs layout.** No monorepo signals in explore -> **single-context**, one `CONTEXT.md` at the context-home root; write it without asking. Signals found -> confirm which:
 

@@ -10,4 +10,4 @@ The skills speak in terms of five canonical triage roles. This file maps those r
 | `ready-for-human` | `ready-for-human` | Requires human implementation |
 | `wontfix` | `wontfix` | Will not be actioned |
 
-When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding string from the second column. `to-tickets` labels new tickets `needs-triage` (or `ready-for-agent` when fully specified); `implement` treats `ready-for-agent` as the pick-up signal.
+When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the corresponding string from the second column. `to-tickets` publishes approved fully specified slices straight to `ready-for-agent` (agent-grabbable by construction, no re-triage); only slices left underspecified open `needs-triage`. `implement` treats `ready-for-agent` as the pick-up signal.
