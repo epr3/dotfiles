@@ -41,6 +41,9 @@ _Avoid_: automatic ticket, unattended type.
 **Tracer bullet**: An implementation ticket that delivers a thin, independently verifiable slice through every required layer.
 _Avoid_: horizontal task, partial layer.
 
+**Worktree container**: A repository directory whose `.git/` is a bare repository and whose working trees occupy sibling directories beside `.git/`.
+_Avoid_: .bare layout, .git pointer layout.
+
 **Bootstrap**: The repeatable entrypoint that links dotfiles and runs guarded setup stages for package managers, packages, shell tools, editor extensions, and git identity.
 _Avoid_: install script, setup script.
 

@@ -3,7 +3,7 @@ font-family = "Inconsolata Nerd Font"
 font-size = 18
 
 # Theme
-theme = catppuccin-macchiato
+theme = Catppuccin Macchiato
 
 # Window appearance
 window-decoration = none
