@@ -18,6 +18,8 @@ _Avoid_: overflow limit, remaining-context warning.
 
 **Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `6654f6b` (2026-08-25).
 
+**Trigger loss**: A compression defect in agent instructions that removes a prerequisite, activation condition, or timing rule while retaining the action it governs.
+
 **Agent context store**: The tool-neutral directory pointed to by `AGENT_CONTEXT_HOME`, shared by agent harnesses for branch-aware context worktrees.
 _Avoid_: Pi context, Claude context.
 
