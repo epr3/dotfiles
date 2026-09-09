@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: Test-driven development via a red-green-refactor loop, one vertical slice at a time. Use when the user wants work done test-first, mentions TDD or red-green-refactor, or when a change needs a tight feedback loop.
+description: Test-driven development via the red → green loop, one vertical slice at a time. Use when the user wants work done test-first, mentions TDD or red-green-refactor, or when a change needs a tight feedback loop.
 ---
 
 # Test-Driven Development
@@ -65,19 +65,9 @@ GREEN: write the minimal code to pass        -> it passes
 
 The first pass through is your **tracer bullet**: it proves the path works end-to-end. Then repeat, one behaviour at a time, each test responding to what the last cycle taught you.
 
-### 3. Refactor
+### 3. Refactoring
 
-After all tests pass, look for [refactor candidates](./refactoring.md):
-
-- Extract duplication.
-- Deepen modules (move complexity behind simple interfaces).
-- Apply SOLID principles where natural.
-- Consider what the new code reveals about existing code.
-- Run tests after each refactor step.
-
-**Never refactor while RED.** Get to GREEN first.
-
-Candidates beyond the slice (code the ticket didn't touch) route to the `code-review` skill instead of widening this phase.
+Refactoring is not part of the red → green loop: each cycle ends at GREEN, and this skill has no refactor phase. Refactoring belongs to the review stage instead (see the `code-review` skill): review identifies refactor candidates, and each agreed change is applied one at a time, rerunning the appropriate tests after it. Never refactor while red.
 
 ## Checklist per cycle
 

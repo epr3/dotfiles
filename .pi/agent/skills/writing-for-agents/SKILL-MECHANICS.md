@@ -33,7 +33,7 @@ A model-invoked description is the skill's always-loaded context pointer. Apply 
 
 ## Composition (this suite's rule)
 
-Orchestrators compose disciplines, not other orchestrators: a flow skill invokes reference/discipline skills, never another flow. The invocation mechanics enforce half of this for free; a user-invoked skill has no description, so nothing can fire it. The rest is design intent. One sanctioned exception: a *methodology* skill may run on top of a base flow and change how one of its steps is done (`tdd` layering red-green-refactor onto `implement`'s build-the-slice step): a layer, not an orchestrator calling an orchestrator. Keep shared discipline model-invoked, or as external reference, so several flows can reach it.
+Orchestrators compose disciplines, not other orchestrators: a flow skill invokes reference/discipline skills, never another flow. The invocation mechanics enforce half of this for free; a user-invoked skill has no description, so nothing can fire it. The rest is design intent. One sanctioned exception: a *methodology* skill may run on top of a base flow and change how one of its steps is done (`tdd` layering its red → green loop onto `implement`'s build-the-slice step): a layer, not an orchestrator calling an orchestrator. Keep shared discipline model-invoked, or as external reference, so several flows can reach it.
 
 ## Router skills
 
