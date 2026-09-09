@@ -161,49 +161,37 @@ make_fixture "$fixture"
 dest="$sandbox/container dir"
 
 # --- Usage errors: before any container creation ---
+# <label> [--no-create <path>] <cmd...>: expect nonzero + Usage text, and
+# optionally that no container appeared at <path>.
+assert_usage_error() {
+  local label="$1" guard="" out
+  shift
+  if [ "${1:-}" = "--no-create" ]; then
+    guard="$2"; shift 2
+  fi
+  if out="$("$@" 2>&1)"; then
+    fail "usage: $label fails"
+  elif [ -n "$guard" ] && [ -e "$guard" ]; then
+    fail "usage: $label created a container anyway"
+  elif echo "$out" | grep -q "Usage:"; then
+    ok "usage: $label fails before creation"
+  else
+    fail "usage: $label (no Usage text)"
+  fi
+}
+
 t_usage() {
   local dest_empty="$sandbox/usage-empty-src-dest"
   local dest_excess="$sandbox/usage-excess-dest"
-  local out rc
 
-  # 0 args
-  if out=$(git clone-for-worktrees 2>&1); then
-    fail "usage: zero arguments fails"
-  else
-    echo "$out" | grep -q "Usage:" && ok "usage: zero arguments fail with usage" || fail "usage: zero arguments (no Usage text)"
-  fi
-
-  # 1 arg (missing destination)
-  if out=$(git clone-for-worktrees "$fixture" 2>&1); then
-    fail "usage: missing destination fails"
-  else
-    echo "$out" | grep -q "Usage:" && ok "usage: missing destination fails with usage" || fail "usage: missing destination (no Usage text)"
-  fi
-
-  # 3 args (excess)
-  if out=$(git clone-for-worktrees "$fixture" "$dest_excess" extra 2>&1); then
-    fail "usage: excess arguments fail"
-  elif [ -e "$dest_excess" ]; then
-    fail "usage: excess arguments created a container anyway"
-  else
-    echo "$out" | grep -q "Usage:" && ok "usage: excess arguments fail before creation" || fail "usage: excess arguments (no Usage text)"
-  fi
-
-  # empty source
-  if out=$(git clone-for-worktrees "" "$dest_empty" 2>&1); then
-    fail "usage: empty source fails"
-  elif [ -e "$dest_empty" ]; then
-    fail "usage: empty source created a container anyway"
-  else
-    echo "$out" | grep -q "Usage:" && ok "usage: empty source fails before creation" || fail "usage: empty source (no Usage text)"
-  fi
-
-  # empty destination
-  if out=$(git clone-for-worktrees "$fixture" "" 2>&1); then
-    fail "usage: empty destination fails"
-  else
-    echo "$out" | grep -q "Usage:" && ok "usage: empty destination fails with usage" || fail "usage: empty destination (no Usage text)"
-  fi
+  assert_usage_error "zero arguments" git clone-for-worktrees
+  assert_usage_error "excess arguments" --no-create "$dest_excess" \
+    git clone-for-worktrees "$fixture" "$dest_excess" extra
+  assert_usage_error "empty source" --no-create "$dest_empty" \
+    git clone-for-worktrees "" "$dest_empty"
+  assert_usage_error "empty destination" git clone-for-worktrees "$fixture" ""
+  assert_usage_error "source-only empty source" git clone-for-worktrees ""
+  assert_usage_error "slash-only destination" git clone-for-worktrees "$fixture" "/"
 }
 
 # --- Destination refusal ---
@@ -406,6 +394,197 @@ t_full() {
   fi
 }
 
+# --- Source-only invocation: derived container names ---
+t_derived_names() {
+  local out srconly refs
+  srconly="$sandbox/srconly"
+  mkdir -p "$srconly"
+
+  # multiple dots plus a terminal .git: the suffix is dropped, inner dots kept
+  local dmulti="$sandbox/multi.dot.git"
+  make_fixture "$dmulti"
+  if out=$(cd "$srconly" && git clone-for-worktrees "$dmulti" 2>&1); then
+    if [ -d "$srconly/multi.dot/.git" ] && [ ! -e "$srconly/multi.dot.git" ]; then
+      ok "derived name strips only the terminal .git, keeps inner dots"
+    else
+      fail "derived name wrong: $(ls -A "$srconly" | tr '\n' ' ')"
+    fi
+  else
+    fail "source-only clone (multi.dot.git) failed: $out"
+  fi
+
+  # a name without the .git suffix keeps every dot
+  local dtools="$sandbox/tool.tools"
+  make_fixture "$dtools"
+  if out=$(cd "$srconly" && git clone-for-worktrees "$dtools" 2>&1); then
+    if [ -d "$srconly/tool.tools/.git" ]; then
+      ok "derived name preserves non-.git dots"
+    else
+      fail "derived name for 'tool.tools' wrong: $(ls -A "$srconly" | tr '\n' ' ')"
+    fi
+  else
+    fail "source-only clone (tool.tools) failed: $out"
+  fi
+
+  # trailing slash on the source, derived name containing a space
+  if out=$(cd "$srconly" && git clone-for-worktrees "$fixture/" 2>&1); then
+    if [ -d "$srconly/source repo dir/.git" ]; then
+      ok "trailing slash on source; spaced derived name survives alias invocation"
+    else
+      fail "trailing-slash/space case wrong: $(ls -A "$srconly" | tr '\n' ' ')"
+    fi
+  else
+    fail "trailing-slash source-only clone failed: $out"
+  fi
+
+  # derived-name clones fetched every remote branch
+  refs=$(git -C "$srconly/multi.dot" for-each-ref --format='%(refname:short)' refs/remotes/origin || true)
+  echo "$refs" | grep -qx origin/feature && echo "$refs" | grep -qx origin/main \
+    && ok "source-only container fetched all remote branches" \
+    || fail "source-only container refs: $(echo "$refs" | tr '\n' ' ')"
+}
+
+# --- Explicit destination with a trailing slash behaves like its absence ---
+t_trailing_slash_dest() {
+  local out d="$sandbox/ts-dest"
+  if out=$(git clone-for-worktrees "$fixture" "$d/" 2>&1); then
+    if [ -d "$d/.git" ]; then
+      ok "explicit destination trailing slash handled like its absence"
+    else
+      fail "trailing-slash destination not created at $d"
+    fi
+    if echo "$out" | grep -qF "at '$d' (bare"; then
+      ok "reported destination path has no stray trailing slash"
+    else
+      fail "reported destination path keeps a trailing slash: $out"
+    fi
+  else
+    fail "trailing-slash destination clone failed: $out"
+  fi
+}
+
+# --- Caller-relative sources and destinations ---
+t_caller_relative() {
+  local out other nested callout url url2
+  other="$sandbox/caller-relative-repo"
+  nested="$other/sub/dir"
+  callout="$sandbox/callout"
+  mkdir -p "$nested" "$callout"
+  git init -q "$other"
+  git -C "$other" symbolic-ref HEAD refs/heads/main
+  echo "outer content" > "$other/outer.txt"
+  git -C "$other" add outer.txt
+  git -C "$other" commit -qm "outer commit"
+
+  # explicit relative destination from a nested directory of another repository
+  if out=$(cd "$nested" && git clone-for-worktrees "../../../source repo dir" "nested dock" 2>&1); then
+    if [ -d "$nested/nested dock/.git" ] && [ ! -e "$other/nested dock" ]; then
+      ok "relative destination from a nested dir resolves under the caller, not the repo root"
+    else
+      fail "nested relative destination wrong: $(ls -A "$nested" | tr '\n' ' ')"
+    fi
+    url=$(git -C "$nested/nested dock" remote get-url origin 2>/dev/null || true)
+    [ "$url" = "$fixture" ] \
+      && ok "relative local source resolves from the caller's directory" \
+      || fail "nested origin is '$url'"
+  else
+    fail "nested relative clone failed: $out"
+  fi
+
+  # no explicit destination: the container appears beneath the caller, not the repo root
+  if out=$(cd "$nested" && git clone-for-worktrees "../../../source repo dir" 2>&1); then
+    if [ -d "$nested/source repo dir/.git" ] && [ ! -e "$other/source repo dir" ]; then
+      ok "derived destination lands beneath the caller dir, not the enclosing repo root"
+    else
+      fail "derived destination nested wrong: $(ls -A "$nested" | tr '\n' ' ')"
+    fi
+  else
+    fail "nested source-only clone failed: $out"
+  fi
+
+  # the enclosing repository is still a working, top-level repository
+  if [ "$(git -C "$other" rev-parse --show-toplevel 2>/dev/null || true)" = "$other" ]; then
+    ok "enclosing repository untouched"
+  else
+    fail "enclosing repository damaged"
+  fi
+
+  # the relative origin stays usable for a later normal fetch from the container
+  git -C "$fixture" checkout -qb nested-later
+  echo "nested later content" > "$fixture/nested-later.txt"
+  git -C "$fixture" add nested-later.txt
+  git -C "$fixture" commit -qm "nested later commit"
+  git -C "$fixture" checkout -q main
+  if git -C "$nested/source repo dir" fetch origin >/dev/null 2>&1 \
+     && git -C "$nested/source repo dir" show-ref --verify -q refs/remotes/origin/nested-later; then
+    ok "relative-origin container stays fetchable for a later normal fetch"
+  else
+    fail "nested container origin unusable for a later fetch"
+  fi
+
+  # outside any repository: relative source and destination from the caller's directory
+  if out=$(cd "$callout" && git clone-for-worktrees "../source repo dir" "../rel-out-dest" 2>&1); then
+    if [ -d "$sandbox/rel-out-dest/.git" ]; then
+      ok "outside a repo: caller-relative source and destination work"
+    else
+      fail "callout clone landed wrong"
+    fi
+    url2=$(git -C "$sandbox/rel-out-dest" remote get-url origin 2>/dev/null || true)
+    [ "$url2" = "$fixture" ] && ok "callout origin is the caller-resolved source" \
+      || fail "callout origin is '$url2'"
+  else
+    fail "callout clone failed: $out"
+  fi
+}
+
+# --- SSH- and HTTPS-shaped sources via Git's own URL rewriting ---
+t_remote_shapes() {
+  local out url refs
+  mkdir -p "$sandbox/ssh-shape" "$sandbox/https-shape"
+
+  # SSH-shaped source rewritten to the local fixture; alias config + rewrite
+  # both apply via the main GIT_CONFIG_GLOBAL and the environment scaffold.
+  if out=$(cd "$sandbox/ssh-shape" \
+      && GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="url.$fixture.insteadOf" \
+         GIT_CONFIG_VALUE_0="git@shapes.invalid:worktrees/repo.git" \
+         git clone-for-worktrees "git@shapes.invalid:worktrees/repo.git" 2>&1); then
+    url=$(git -C "$sandbox/ssh-shape/repo" remote get-url origin 2>/dev/null || true)
+    refs=$(git -C "$sandbox/ssh-shape/repo" for-each-ref --format='%(refname:short)' refs/remotes/origin || true)
+    # Git rewrites the SSH-shaped URL to the local fixture at transport time;
+    # the fixture is the only source carrying these branch names.
+    if [ -n "$url" ] && echo "$refs" | grep -qx origin/feature \
+       && echo "$refs" | grep -qx origin/main; then
+      ok "SSH-shaped source clones through Git's own URL rewriting"
+    else
+      fail "SSH-shaped source: origin '$url', refs: $(echo "$refs" | tr '\n' ' ')"
+    fi
+  else
+    fail "SSH-shaped source clone failed: $out"
+  fi
+
+  # HTTPS-shaped source rewritten the same way, offline
+  if out=$(cd "$sandbox/https-shape" \
+      && GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0="url.$fixture.insteadOf" \
+         GIT_CONFIG_VALUE_0="https://shapes.invalid/worktrees/tool.git" \
+         git clone-for-worktrees "https://shapes.invalid/worktrees/tool.git" 2>&1); then
+    url=$(git -C "$sandbox/https-shape/tool" remote get-url origin 2>/dev/null || true)
+    refs=$(git -C "$sandbox/https-shape/tool" for-each-ref --format='%(refname:short)' refs/remotes/origin || true)
+    if [ -d "$sandbox/https-shape/tool/.git" ] \
+       && [ -n "$url" ] && echo "$refs" | grep -qx origin/main; then
+      ok "HTTPS-shaped source clones through Git's own URL rewriting"
+    else
+      fail "HTTPS-shaped source: origin '$url', refs: $(echo "$refs" | tr '\n' ' ')"
+    fi
+  else
+    fail "HTTPS-shaped source clone failed: $out"
+  fi
+
+  # URL-derived names drop only the terminal .git suffix
+  [ -e "$sandbox/ssh-shape/repo/.git" ] && [ ! -e "$sandbox/ssh-shape/repo.git" ] \
+    && ok "URL-shaped source derives its name without the final .git" \
+    || fail "URL-shaped derived name wrong"
+}
+
 t_config_link
 t_register_absent
 t_register_idempotent
@@ -417,6 +596,10 @@ t_missing_parent
 t_clone_failure
 t_fetch_failure
 t_full
+t_derived_names
+t_trailing_slash_dest
+t_caller_relative
+t_remote_shapes
 
 if [ "$fail_count" -eq 0 ]; then
   echo "PASS: all clone-for-worktrees integration checks green"
