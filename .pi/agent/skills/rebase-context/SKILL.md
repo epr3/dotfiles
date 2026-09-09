@@ -17,7 +17,7 @@ Typical use: a branch's context was forked off its base (e.g. `feature-3` off `f
 
 ### 1. Resolve source + onto
 
-Parse the argument as `[<source>] onto <onto>`. Source context branch: the named branch, else the current code branch's context. Onto: the named target, else the source's **base** (the branch it was forked from; `ctx-init` records it, falling back to the designated master). Both are branches in this repo's **context repo** (slug formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*), their **context worktree**s pairing 1:1 with the code branches. Resolve the source **context worktree**; ensure `onto` exists (materialise its **context worktree** if needed). Confirm direction: the rebase **rewrites the source branch** on top of `onto`; `onto` is read, never changed.
+Parse the argument as `[<source>] onto <onto>`. Source context branch: the named branch, else the current code branch's context. Onto: the named target, else the source's recorded **base**: the fork parent `ctx-init.sh` persisted for that context branch at fork time; read it at `$AGENT_CONTEXT_HOME/<slug>/.git/info/fork-parent/<branch>` (slug formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*), with cwd inside the code repo. An absent record falls back to the designated master. An explicit named `onto` always wins. Both are branches in this repo's **context repo**, their **context worktree**s pairing 1:1 with the code branches. Resolve the source **context worktree**; ensure `onto` exists (materialise its **context worktree** if needed). Confirm direction before any rewrite: the rebase **rewrites the source branch** on top of `onto`; `onto` is read, never changed.
 
 ### 2. Rebase
 

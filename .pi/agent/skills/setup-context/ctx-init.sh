@@ -43,23 +43,22 @@ fi
 [ -n "$trunk" ] || trunk="$branch"
 
 # --- detect the branch this one was forked from, in the CODE repo --------------------
-# Nearest ancestor branch: among local heads (excluding descendants of $branch), the one
-# whose merge-base with $branch is closest to its tip. Ties prefer a non-trunk parent.
+# Nearest merge-base first (a moved base's tip may no longer be an ancestor, so distance to
+# the cut point decides); ties -> the designated master, else ref-name order stays.
 detect_base() {
   local B="$1" T="$2" c mb d
-  local abest="" abestd="" anc=0       # tier 1: candidates whose TIP is an ancestor of B (real parent)
-  local best=""  bestd=""              # tier 2: nearest merge-base among non-descendants (fallback)
+  local best="" bestd=""
   while IFS= read -r c; do
     [ -z "$c" ] && continue; [ "$c" = "$B" ] && continue
     git merge-base --is-ancestor "$B" "$c" 2>/dev/null && continue   # skip branches that contain B (children)
     mb="$(git merge-base "$B" "$c" 2>/dev/null)" || continue; [ -n "$mb" ] || continue
     d="$(git rev-list --count "$mb..$B" 2>/dev/null)" || continue
-    if git merge-base --is-ancestor "$c" "$B" 2>/dev/null; then       # B descends from C's tip -> strong parent
-      if [ -z "$abestd" ] || [ "$d" -lt "$abestd" ] || { [ "$d" -eq "$abestd" ] && [ "$abest" = "$T" ] && [ "$c" != "$T" ]; }; then abest="$c"; abestd="$d"; anc=1; fi
+    if [ -z "$bestd" ] || [ "$d" -lt "$bestd" ] \
+       || { [ "$d" -eq "$bestd" ] && [ "$c" = "$T" ] && [ "$best" != "$T" ]; }; then
+      best="$c"; bestd="$d"
     fi
-    if [ -z "$bestd" ] || [ "$d" -lt "$bestd" ]; then best="$c"; bestd="$d"; fi
   done < <(git for-each-ref --format='%(refname:short)' refs/heads/ 2>/dev/null)
-  [ "$anc" = 1 ] && printf '%s' "$abest" || printf '%s' "$best"
+  printf '%s' "$best"
 }
 
 # --- ensure the bare context repo ----------------------------------------------------
@@ -84,10 +83,17 @@ if [ ! -d "$wt" ]; then
     git -C "$bare" worktree add "$wt" "$branch" >/dev/null 2>&1 || true               # existing context branch
   else
     if [ -n "$base_override" ]; then base="$base_override"; else base="$(detect_base "$branch" "$trunk")"; fi
-    [ -n "$base" ] || base="$trunk"
+    [ -n "$base" ] || base="$trunk"     # no candidate -> the designated master
     start="$trunk"; git -C "$bare" show-ref --verify -q "refs/heads/$base" && start="$base"   # fork off base's context if it exists
     git -C "$bare" worktree add -b "$branch" "$wt" "$start" >/dev/null 2>&1 \
       || git -C "$bare" worktree add -b "$branch" "$wt" >/dev/null 2>&1 || true
+    if [ -d "$wt" ]; then
+      # persist the resolved fork parent, branch-scoped, read by rebase-context for this
+      # branch. A fork-time fact: written once (also when start fell back to base/trunk),
+      # never rewritten or duplicated by later runs.
+      rec="$bare/info/fork-parent/$branch"
+      if [ ! -f "$rec" ]; then mkdir -p "$(dirname "$rec")"; printf '%s\n' "$base" > "$rec"; fi
+    fi
   fi
 fi
 [ -d "$wt" ] || { echo "failed to create worktree $wt" >&2; exit 1; }
