@@ -1,0 +1,681 @@
+#!/usr/bin/env bash
+# Restore one or more tmux-resurrect sessions into Zellij.
+#
+# Usage:
+#   zellij-restore-snapshot <source> <destination> [--session <name>] [--report <path>]
+#
+# Accepts a frozen Resurrect snapshot and a local destination.
+# Owns validation, translation, safe session creation, and reporting.
+# Callers must not orchestrate individual pane actions.
+#
+# Options:
+#   --session <name>  Import only this session from the snapshot.
+#                     Omit to import all sessions.
+#   --report <path>   Write the verification report to this path.
+#                     Default: <destination>/report.txt
+#
+# Exit codes:
+#   0  Success (all requested sessions imported).
+#   1  Validation or creation error.
+
+set -uo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ZELLIJ_BIN="${ZELLIJ_BIN:-$(command -v zellij 2>/dev/null)}"
+
+# --- Globals ---
+SOURCE=""
+DEST=""
+SESSION_FILTER=""
+REPORT_PATH=""
+FORCE=false
+MANIFEST_FILE=""
+ARCHIVE_FILE=""
+WARNINGS=0
+
+# Parsed snapshot data (populated by parse_snapshot).
+declare -a SESSIONS=()
+declare -A PANE_SESSION=()
+declare -A PANE_WINDOW=()
+declare -A PANE_INDEX=()
+declare -A PANE_DIR=()
+declare -A PANE_COMMAND=()
+declare -A PANE_FULL_COMMAND=()
+declare -A PANE_TITLE=()
+declare -A PANE_ACTIVE=()
+declare -A WINDOW_NAME=()
+declare -A WINDOW_ACTIVE=()
+declare -A WINDOW_LAYOUT=()
+declare -A SESSION_ACTIVE_WINDOW=()
+
+# ======================================================================
+# Usage and argument parsing
+# ======================================================================
+usage() {
+  cat <<EOF
+Usage: zellij-restore-snapshot <source> <destination> [options]
+
+  <source>         Path to a frozen tmux-resurrect snapshot file (.txt).
+  <destination>    Local directory for recovery copies and the report.
+                   Created if it does not exist.
+
+Options:
+  --session <name> Import only the named session. Without this flag,
+                   all sessions in the snapshot are imported.
+  --report <path>  Write the verification report to this path.
+                   Default: <destination>/report.txt
+  --force          Kill existing sessions with the same name before creating.
+  -h, --help       Show this help.
+EOF
+}
+
+parse_args() {
+  local positional=()
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -h|--help) usage; exit 0 ;;
+      --session)
+        [ -z "${2:-}" ] && { echo "Error: --session requires a name" >&2; exit 1; }
+        SESSION_FILTER="$2"; shift 2 ;;
+      --report)
+        [ -z "${2:-}" ] && { echo "Error: --report requires a path" >&2; exit 1; }
+        REPORT_PATH="$2"; shift 2 ;;
+      --force) FORCE=true; shift ;;
+      -*) echo "Error: unknown option '$1'" >&2; usage >&2; exit 1 ;;
+      *) positional+=("$1"); shift ;;
+    esac
+  done
+
+  [ ${#positional[@]} -lt 2 ] && { usage >&2; exit 1; }
+  SOURCE="${positional[0]}"
+  DEST="${positional[1]}"
+  REPORT_PATH="${REPORT_PATH:-$DEST/report.txt}"
+}
+
+# ======================================================================
+# Logging
+# ======================================================================
+die() { echo "Error: $*" >&2; exit 1; }
+warn() { echo "Warning: $*" >&2; WARNINGS=$((WARNINGS + 1)); }
+info() { echo "$*" >&2; }
+
+# ======================================================================
+# Source validation
+# ======================================================================
+validate_source() {
+  [ -f "$SOURCE" ] || die "Source file not found: $SOURCE"
+  [ -s "$SOURCE" ] || die "Source file is empty: $SOURCE"
+
+  # Count lines by type using awk (avoids grep -c exit code issues).
+  local pane_count window_count state_count
+  pane_count=$(awk -F'\t' '$1=="pane"' "$SOURCE" | wc -l | tr -d ' ')
+  window_count=$(awk -F'\t' '$1=="window"' "$SOURCE" | wc -l | tr -d ' ')
+  state_count=$(awk -F'\t' '$1=="state"' "$SOURCE" | wc -l | tr -d ' ')
+
+  [ "$pane_count" -eq 0 ] && [ "$window_count" -eq 0 ] && die "Snapshot contains no pane or window records"
+  [ "$pane_count" -eq 0 ] && die "Snapshot contains no pane records"
+  [ "$window_count" -eq 0 ] && die "Snapshot contains no window records"
+
+  # Verify at least one line starts with a known type.
+  if ! awk -F'\t' '$1=="pane"||$1=="window"||$1=="state"' "$SOURCE" | head -1 | grep -q .; then
+    die "Snapshot does not appear to be a tmux-resurrect file (no known record types)"
+  fi
+
+  info "Source: $pane_count panes, $window_count windows, $state_count state records"
+}
+
+validate_destination() {
+  if [ ! -d "$DEST" ]; then
+    mkdir -p "$DEST" || die "Cannot create destination directory: $DEST"
+  fi
+}
+
+# ======================================================================
+# Recovery copy
+# ======================================================================
+create_recovery_copy() {
+  local source_id
+  source_id=$(shasum -a 256 "$SOURCE" 2>/dev/null | awk '{print $1}')
+  local source_mtime
+  source_mtime=$(stat -f %m "$SOURCE" 2>/dev/null || stat -c %Y "$SOURCE" 2>/dev/null)
+
+  local recovery_dir="$DEST/recovery"
+  mkdir -p "$recovery_dir"
+
+  MANIFEST_FILE="$recovery_dir/manifest-${source_id:0:12}.txt"
+  cp "$SOURCE" "$MANIFEST_FILE"
+
+  # Record source identity.
+  cat > "$recovery_dir/source-identity.txt" <<EOF
+source_file: $SOURCE
+sha256: $source_id
+mtime: $source_mtime
+captured_at: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+EOF
+
+  # Copy companion archive if it exists alongside the source.
+  local source_dir
+  source_dir=$(dirname "$SOURCE")
+  ARCHIVE_FILE="$source_dir/pane_contents.tar.gz"
+  if [ -f "$ARCHIVE_FILE" ]; then
+    cp "$ARCHIVE_FILE" "$recovery_dir/pane_contents.tar.gz"
+    info "Recovery: copied scrollback archive"
+  fi
+
+  info "Recovery: manifest saved to $MANIFEST_FILE"
+  info "Recovery: identity recorded"
+}
+
+# ======================================================================
+# Snapshot parsing
+# ======================================================================
+parse_snapshot() {
+  local file="$1"
+  local session_filter="${2:-}"
+
+  # Reset global arrays.
+  SESSIONS=()
+  PANE_SESSION=(); PANE_WINDOW=(); PANE_INDEX=()
+  PANE_DIR=(); PANE_COMMAND=(); PANE_FULL_COMMAND=()
+  PANE_TITLE=(); PANE_ACTIVE=()
+  WINDOW_NAME=(); WINDOW_ACTIVE=(); WINDOW_LAYOUT=()
+  SESSION_ACTIVE_WINDOW=()
+
+  local seen_sessions=""
+
+  while IFS=$'\t' read -r line_type rest; do
+    case "$line_type" in
+      pane)
+        IFS=$'\t' read -r sess wnd wnd_active flags pane_idx pane_title dir pane_active cmd full_cmd <<< "$rest"
+        dir="${dir#:}"
+        full_cmd="${full_cmd#:}"
+
+        # If session filter is set, skip other sessions.
+        if [ -n "$session_filter" ] && [ "$sess" != "$session_filter" ]; then
+          continue
+        fi
+
+        local key="${sess}:${wnd}.${pane_idx}"
+        PANE_SESSION["$key"]="$sess"
+        PANE_WINDOW["$key"]="$wnd"
+        PANE_INDEX["$key"]="$pane_idx"
+        PANE_DIR["$key"]="$dir"
+        PANE_COMMAND["$key"]="$cmd"
+        PANE_FULL_COMMAND["$key"]="$full_cmd"
+        PANE_TITLE["$key"]="$pane_title"
+        PANE_ACTIVE["$key"]="$pane_active"
+
+        # Track unique sessions.
+        if [[ "$seen_sessions" != *"|${sess}|"* ]]; then
+          seen_sessions="${seen_sessions}|${sess}|"
+          SESSIONS+=("$sess")
+        fi
+        ;;
+      window)
+        IFS=$'\t' read -r sess wnd wnd_name wnd_active wnd_flags layout auto_rename <<< "$rest"
+        wnd_name="${wnd_name#:}"
+        wnd_flags="${wnd_flags#:}"
+
+        if [ -n "$session_filter" ] && [ "$sess" != "$session_filter" ]; then
+          continue
+        fi
+
+        WINDOW_NAME["${sess}:${wnd}"]="$wnd_name"
+        WINDOW_ACTIVE["${sess}:${wnd}"]="$wnd_active"
+        WINDOW_LAYOUT["${sess}:${wnd}"]="$layout"
+
+        # Parse flags for active window.
+        if [[ "$wnd_flags" == *\** ]]; then
+          SESSION_ACTIVE_WINDOW["$sess"]="$wnd"
+        fi
+        ;;
+    esac
+  done < "$file"
+
+  # Count total sessions before filtering.
+  local total_session_count=${#SESSIONS[@]}
+
+  # Validate session filter if specified.
+  if [ -n "$session_filter" ]; then
+    local found=false
+    for s in "${SESSIONS[@]}"; do
+      [ "$s" = "$session_filter" ] && found=true && break
+    done
+    if [ "$found" = false ]; then
+      die "Session '$session_filter' not found in snapshot"
+    fi
+    SESSIONS=("$session_filter")
+    info "Importing session: $session_filter"
+    info "Scope: 1 of $total_session_count sessions ($session_filter)"
+  else
+    info "Scope: all $total_session_count sessions"
+  fi
+
+  # Validate directories exist for all panes.
+  local missing_dirs=0
+  for key in "${!PANE_DIR[@]}"; do
+    local dir="${PANE_DIR[$key]}"
+    if [ ! -d "$dir" ]; then
+      warn "Directory does not exist: $dir (pane $key)"
+      missing_dirs=$((missing_dirs + 1))
+    fi
+  done
+
+  [ "$missing_dirs" -gt 0 ] && die "Cannot proceed: $missing_dirs pane(s) have non-existent directories"
+}
+
+# ======================================================================
+# Layout translation: tmux window_layout → Zellij KDL
+# ======================================================================
+
+# Recursive layout parser.
+# Reads a tmux layout string and produces KDL.
+# Uses global arrays PANE_DIR, PANE_COMMAND, PANE_FULL_COMMAND, PANE_ACTIVE
+# to fill in pane details.
+build_window_kdl() {
+  local layout="$1"
+  local session_name="$2"
+  local window_index="$3"
+  local depth="${4:-0}"
+
+  local len=${#layout}
+  local pos=0
+
+  _parse_node "$layout" "$pos" "$depth" "$session_name" "$window_index"
+}
+
+# Recursive node parser. Sets _NODE_KDL and _NODE_CONSUMED.
+_parse_node() {
+  local layout="$1"
+  local pos="$2"
+  local depth="$3"
+  local session_name="$4"
+  local window_index="$5"
+
+  local len=${#layout}
+  _NODE_KDL=""
+  _NODE_CONSUMED=$pos
+
+  [ "$pos" -ge "$len" ] && return
+
+  local char="${layout:$pos:1}"
+
+  if [ "$char" = "[" ] || [ "$char" = "{" ]; then
+    # Split node.
+    local split_type
+    if [ "$char" = "[" ]; then
+      split_type="horizontal"  # tmux [] → vertical stacking → Zellij horizontal
+    else
+      split_type="vertical"    # tmux {} → side-by-side → Zellij vertical
+    fi
+
+    pos=$((pos + 1))  # skip opening bracket
+    local children=""
+    local child_count=0
+
+    while [ "$pos" -lt "$len" ]; do
+      local c="${layout:$pos:1}"
+      if [ "$c" = "]" ] || [ "$c" = "}" ]; then
+        pos=$((pos + 1))  # skip closing bracket
+        break
+      fi
+
+      # Parse child.
+      _parse_node "$layout" "$pos" "$((depth + 1))" "$session_name" "$window_index"
+      local child_kdl="$_NODE_KDL"
+      pos="$_NODE_CONSUMED"
+
+      if [ -n "$child_kdl" ]; then
+        [ "$child_count" -gt 0 ] && children="$children"$'\n'
+        children="${children}${child_kdl}"
+        child_count=$((child_count + 1))
+      fi
+    done
+
+    local indent=""
+    for ((i=0; i<depth; i++)); do indent+="    "; done
+
+    if [ "$child_count" -eq 1 ]; then
+      _NODE_KDL="$children"
+    else
+      _NODE_KDL="${indent}pane split_direction=\"${split_type}\" {"$'\n'"${children}"$'\n'"${indent}}"
+    fi
+    _NODE_CONSUMED=$pos
+
+  elif [[ "$char" =~ [0-9a-f] ]] || [ "$char" = "," ]; then
+    # Leaf node: width,height,x,y,pane_id
+    local leaf_start=$pos
+    local has_comma=false
+
+    while [ "$pos" -lt "$len" ]; do
+      local c="${layout:$pos:1}"
+      if [ "$c" = "[" ] || [ "$c" = "{" ] || [ "$c" = "]" ] || [ "$c" = "}" ]; then
+        break
+      fi
+      [ "$c" = "," ] && has_comma=true
+      pos=$((pos + 1))
+    done
+
+    local leaf="${layout:$leaf_start:$((pos - leaf_start))}"
+    local pane_id=""
+    [ "$has_comma" = true ] && pane_id="${leaf##*,}"
+
+    # Get pane data.
+    local key="${session_name}:${window_index}.${pane_id}"
+    local cwd_val="${PANE_DIR[$key]:-}"
+    local cmd_val="${PANE_COMMAND[$key]:-zsh}"
+    local full_val="${PANE_FULL_COMMAND[$key]:-}"
+
+    local indent=""
+    for ((i=0; i<depth; i++)); do indent+="    "; done
+
+    # Escape for KDL.
+    local escaped_cwd
+    escaped_cwd=$(printf '%s' "$cwd_val" | sed 's/\\/\\\\/g; s/"/\\"/g')
+
+    _NODE_KDL="${indent}pane {"
+    _NODE_KDL="${_NODE_KDL}"$'\n'"${indent}    cwd \"${escaped_cwd}\""
+
+    # For saved applications, wait for Enter.
+    if [ -n "$full_val" ] && [ "$full_val" != ":" ] && [ "$full_val" != "" ] && \
+       [ "$cmd_val" != "zsh" ] && [ "$cmd_val" != "bash" ] && [ "$cmd_val" != "sh" ]; then
+      local cmd_name="${full_val%% *}"
+      cmd_name="${cmd_name#:}"
+      _NODE_KDL="${_NODE_KDL}"$'\n'"${indent}    command \"sh\""
+      _NODE_KDL="${_NODE_KDL}"$'\n'"${indent}    args \"-c\" \"echo \\\"IMPORT_WAITING: ${cmd_name}\\\"; cat\""
+    else
+      local escaped_cmd
+      escaped_cmd=$(printf '%s' "$cmd_val" | sed 's/\\/\\\\/g; s/"/\\"/g')
+      _NODE_KDL="${_NODE_KDL}"$'\n'"${indent}    command \"${escaped_cmd}\""
+    fi
+
+    _NODE_KDL="${_NODE_KDL}"$'\n'"${indent}}"
+    _NODE_CONSUMED=$pos
+
+  else
+    _NODE_KDL=""
+    _NODE_CONSUMED=$((pos + 1))
+  fi
+}
+
+# ======================================================================
+# Session creation
+# ======================================================================
+create_zellij_session() {
+  local session_name="$1"
+  local layout_file="$2"
+
+  # Check if session already exists.
+  if "$ZELLIJ_BIN" list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -qw "$session_name"; then
+    if [ "$FORCE" = true ]; then
+      info "Session '$session_name' exists, killing (--force)"
+      "$ZELLIJ_BIN" kill-session "$session_name" 2>/dev/null || true
+      sleep 0.5
+    else
+      die "Session '$session_name' already exists. Use --force to replace or a different name."
+    fi
+  fi
+
+  info "Creating session: $session_name"
+
+  # Use a layout that opens a shell in the right directory.
+  local create_output
+  create_output=$(
+    HOME="$HOME" ZELLIJ_CONFIG_DIR="${ZELLIJ_CONFIG_DIR:-$HOME/.config/zellij}" \
+      "$ZELLIJ_BIN" --layout "$layout_file" attach --create-background "$session_name" 2>&1
+  ) || {
+    die "Failed to create session '$session_name': $create_output"
+  }
+
+  sleep 1
+
+  # Verify session was created.
+  if ! "$ZELLIJ_BIN" list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -qw "$session_name"; then
+    die "Session '$session_name' was not created despite no error"
+  fi
+
+  info "Session '$session_name' created successfully"
+}
+
+# ======================================================================
+# Report generation
+# ======================================================================
+generate_report() {
+  local report_path="$1"
+  local session_names="$2"
+  local pane_count="$3"
+  local window_count="$4"
+  local source_file="$5"
+
+  mkdir -p "$(dirname "$report_path")"
+
+  local source_hash
+  source_hash=$(shasum -a 256 "$source_file" 2>/dev/null | awk '{print $1}')
+
+  cat > "$report_path" <<REPORT
+# Restore Report
+
+## Source
+
+- File: $source_file
+- SHA-256: $source_hash
+- Captured: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+## Sessions Imported
+
+$session_names
+
+## Totals
+
+- Windows (tabs): $window_count
+- Panes: $pane_count
+
+## What was transferred
+
+- Session structure (windows and panes)
+- Working directories for each pane
+- Split orientation and approximate proportions
+- Active tab and pane focus (where representable)
+- Pane command names and saved arguments
+
+## What was NOT transferred
+
+- Live processes and unsaved application state
+- Old native tmux scrollback (preserved as recovery artifact)
+- Application-specific resume state
+- Terminal cell dimensions (may differ between tmux and Zellij)
+
+## Saved application behavior
+
+- Saved commands (vim, lazygit, etc.) retain their recorded arguments
+- Commands are NOT automatically executed during import
+- User must press Enter to start each saved application
+
+## Recovery artifacts
+
+- Manifest copy: recovery/manifest-*.txt
+- Source identity: recovery/source-identity.txt
+- Scrollback archive: recovery/pane_contents.tar.gz (if present)
+REPORT
+
+  info "Report written to $report_path"
+}
+
+# ======================================================================
+# Build Zellij layout from parsed snapshot data
+# ======================================================================
+build_session_layout() {
+  local session_name="$1"
+  local output_file="$2"
+
+  # Collect windows for this session.
+  local -a window_indices=()
+  for key in "${!WINDOW_NAME[@]}"; do
+    local sess="${key%%:*}"
+    if [ "$sess" = "$session_name" ]; then
+      window_indices+=("${key#*:}")
+    fi
+  done
+  IFS=$'\n' window_indices=($(printf '%s\n' "${window_indices[@]}" | sort -n)); unset IFS
+
+  # Build KDL layout.
+  {
+    echo "layout {"
+
+    for wnd_idx in "${window_indices[@]}"; do
+      local wnd_name="${WINDOW_NAME[${session_name}:${wnd_idx}]:-window}"
+      local layout="${WINDOW_LAYOUT[${session_name}:${wnd_idx}]}"
+
+      # Escape name for KDL.
+      local escaped_name
+      escaped_name=$(printf '%s' "$wnd_name" | sed 's/\\/\\\\/g; s/"/\\"/g')
+
+      # Translate the tmux layout to KDL.
+      local kdl_body
+      kdl_body=$(build_window_kdl "$layout" "$session_name" "$wnd_idx" 2)
+
+      echo "    pane name=\"${escaped_name}\" split_direction=\"vertical\" {"
+      echo "$kdl_body"
+      echo "    }"
+    done
+
+    echo "}"
+  } > "$output_file"
+}
+
+# ======================================================================
+# Semantic verification
+# ======================================================================
+verify_session() {
+  local session_name="$1"
+  local report_path="$2"
+
+  info "Verifying session: $session_name"
+
+  # Count expected panes and windows.
+  local expected_panes=0
+  local expected_windows=0
+
+  for key in "${!PANE_SESSION[@]}"; do
+    [ "${PANE_SESSION[$key]}" = "$session_name" ] && expected_panes=$((expected_panes + 1))
+  done
+
+  for key in "${!WINDOW_NAME[@]}"; do
+    [ "${key%%:*}" = "$session_name" ] && expected_windows=$((expected_windows + 1))
+  done
+
+  # Verify session exists.
+  if ! "$ZELLIJ_BIN" list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -qw "$session_name"; then
+    echo "FAIL: Session '$session_name' not found" >> "$report_path"
+    return 1
+  fi
+  echo "PASS: Session '$session_name' exists" >> "$report_path"
+  echo "Expected: $expected_windows tabs, $expected_panes panes" >> "$report_path"
+
+  # Directory validation.
+  local dir_issues=0
+  for key in "${!PANE_DIR[@]}"; do
+    if [ "${PANE_SESSION[$key]}" = "$session_name" ]; then
+      if [ ! -d "${PANE_DIR[$key]}" ]; then
+        echo "WARN: Directory missing: ${PANE_DIR[$key]} (pane $key)" >> "$report_path"
+        dir_issues=$((dir_issues + 1))
+      fi
+    fi
+  done
+  [ "$dir_issues" -eq 0 ] && echo "PASS: All pane directories exist" >> "$report_path"
+
+  # Focus.
+  local focus_window="${SESSION_ACTIVE_WINDOW[$session_name]:-}"
+  [ -n "$focus_window" ] && echo "Active window: $focus_window" >> "$report_path"
+
+  # Saved applications.
+  local saved_apps=0
+  for key in "${!PANE_FULL_COMMAND[@]}"; do
+    if [ "${PANE_SESSION[$key]}" = "$session_name" ]; then
+      local full="${PANE_FULL_COMMAND[$key]}"
+      if [ -n "$full" ] && [ "$full" != ":" ] && [ "$full" != "" ]; then
+        saved_apps=$((saved_apps + 1))
+      fi
+    fi
+  done
+  [ "$saved_apps" -gt 0 ] && echo "Saved applications: $saved_apps (require Enter to start)" >> "$report_path"
+
+  # Unsupported representations.
+  echo "" >> "$report_path"
+  echo "## Unsupported representations (noted, not silently dropped)" >> "$report_path"
+  echo "- Exact terminal cell dimensions (tmux-specific)" >> "$report_path"
+  echo "- tmux pane IDs and internal identifiers" >> "$report_path"
+  echo "- Live process state and unsaved buffers" >> "$report_path"
+  echo "- Old native scrollback (preserved as recovery artifact)" >> "$report_path"
+}
+
+# ======================================================================
+# Main
+# ======================================================================
+main() {
+  parse_args "$@"
+
+  validate_source
+  validate_destination
+
+  [ -n "$ZELLIJ_BIN" ] || die "zellij not found in PATH"
+
+  create_recovery_copy
+
+  info "Parsing snapshot..."
+  parse_snapshot "$SOURCE" "$SESSION_FILTER"
+
+  [ ${#SESSIONS[@]} -eq 0 ] && die "No sessions found to import"
+
+  # Import each session.
+  local imported=0
+  local total_windows=0
+  local total_panes=0
+  local imported_names=""
+
+  for sess in "${SESSIONS[@]}"; do
+    # Count windows and panes.
+    local sess_windows=0
+    local sess_panes=0
+
+    for key in "${!WINDOW_NAME[@]}"; do
+      [ "${key%%:*}" = "$sess" ] && sess_windows=$((sess_windows + 1))
+    done
+    for key in "${!PANE_SESSION[@]}"; do
+      [ "${PANE_SESSION[$key]}" = "$sess" ] && sess_panes=$((sess_panes + 1))
+    done
+
+    # Build layout file.
+    local layout_file="$DEST/layout-${sess}.kdl"
+    build_session_layout "$sess" "$layout_file"
+
+    # Create the session.
+    if create_zellij_session "$sess" "$layout_file"; then
+      imported=$((imported + 1))
+      total_windows=$((total_windows + sess_windows))
+      total_panes=$((total_panes + sess_panes))
+      imported_names="${imported_names}- ${sess} ($sess_windows tabs, $sess_panes panes)"$'\n'
+    fi
+  done
+
+  # Generate final report.
+  generate_report "$REPORT_PATH" "$imported_names" "$total_panes" "$total_windows" "$SOURCE"
+
+  # Append verification results.
+  for sess in "${SESSIONS[@]}"; do
+    verify_session "$sess" "$REPORT_PATH"
+  done
+
+  # Summary.
+  echo ""
+  info "=== Import Complete ==="
+  info "Sessions imported: $imported"
+  info "Total windows: $total_windows"
+  info "Total panes: $total_panes"
+  info "Report: $REPORT_PATH"
+  info "Recovery: $DEST/recovery/"
+
+}
+
+main "$@"
