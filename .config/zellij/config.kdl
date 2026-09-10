@@ -19,6 +19,12 @@ mouse_hover_tips false
 // Detach on terminal close instead of killing the session.
 on_force_close "detach"
 
+// Pi enables the Kitty keyboard protocol, whose enhanced Alt-arrow sequences
+// Zellij 0.45.1 does not match for pane navigation. Keep legacy input so
+// Zellij's stock Alt+arrow / Alt+hjkl focus bindings remain reliable.
+// Requires restarting Zellij sessions.
+support_kitty_keyboard_protocol false
+
 // Session resurrection — native serialization, viewport persistence,
 // and bounded scrollback per pane.
 session_serialization true
