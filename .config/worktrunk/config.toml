@@ -223,5 +223,6 @@ tmux send-keys -t "$S.2" 'lazygit' Enter
 
 tmux select-pane -t "$S.1"
 """
+zellij = """bash $HOME/dotfiles/scripts/zellij-worktree-workspace.sh"""
 [post-switch]
 sync = "{% if upstream %}git fetch && git rebase {{ upstream }}{% endif %}"
