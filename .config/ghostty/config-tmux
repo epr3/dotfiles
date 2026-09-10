@@ -1,0 +1,16 @@
+# Font
+font-family = "Inconsolata Nerd Font"
+font-size = 18
+
+# Theme
+theme = Catppuccin Macchiato
+
+# Window appearance
+window-decoration = none
+macos-titlebar-style = hidden
+
+# Keyboard
+macos-option-as-alt = left
+
+# Launch tmux directly
+command = /opt/homebrew/bin/tmux
