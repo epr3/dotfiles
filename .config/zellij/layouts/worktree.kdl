@@ -4,13 +4,6 @@
 //
 // Structure: pi (top) | lazygit / shell (bottom), focused on pi.
 // All panes share the worktree working directory.
-//
-// Cutover: This layout replaces the tmux workspace hook. During cutover:
-//   1. The zellij hook in worktrunk config is already active alongside tmux.
-//   2. Inside Zellij, the zellij hook creates workspace tabs.
-//   3. Outside Zellij, the zellij hook prints a skip message.
-//   4. The tmux hook remains as fallback until the tmux retirement ticket.
-//   5. After tmux retirement, the tmux hook line is removed from config.toml.
 layout {
     tab name="WORKTREE_BRANCH" cwd="WORKTREE_PATH" split_direction="vertical" {
         pane focus=true {

@@ -224,7 +224,7 @@ t_hook_script() {
 }
 
 # ======================================================================
-# Test 3: Worktrunk config — zellij hook declared alongside tmux
+# Test 3: Worktrunk config — zellij hook declared
 # ======================================================================
 t_worktrunk_config() {
   if [ ! -f "$worktrunk_config" ]; then
@@ -236,21 +236,6 @@ t_worktrunk_config() {
     ok "config: zellij hook declared"
   else
     fail "config: zellij hook not found"
-  fi
-
-  if grep -q 'tmux' "$worktrunk_config"; then
-    ok "config: tmux hook still present"
-  else
-    fail "config: tmux hook missing"
-  fi
-
-  # Both hooks in the same [[pre-start]] block.
-  local pre_start_section
-  pre_start_section=$(sed -n '/^\[\[pre-start\]\]/,/^\[/p' "$worktrunk_config")
-  if echo "$pre_start_section" | grep -q 'zellij' && echo "$pre_start_section" | grep -q 'tmux'; then
-    ok "config: both hooks in same pre-start block"
-  else
-    fail "config: hooks not in same pre-start block"
   fi
 
   # zellij hook references the script.
@@ -270,7 +255,7 @@ t_worktrunk_recognizes() {
     return
   fi
 
-  # Dry-run pre-start should list both tmux and zellij hooks.
+  # Dry-run pre-start should list the zellij hook.
   local out
   out=$(cd "$repo_root" && wt hook pre-start --dry-run --branch=test/dry-run 2>&1) || true
 
@@ -278,12 +263,6 @@ t_worktrunk_recognizes() {
     ok "worktrunk: zellij hook recognized in dry-run"
   else
     fail "worktrunk: zellij hook not in dry-run output"
-  fi
-
-  if echo "$out" | grep -q 'tmux'; then
-    ok "worktrunk: tmux hook still recognized in dry-run"
-  else
-    fail "worktrunk: tmux hook not in dry-run output"
   fi
 }
 

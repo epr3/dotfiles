@@ -6,8 +6,7 @@
 --      and have no resolved lock entries.
 --   2. MDX remains declared (supplying the `markdown.mdx` filetype contract
 --      consumed by formatting and language-server selection).
---   3. Cross-pane tmux navigation (vim-tmux-navigator) remains declared.
---   4. Comment-only wrapper modules and stale implicit-configuration claims
+--   3. Comment-only wrapper modules and stale implicit-configuration claims
 --      are absent.
 --
 -- Declarations and lock contents are validated as data; nothing is installed.
@@ -81,13 +80,7 @@ if lock then
   assert(lock.plugins['mdx.nvim'] ~= nil, 'lock must retain mdx.nvim')
 end
 
--- 3. Cross-pane tmux navigation remains declared.
-assert_present(standalone, "pack.use 'christoomey/vim-tmux-navigator'", 'standalone profile')
-if lock then
-  assert(lock.plugins['vim-tmux-navigator'] ~= nil, 'lock must retain vim-tmux-navigator')
-end
-
--- 4. Comment-only wrapper modules and stale configuration claims are absent.
+-- 3. Comment-only wrapper modules and stale configuration claims are absent.
 local removed_wrappers = { 'nvim.plugins.mdx', 'nvim.plugins.tmux' }
 for _, mod in ipairs(removed_wrappers) do
   local ok = pcall(require, mod)
