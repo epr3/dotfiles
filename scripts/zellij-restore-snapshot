@@ -34,6 +34,13 @@ MANIFEST_FILE=""
 ARCHIVE_FILE=""
 WARNINGS=0
 
+# Pre-flight results.
+declare -a CONFLICT_SESSIONS=()
+declare -a ALREADY_IMPORTED_SESSIONS=()
+declare -a READY_SESSIONS=()
+declare -a FAILED_SESSIONS=()
+declare -A FAILED_REASONS=()
+
 # Parsed snapshot data (populated by parse_snapshot).
 declare -a SESSIONS=()
 declare -A PANE_SESSION=()
@@ -400,20 +407,66 @@ _parse_node() {
 }
 
 # ======================================================================
+# Pre-flight: check all sessions before creating any
+# ======================================================================
+preflight_check() {
+  local -a sessions=("$@")
+  CONFLICT_SESSIONS=()
+  ALREADY_IMPORTED_SESSIONS=()
+  READY_SESSIONS=()
+
+  for sess in "${sessions[@]}"; do
+    local exists_in_zellij=false
+    local was_imported=false
+
+    # Check if session already exists in Zellij.
+    if "$ZELLIJ_BIN" list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -qw "$sess"; then
+      exists_in_zellij=true
+    fi
+
+    # Check if session was previously imported (recovery manifest exists).
+    if [ -d "$DEST/recovery" ] && [ -f "$DEST/recovery/imported-sessions.txt" ] &&
+       grep -qF "$sess" "$DEST/recovery/imported-sessions.txt" 2>/dev/null; then
+      was_imported=true
+    fi
+
+    if [ "$was_imported" = true ]; then
+      # Session was previously imported. If it still exists in Zellij, it's a rerun.
+      # If it doesn't exist, the import was cleaned up, treat as ready.
+      if [ "$exists_in_zellij" = true ] && [ "$FORCE" != true ]; then
+        ALREADY_IMPORTED_SESSIONS+=("$sess")
+      else
+        READY_SESSIONS+=("$sess")
+      fi
+    elif [ "$exists_in_zellij" = true ]; then
+      # Session exists but was not imported by us. This is a conflict.
+      if [ "$FORCE" = true ]; then
+        READY_SESSIONS+=("$sess")
+      else
+        CONFLICT_SESSIONS+=("$sess")
+      fi
+    else
+      READY_SESSIONS+=("$sess")
+    fi
+  done
+}
+
+# ======================================================================
 # Session creation
 # ======================================================================
 create_zellij_session() {
   local session_name="$1"
   local layout_file="$2"
 
-  # Check if session already exists.
+  # Session existence should have been caught by preflight_check.
+  # This is a safety net.
   if "$ZELLIJ_BIN" list-sessions 2>/dev/null | sed 's/\x1b\[[0-9;]*m//g' | grep -qw "$session_name"; then
     if [ "$FORCE" = true ]; then
       info "Session '$session_name' exists, killing (--force)"
       "$ZELLIJ_BIN" kill-session "$session_name" 2>/dev/null || true
       sleep 0.5
     else
-      die "Session '$session_name' already exists. Use --force to replace or a different name."
+      return 1
     fi
   fi
 
@@ -611,6 +664,110 @@ verify_session() {
 }
 
 # ======================================================================
+# Track imported sessions
+# ======================================================================
+track_import() {
+  local session_name="$1"
+  local tracking_file="$DEST/recovery/imported-sessions.txt"
+  mkdir -p "$DEST/recovery"
+
+  # Append session name if not already tracked.
+  if ! grep -qF "$session_name" "$tracking_file" 2>/dev/null; then
+    echo "$session_name" >> "$tracking_file"
+  fi
+}
+
+# ======================================================================
+# Report: already imported
+# ======================================================================
+generate_already_imported_report() {
+  local report_path="$1"
+  shift
+  local sessions=("$@")
+  local source_file="${sessions[-1]}"
+  unset 'sessions[-1]'
+
+  mkdir -p "$(dirname "$report_path")"
+
+  local source_hash
+  source_hash=$(shasum -a 256 "$source_file" 2>/dev/null | awk '{print $1}')
+
+  cat > "$report_path" <<REPORT
+# Restore Report
+
+## Status: Already Imported
+
+All requested sessions were previously imported. No action taken.
+
+## Source
+
+- File: $source_file
+- SHA-256: $source_hash
+
+## Sessions
+
+REPORT
+
+  for sess in "${sessions[@]}"; do
+    echo "- $sess (previously imported)" >> "$report_path"
+  done
+
+  cat >> "$report_path" <<'REPORT'
+
+## Rerun Behavior
+
+- No duplicate sessions created
+- No saved commands re-executed
+- To re-import: delete the recovery/imported-sessions.txt entry
+  or use --force to overwrite existing sessions
+REPORT
+
+  info "Report written to $report_path"
+}
+
+# ======================================================================
+# Report: partial failure
+# ======================================================================
+generate_partial_failure_report() {
+  local report_path="$1"
+
+  cat >> "$report_path" <<REPORT
+
+## Partial Failure
+
+The following sessions failed to import:
+REPORT
+
+  for i in "${!FAILED_SESSIONS[@]}"; do
+    local sess="${FAILED_SESSIONS[$i]}"
+    local reason="${FAILED_REASONS[$sess]:-unknown error}"
+    echo "- $sess: $reason" >> "$report_path"
+  done
+
+  cat >> "$report_path" <<'REPORT'
+
+## What was created
+
+Only sessions listed above failed. Sessions not listed were created successfully.
+
+## What remains
+
+- Source snapshot is preserved (not modified)
+- Recovery copies are preserved
+- Successfully created sessions remain active
+
+## Retry / Recovery
+
+- Run the same command again to retry failed sessions
+- Use --force to overwrite any partially-created sessions
+- To start fresh: delete the destination directory and retry
+- Check the report above for specific failure reasons
+REPORT
+
+  info "Partial failure report appended to $report_path"
+}
+
+# ======================================================================
 # Main
 # ======================================================================
 main() {
@@ -628,13 +785,45 @@ main() {
 
   [ ${#SESSIONS[@]} -eq 0 ] && die "No sessions found to import"
 
-  # Import each session.
+  # Pre-flight: check all sessions before creating any.
+  info "Running pre-flight checks..."
+  preflight_check "${SESSIONS[@]}"
+
+  # Report conflicts.
+  if [ ${#CONFLICT_SESSIONS[@]} -gt 0 ]; then
+    info "Sessions with name conflicts (existing sessions):"
+    for sess in "${CONFLICT_SESSIONS[@]}"; do
+      info "  - $sess"
+    done
+    die "Cannot proceed: ${#CONFLICT_SESSIONS[@]} session(s) already exist. Use --force to replace."
+  fi
+
+  # Report already-imported sessions.
+  if [ ${#ALREADY_IMPORTED_SESSIONS[@]} -gt 0 ]; then
+    info "Sessions previously imported (skipping):"
+    for sess in "${ALREADY_IMPORTED_SESSIONS[@]}"; do
+      info "  - $sess"
+    done
+
+    # If all sessions were already imported, report and exit.
+    if [ ${#ALREADY_IMPORTED_SESSIONS[@]} -eq ${#SESSIONS[@]} ]; then
+      generate_already_imported_report "$REPORT_PATH" "${SESSIONS[@]}" "$SOURCE"
+      info "All sessions already imported. Report: $REPORT_PATH"
+      exit 0
+    fi
+
+    info "Importing ${#READY_SESSIONS[@]} remaining session(s)..."
+  fi
+
+  # Import each ready session.
   local imported=0
   local total_windows=0
   local total_panes=0
   local imported_names=""
+  FAILED_SESSIONS=()
+  FAILED_REASONS=()
 
-  for sess in "${SESSIONS[@]}"; do
+  for sess in "${READY_SESSIONS[@]}"; do
     # Count windows and panes.
     local sess_windows=0
     local sess_panes=0
@@ -651,11 +840,18 @@ main() {
     build_session_layout "$sess" "$layout_file"
 
     # Create the session.
-    if create_zellij_session "$sess" "$layout_file"; then
+    local create_output
+    if create_output=$(create_zellij_session "$sess" "$layout_file" 2>&1); then
       imported=$((imported + 1))
       total_windows=$((total_windows + sess_windows))
       total_panes=$((total_panes + sess_panes))
       imported_names="${imported_names}- ${sess} ($sess_windows tabs, $sess_panes panes)"$'\n'
+      # Track successful import.
+      track_import "$sess"
+    else
+      FAILED_SESSIONS+=("$sess")
+      FAILED_REASONS["$sess"]="$create_output"
+      warn "Failed to import session '$sess': $create_output"
     fi
   done
 
@@ -663,19 +859,42 @@ main() {
   generate_report "$REPORT_PATH" "$imported_names" "$total_panes" "$total_windows" "$SOURCE"
 
   # Append verification results.
-  for sess in "${SESSIONS[@]}"; do
-    verify_session "$sess" "$REPORT_PATH"
+  for sess in "${READY_SESSIONS[@]}"; do
+    # Only verify sessions that were successfully created.
+    if [[ ! " ${FAILED_SESSIONS[*]:-} " =~ " ${sess} " ]]; then
+      verify_session "$sess" "$REPORT_PATH"
+    fi
   done
+
+  # Append partial failure section if applicable.
+  if [ ${#FAILED_SESSIONS[@]} -gt 0 ]; then
+    generate_partial_failure_report "$REPORT_PATH"
+  fi
 
   # Summary.
   echo ""
-  info "=== Import Complete ==="
-  info "Sessions imported: $imported"
-  info "Total windows: $total_windows"
-  info "Total panes: $total_panes"
+  if [ ${#FAILED_SESSIONS[@]} -eq 0 ]; then
+    info "=== Import Complete ==="
+    info "Sessions imported: $imported"
+    info "Total windows: $total_windows"
+    info "Total panes: $total_panes"
+  else
+    info "=== Partial Import ==="
+    info "Sessions imported: $imported"
+    info "Sessions failed: ${#FAILED_SESSIONS[@]}"
+    info "Total windows: $total_windows"
+    info "Total panes: $total_panes"
+    info "Retry: run the same command to retry failed sessions."
+    info "Or use --force to replace any that partially exist."
+  fi
   info "Report: $REPORT_PATH"
   info "Recovery: $DEST/recovery/"
 
+  # Exit with error if any sessions failed.
+  if [ ${#FAILED_SESSIONS[@]} -gt 0 ]; then
+    exit 1
+  fi
+  exit 0
 }
 
 main "$@"

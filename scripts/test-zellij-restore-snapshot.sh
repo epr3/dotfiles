@@ -43,7 +43,7 @@ zellij_version="$("$zellij_bin" --version 2>&1)"
 echo "zellij: $zellij_version"
 
 # Kill any leftover test sessions from previous runs.
-for sess in session-a session-b sess solo 'session "quoted"'; do
+for sess in session-a session-b sess solo 'session "quoted"' new-sess foreign-sess good-sess bad-sess sess-x sess-y sess-a sess-b sess-c; do
   HOME="$test_home" ZELLIJ_CONFIG_DIR="$test_config_dir" \
     "$zellij_bin" kill-session "$sess" 2>/dev/null || true
 done
@@ -405,13 +405,30 @@ t_no_duplicate_session() {
   add_session "solo"
   ok "dup: first import succeeded"
 
-  # Second import — should detect existing session (no --force).
+  # Second import — should detect already-imported session (no --force).
+  # The session was tracked in imported-sessions.txt, so it's recognized as previously imported.
   out=$(run_migration "$test_fixtures/snapshot-single-session.txt" "$test_dest" \
     --session solo --report "$report_file" 2>&1) && rc=$? || rc=$?
-  if [ "$rc" -ne 0 ] && echo "$out" | grep -qi "already\|exists\|conflict\|duplicate\|session.*exist"; then
-    ok "dup: re-run detects existing session"
+  if [ "$rc" -eq 0 ] && echo "$out" | grep -qi "already imported\|previously imported\|skipping"; then
+    ok "dup: re-run detects already-imported session"
   else
-    fail "dup: re-run should detect existing session (rc=$rc, out=$out)"
+    fail "dup: re-run should detect already-imported session (rc=$rc, out=$out)"
+  fi
+
+  # Report should indicate already imported, not success.
+  if grep -qi "already imported\|previously imported" "$report_file"; then
+    ok "dup: report indicates already imported"
+  else
+    fail "dup: report missing already-imported indication"
+  fi
+
+  # Session should still exist (not duplicated).
+  local sess_count
+  sess_count=$(zellij_cmd list-sessions 2>&1 | strip_ansi | grep -cw "solo")
+  if [ "$sess_count" -eq 1 ]; then
+    ok "dup: no duplicate session"
+  else
+    fail "dup: expected 1 solo session, found $sess_count"
   fi
 }
 
@@ -519,6 +536,292 @@ t_report_outside_git() {
 }
 
 # ======================================================================
+# Test 16: Collision detection — all sessions checked before any created
+# ======================================================================
+t_preflight_collision() {
+  # Create a session using migration, then remove it from imported-sessions.txt
+  # so it appears as a foreign (untracked) session.
+  local out rc
+  write_fixture "$test_fixtures/snapshot-foreign.txt" \
+    "pane${T}foreign-sess${T}1${T}1${T}:*${T}1${T}p1${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "window${T}foreign-sess${T}1${T}:tab-foreign${T}1${T}*${T}x1y2,80x24,0,0,1${T}off" \
+    "state${T}foreign-sess"
+
+  # Import foreign-sess (will be tracked).
+  out=$(run_migration --force "$test_fixtures/snapshot-foreign.txt" "$test_dest" \
+    --session foreign-sess --report "$test_dest/report-preflight.txt" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    fail "preflight: first import failed (rc=$rc, out=$out)"
+    return
+  fi
+  add_session "foreign-sess"
+  ok "preflight: first import succeeded (foreign-sess)"
+
+  # Remove foreign-sess from imported-sessions.txt to simulate a foreign session.
+  local tracking_file="$test_dest/recovery/imported-sessions.txt"
+  if [ -f "$tracking_file" ]; then
+    grep -v '^foreign-sess$' "$tracking_file" > "${tracking_file}.tmp" || true
+    mv "${tracking_file}.tmp" "$tracking_file"
+  fi
+
+  # Now try to import a snapshot with two sessions:
+  # 'foreign-sess' exists but is NOT tracked in imported-sessions.txt.
+  # 'new-sess' does not exist.
+  write_fixture "$test_fixtures/snapshot-preflight.txt" \
+    "pane${T}foreign-sess${T}1${T}1${T}:*${T}1${T}p1${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "pane${T}new-sess${T}1${T}1${T}:*${T}3${T}p3${T}${test_fixtures}/dir-b${T}1${T}zsh${T}:" \
+    "window${T}foreign-sess${T}1${T}:tab-one${T}1${T}*${T}p9q0,80x24,0,0,1${T}off" \
+    "window${T}new-sess${T}1${T}:tab-new${T}1${T}*${T}r1s2,80x24,0,0,3${T}off" \
+    "state${T}foreign-sess${T}new-sess"
+
+  # Without --force, should fail because foreign-sess exists and is not tracked.
+  out=$(run_migration "$test_fixtures/snapshot-preflight.txt" "$test_dest" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -ne 0 ] && echo "$out" | grep -qi "already exist\|conflict\|collision\|cannot proceed"; then
+    ok "preflight: detects collision before creating any"
+  else
+    fail "preflight: expected collision error (rc=$rc, out=$out)"
+  fi
+
+  # new-sess should NOT have been created.
+  if zellij_cmd list-sessions 2>&1 | strip_ansi | grep -q "new-sess"; then
+    fail "preflight: new-sess should not exist (no partial creation)"
+    add_session "new-sess"  # Clean it up if it was created
+  else
+    ok "preflight: no partial creation on collision"
+  fi
+}
+
+# ======================================================================
+# Test 17: Rerun safety — detects prior import, no duplicate
+# ======================================================================
+t_rerun_safety() {
+  local out rc report_file
+  report_file="$test_dest/report-rerun.txt"
+
+  # First import.
+  out=$(run_migration --force "$test_fixtures/snapshot-single-session.txt" "$test_dest" \
+    --session solo --report "$report_file" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    fail "rerun: first import failed (rc=$rc, out=$out)"
+    return
+  fi
+  add_session "solo"
+  ok "rerun: first import succeeded"
+
+  # Verify imported-sessions.txt was created.
+  if [ -f "$test_dest/recovery/imported-sessions.txt" ] &&
+     grep -qF "solo" "$test_dest/recovery/imported-sessions.txt"; then
+    ok "rerun: imported-sessions.txt tracks solo"
+  else
+    fail "rerun: imported-sessions.txt missing or incomplete"
+    return
+  fi
+
+  # Second import without --force.
+  out=$(run_migration "$test_fixtures/snapshot-single-session.txt" "$test_dest" \
+    --session solo --report "$report_file" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -eq 0 ]; then
+    ok "rerun: second import succeeded (not a failure)"
+  else
+    fail "rerun: second import failed unexpectedly (rc=$rc, out=$out)"
+    return
+  fi
+
+  # Report should indicate already imported.
+  if grep -qi "already imported\|previously imported\|no action taken" "$report_file"; then
+    ok "rerun: report indicates already imported"
+  else
+    fail "rerun: report missing already-imported indication"
+  fi
+
+  # Session should still exist (not duplicated).
+  local sess_count
+  sess_count=$(zellij_cmd list-sessions 2>&1 | strip_ansi | grep -cw "solo")
+  if [ "$sess_count" -eq 1 ]; then
+    ok "rerun: no duplicate session"
+  else
+    fail "rerun: expected 1 solo session, found $sess_count"
+  fi
+}
+
+# ======================================================================
+# Test 18: Partial failure — mid-apply failure, what remains, retry instruction
+# ======================================================================
+t_partial_failure() {
+  local out rc report_file
+  report_file="$test_dest/report-partial.txt"
+
+  # Create a snapshot with two sessions, one that will fail.
+  # 'good-sess' will succeed, 'bad-sess' references a nonexistent layout
+  # that will cause a parse failure.
+  write_fixture "$test_fixtures/snapshot-partial.txt" \
+    "pane${T}good-sess${T}1${T}1${T}:*${T}1${T}p1${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "pane${T}good-sess${T}1${T}0${T}:-${T}2${T}p2${T}${test_fixtures}/dir-a${T}0${T}zsh${T}:" \
+    "pane${T}bad-sess${T}1${T}1${T}:*${T}3${T}p3${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "window${T}good-sess${T}1${T}:good${T}1${T}*${T}t1u2,80x24,0,0[40x24,0,0,1,39x24,41,0,2]${T}off" \
+    "window${T}bad-sess${T}1${T}:bad${T}1${T}*${T}v3w4,80x24,0,0,3${T}off" \
+    "state${T}good-sess${T}bad-sess"
+
+  # We need to make the migration fail for one session.
+  # One way: make ZELLIJ_BIN point to a script that fails for bad-sess.
+  # Create a wrapper that blocks bad-sess creation by checking the session name.
+  local wrapper="$sandbox/zellij-wrapper.sh"
+  cat > "$wrapper" <<WRAPPER
+#!/usr/bin/env bash
+# Wrapper that blocks session creation for 'bad-sess'.
+if [ "\$1" = "--layout" ] && [ "\$3" = "attach" ]; then
+  # Check if the session name (last arg) contains 'bad-sess'.
+  if echo "\$@" | grep -q 'bad-sess'; then
+    echo "Error: simulated failure for bad-sess"
+    exit 1
+  fi
+fi
+exec "$zellij_bin" "\$@"
+WRAPPER
+  chmod +x "$wrapper"
+
+  # Run with the wrapper.
+  out=$(ZELLIJ_BIN="$wrapper" \
+    run_migration --force "$test_fixtures/snapshot-partial.txt" "$test_dest" \
+    --report "$report_file" 2>&1) && rc=$? || rc=$?
+
+  # good-sess should have been created.
+  if zellij_cmd list-sessions 2>&1 | strip_ansi | grep -q "good-sess"; then
+    ok "partial: good-sess created before failure"
+    add_session "good-sess"
+  else
+    fail "partial: good-sess not found"
+  fi
+
+  # Report should exist and mention partial failure.
+  if [ -f "$report_file" ] && grep -qi "partial failure\|failed to import\|retry" "$report_file"; then
+    ok "partial: report indicates partial failure"
+  else
+    fail "partial: report missing partial failure info"
+  fi
+
+  # Report should mention what succeeded and what failed.
+  if grep -q "good-sess" "$report_file" && grep -q "bad-sess" "$report_file"; then
+    ok "partial: report lists both succeeded and failed"
+  else
+    fail "partial: report missing success/failure details"
+  fi
+
+  # Report should provide retry instruction.
+  if grep -qi "retry\|run the same command\|use --force" "$report_file"; then
+    ok "partial: report provides retry instruction"
+  else
+    fail "partial: report missing retry instruction"
+  fi
+}
+
+# ======================================================================
+# Test 19: Sentinel in multi-session — commands not auto-run
+# ======================================================================
+t_multi_session_sentinel() {
+  local out rc report_file
+  report_file="$test_dest/report-multi-sentinel.txt"
+
+  # Create a snapshot with two sessions, each with a sentinel command.
+  write_fixture "$test_fixtures/snapshot-multi-sentinel.txt" \
+    "pane${T}sess-x${T}1${T}1${T}:*${T}1${T}sentinel-x1${T}${test_fixtures}/dir-a${T}1${T}sh${T}:sh -c 'echo SENTINEL_X1; sleep infinity'" \
+    "pane${T}sess-x${T}1${T}0${T}:-${T}2${T}shell-x2${T}${test_fixtures}/dir-a${T}0${T}zsh${T}:" \
+    "pane${T}sess-y${T}1${T}1${T}:*${T}3${T}sentinel-y1${T}${test_fixtures}/dir-b${T}1${T}sh${T}:sh -c 'echo SENTINEL_Y1; sleep infinity'" \
+    "pane${T}sess-y${T}1${T}0${T}:-${T}4${T}shell-y2${T}${test_fixtures}/dir-b${T}0${T}zsh${T}:" \
+    "window${T}sess-x${T}1${T}:tab-x${T}1${T}*${T}x1y2,80x24,0,0[40x24,0,0,1,39x24,41,0,2]${T}off" \
+    "window${T}sess-y${T}1${T}:tab-y${T}1${T}*${T}z3a4,80x24,0,0[40x24,0,0,3,39x24,41,0,4]${T}off" \
+    "state${T}sess-x${T}sess-y"
+
+  out=$(run_migration --force "$test_fixtures/snapshot-multi-sentinel.txt" "$test_dest" \
+    --report "$report_file" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    fail "multi-sentinel: migration failed (rc=$rc, out=$out)"
+    return
+  fi
+  add_session "sess-x"
+  add_session "sess-y"
+  ok "multi-sentinel: both sessions created"
+
+  # Both sessions should exist.
+  if zellij_cmd list-sessions 2>&1 | strip_ansi | grep -q "sess-x" &&
+     zellij_cmd list-sessions 2>&1 | strip_ansi | grep -q "sess-y"; then
+    ok "multi-sentinel: both sessions in list-sessions"
+  else
+    fail "multi-sentinel: sessions not found"
+  fi
+
+  # Report should confirm sentinels not auto-run.
+  if grep -qi "sentinel\|not.*auto.*run\|require enter" "$report_file"; then
+    ok "multi-sentinel: report confirms sentinels not auto-run"
+  else
+    fail "multi-sentinel: report missing sentinel confirmation"
+  fi
+
+  # Report should list both sessions.
+  if grep -q "sess-x" "$report_file" && grep -q "sess-y" "$report_file"; then
+    ok "multi-sentinel: report mentions both sessions"
+  else
+    fail "multi-sentinel: report missing session details"
+  fi
+}
+
+# ======================================================================
+# Test 20: Multi-session with varying tab/pane counts
+# ======================================================================
+t_varying_counts() {
+  local out rc report_file
+  report_file="$test_dest/report-varying.txt"
+
+  # Session A: 3 windows, 5 panes total.
+  # Session B: 1 window, 1 pane.
+  # Session C: 2 windows, 3 panes.
+  write_fixture "$test_fixtures/snapshot-varying.txt" \
+    "pane${T}sess-a${T}1${T}1${T}:*${T}1${T}a-w1-p1${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "pane${T}sess-a${T}1${T}0${T}:-${T}2${T}a-w1-p2${T}${test_fixtures}/dir-a${T}0${T}zsh${T}:" \
+    "pane${T}sess-a${T}2${T}1${T}:*${T}3${T}a-w2-p1${T}${test_fixtures}/dir-b${T}1${T}zsh${T}:" \
+    "pane${T}sess-a${T}2${T}0${T}:-${T}4${T}a-w2-p2${T}${test_fixtures}/dir-b${T}0${T}zsh${T}:" \
+    "pane${T}sess-a${T}3${T}1${T}:*${T}5${T}a-w3-p1${T}${test_fixtures}/dir-c${T}1${T}zsh${T}:" \
+    "pane${T}sess-b${T}1${T}1${T}:*${T}6${T}b-w1-p1${T}${test_fixtures}/dir-a${T}1${T}zsh${T}:" \
+    "pane${T}sess-c${T}1${T}1${T}:*${T}7${T}c-w1-p1${T}${test_fixtures}/dir-b${T}1${T}zsh${T}:" \
+    "pane${T}sess-c${T}1${T}0${T}:-${T}8${T}c-w1-p2${T}${test_fixtures}/dir-b${T}0${T}zsh${T}:" \
+    "pane${T}sess-c${T}2${T}1${T}:*${T}9${T}c-w2-p1${T}${test_fixtures}/dir-c${T}1${T}zsh${T}:" \
+    "window${T}sess-a${T}1${T}:a-tab1${T}1${T}*${T}aa1,80x24,0,0[40x24,0,0,1,39x24,41,0,2]${T}off" \
+    "window${T}sess-a${T}2${T}:a-tab2${T}0${T}-${T}bb2,80x24,0,0[40x24,0,0,3,39x24,41,0,4]${T}off" \
+    "window${T}sess-a${T}3${T}:a-tab3${T}0${T}-${T}cc3,80x24,0,0,5${T}off" \
+    "window${T}sess-b${T}1${T}:b-tab1${T}1${T}*${T}dd4,80x24,0,0,6${T}off" \
+    "window${T}sess-c${T}1${T}:c-tab1${T}1${T}*${T}ee5,80x24,0,0[40x24,0,0,7,39x24,41,0,8]${T}off" \
+    "window${T}sess-c${T}2${T}:c-tab2${T}0${T}-${T}ff6,80x24,0,0,9${T}off" \
+    "state${T}sess-a${T}sess-b${T}sess-c"
+
+  out=$(run_migration --force "$test_fixtures/snapshot-varying.txt" "$test_dest" \
+    --report "$report_file" 2>&1) && rc=$? || rc=$?
+  if [ "$rc" -ne 0 ]; then
+    fail "varying: migration failed (rc=$rc, out=$out)"
+    return
+  fi
+  add_session "sess-a"
+  add_session "sess-b"
+  add_session "sess-c"
+  ok "varying: all three sessions created"
+
+  # Verify session counts in report.
+  if grep -q "sess-a" "$report_file" &&
+     grep -q "sess-b" "$report_file" &&
+     grep -q "sess-c" "$report_file"; then
+    ok "varying: report lists all three sessions"
+  else
+    fail "varying: report missing session entries"
+  fi
+
+  # Verify tab/pane counts in report.
+  if grep -qi "tabs\|windows" "$report_file" && grep -qi "panes" "$report_file"; then
+    ok "varying: report mentions tab and pane counts"
+  else
+    fail "varying: report missing tab/pane counts"
+  fi
+}
+
+# ======================================================================
 # Run all tests
 # ======================================================================
 echo ""
@@ -580,6 +883,26 @@ t_invalid_session_name
 echo ""
 echo "=== Report Outside Git ==="
 t_report_outside_git
+
+echo ""
+echo "=== Preflight Collision Detection ==="
+t_preflight_collision
+
+echo ""
+echo "=== Rerun Safety ==="
+t_rerun_safety
+
+echo ""
+echo "=== Partial Failure ==="
+t_partial_failure
+
+echo ""
+echo "=== Multi-Session Sentinel ==="
+t_multi_session_sentinel
+
+echo ""
+echo "=== Varying Counts ==="
+t_varying_counts
 
 echo ""
 echo "=== Results ==="
