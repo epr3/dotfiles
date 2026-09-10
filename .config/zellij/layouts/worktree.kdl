@@ -13,7 +13,7 @@ layout {
             command "pi";
         }
         pane split_direction="vertical" {
-            pane size="30%" {
+            pane size="70%" {
                 command "lazygit";
             }
             pane

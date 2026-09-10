@@ -8,8 +8,8 @@ font-size = 18
 theme = Catppuccin Macchiato
 
 # Window appearance
-window-decoration = none
-macos-titlebar-style = hidden
+window-decoration = auto
+macos-titlebar-style = transparent
 
 # Keyboard
 macos-option-as-alt = left
