@@ -4,6 +4,15 @@ Application and developer-tool configuration managed under `.config/`.
 
 ## Language
 
+**Terminal emulator**: Ghostty, the desktop application hosting this repository's terminal multiplexer.
+_Avoid_: multiplexer, session.
+
+**Multiplexer session**: An independently attachable terminal workspace containing windows in tmux or tabs in Zellij, each divided into panes.
+_Avoid_: Ghostty window, shell process.
+
+**Resurrect snapshot**: A machine-local tmux-resurrect manifest of saved sessions, windows, panes, working directories, and commands, distinct from live process state and its accompanying scrollback archive.
+_Avoid_: process checkpoint, live session backup.
+
 **Neovim configuration**: The tracked Lua editor setup under `.config/nvim/` used by standalone Neovim and, in constrained form, by VS Code Neovim.
 _Avoid_: nvim setup, editor config.
 

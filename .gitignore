@@ -3,6 +3,7 @@
 Brewfile.lock.json
 
 # Pi runtime state — excluded from Dotfile-managed tool config
+.pi/agent/bin/
 .pi/agent/auth.json
 .pi/agent/models-store.json
 .pi/agent/trust.json

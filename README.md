@@ -21,12 +21,25 @@ git submodule update --init dotbot
 | Directory | What |
 |---|---|
 | `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, zellij, ghostty, btop, yazi |
-
-> **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.
 | `.pi/` | pi coding agent config, skills, themes, extensions |
 | `vscode/` | VS Code settings, keybindings, snippets |
 | `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
 | `dotbot/` | Dotbot submodule for symlink management |
+
+> **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.
+
+## Zellij tips
+
+Zellij uses the built-in **Catppuccin Macchiato** dark theme and starts in
+normal mode with stock keybindings. The status bar shows Ctrl/Alt shortcuts.
+
+- `Ctrl-o`, then `w`: open the session manager to create, attach, or resurrect a session.
+- `Ctrl-o`, then `d`: detach without terminating the session.
+- `Ctrl-g`: toggle locked mode to pass application shortcuts through.
+
+Inside Zellij, `wt switch <branch>` opens or reuses a branch tab with pi above
+lazygit and a shell. Worktrunk loads `.config/zellij/layouts/worktree.kdl`
+directly; no helper scripts are needed.
 
 ## Post-clone steps
 
