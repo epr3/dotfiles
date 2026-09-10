@@ -1,11 +1,20 @@
 // Zellij configuration — Dotfile-managed tool config.
 
-// Start in locked mode so application shortcuts pass through.
-// Ctrl-g switches to Normal mode; Ctrl-g in Normal relocks.
-default_mode "locked"
+// Stock keybindings and visible mode hints. Ctrl-g toggles locked mode
+// when application shortcuts need to pass through unchanged.
+default_mode "normal"
 
 // Catppuccin Macchiato — built-in, matches Ghostty and Neovim.
+// Pin the dark variant so the terminal's colour-scheme negotiation cannot
+// replace it with Zellij's default palette.
 theme "catppuccin-macchiato"
+theme_dark "catppuccin-macchiato"
+explicit_theme_hue "dark"
+
+// Use the built-in bindings, including Ctrl-o then w (sessions) / d (detach).
+// Keep only the Ctrl/Alt shortcut row, without rotating or popup tips.
+show_startup_tips false
+mouse_hover_tips false
 
 // Detach on terminal close instead of killing the session.
 on_force_close "detach"

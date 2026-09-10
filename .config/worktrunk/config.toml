@@ -208,6 +208,18 @@ worktree-path = "{{ repo_path }}/../{{ branch | sanitize }}"
 
 [[pre-start]]
 set-remote = "{% if upstream %}git branch --set-upstream-to={{ upstream }} {{ branch }}{% endif %}"
-zellij = """bash $HOME/dotfiles/scripts/zellij-worktree-workspace.sh"""
+
+# Run for existing worktrees too, after the destination directory exists.
+# Worktrunk shell-escapes template arguments; do not wrap them in quotes.
 [post-switch]
+zellij = '''
+if [ -n "${ZELLIJ:-}" ] && [ -n "${ZELLIJ_SESSION_NAME:-}" ]; then
+  if zellij --session "$ZELLIJ_SESSION_NAME" action query-tab-names | grep -Fxq -- {{ branch }}; then
+    zellij --session "$ZELLIJ_SESSION_NAME" action go-to-tab-name {{ branch }}
+  else
+    zellij --session "$ZELLIJ_SESSION_NAME" action new-tab \
+      --layout worktree --name {{ branch }} --cwd {{ worktree_path }}
+  fi
+fi
+'''
 sync = "{% if upstream %}git fetch && git rebase {{ upstream }}{% endif %}"

@@ -1,19 +1,25 @@
 // Zellij layout for worktree workspaces.
-// Used by the worktrunk pre-start hook when inside Zellij.
-// Branch name and worktree path are injected by the hook script.
+// Used by the worktrunk post-switch hook when inside Zellij.
+// Worktrunk passes the tab name and working directory via new-tab flags.
 //
 // Structure: pi (top) | lazygit / shell (bottom), focused on pi.
 // All panes share the worktree working directory.
 layout {
-    tab name="WORKTREE_BRANCH" cwd="WORKTREE_PATH" split_direction="vertical" {
-        pane focus=true {
-            command "pi"
+    pane split_direction="horizontal" {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
         }
-        pane split_direction="horizontal" {
+        pane focus=true {
+            command "pi";
+        }
+        pane split_direction="vertical" {
             pane size="30%" {
-                command "lazygit"
+                command "lazygit";
             }
             pane
+        }
+        pane size=1 borderless=true {
+            plugin location="zellij:status-bar"
         }
     }
 }
