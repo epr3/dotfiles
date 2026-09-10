@@ -1,0 +1,12 @@
+// Zellij configuration — Dotfile-managed tool config.
+// Candidate Ghostty launch; tmux remains primary until cutover ticket.
+
+// Start in locked mode so application shortcuts pass through.
+// Ctrl-g switches to Normal mode; Ctrl-g in Normal relocks.
+default_mode "locked"
+
+// Catppuccin Macchiato — built-in, matches Ghostty and Neovim.
+theme "catppuccin-macchiato"
+
+// Detach on terminal close instead of killing the session.
+on_force_close "detach"

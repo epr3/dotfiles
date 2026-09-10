@@ -1,0 +1,24 @@
+# Ghostty config — candidate Zellij launch.
+# Duplicate of main config (Ghostty has no include/profile mechanism; only one config file).
+# Exercise this config by symlinking or copying to ~/.config/ghostty/config:
+#   cp ~/.config/ghostty/config ~/.config/ghostty/config-tmux
+#   cp ~/.config/ghostty/config-zellij ~/.config/ghostty/config
+# Restore tmux with:
+#   cp ~/.config/ghostty/config-tmux ~/.config/ghostty/config
+
+# Font
+font-family = "Inconsolata Nerd Font"
+font-size = 18
+
+# Theme
+theme = Catppuccin Macchiato
+
+# Window appearance
+window-decoration = none
+macos-titlebar-style = hidden
+
+# Keyboard
+macos-option-as-alt = left
+
+# Launch Zellij (candidate session-chooser workflow)
+command = /opt/homebrew/bin/zellij
