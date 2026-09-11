@@ -1,8 +1,5 @@
 // Zellij configuration — Dotfile-managed tool config.
 
-// Stock keybindings and visible mode hints. Ctrl-g toggles locked mode
-// when application shortcuts need to pass through unchanged.
-default_mode "normal"
 
 // Catppuccin Macchiato — built-in, matches Ghostty and Neovim.
 // Pin the dark variant so the terminal's colour-scheme negotiation cannot
@@ -12,12 +9,7 @@ theme_dark "catppuccin-macchiato"
 explicit_theme_hue "dark"
 
 // Use the built-in bindings, including Ctrl-o then w (sessions) / d (detach).
-// Keep only the Ctrl/Alt shortcut row, without rotating or popup tips.
-show_startup_tips false
-mouse_hover_tips false
-
-// Detach on terminal close instead of killing the session.
-on_force_close "detach"
+default_shell "/bin/zsh"
 
 // Pi enables the Kitty keyboard protocol, whose enhanced Alt-arrow sequences
 // Zellij 0.45.1 does not match for pane navigation. Keep legacy input so
@@ -25,9 +17,7 @@ on_force_close "detach"
 // Requires restarting Zellij sessions.
 support_kitty_keyboard_protocol false
 
-// Session resurrection — native serialization, viewport persistence,
-// and bounded scrollback per pane.
-session_serialization true
-serialize_pane_viewport true
-// 10 000 lines max per pane; 0 means use scrollback size.
-scrollback_lines_to_serialize 10000
+
+env {
+  PATH "/opt/homebrew/bin:/usr/local/bin:/bin:/usr/bin:/Users/eduardpredescu/.local/bin"
+}

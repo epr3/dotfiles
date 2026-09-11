@@ -2,7 +2,7 @@
 
 # Font
 font-family = "Inconsolata Nerd Font"
-font-size = 18
+font-size = 16
 
 # Theme
 theme = Catppuccin Macchiato
@@ -14,6 +14,8 @@ macos-titlebar-style = transparent
 # Keyboard
 macos-option-as-alt = left
 
+window-padding-balance = true
+
 # Initialize the shell PATH before launching Zellij so layout/resurrect
 # commands (lazygit, pi, etc.) can resolve outside an interactive pane.
-command = /opt/homebrew/bin/zsh -lic 'exec /opt/homebrew/bin/zellij'
+command = /opt/homebrew/bin/zellij
