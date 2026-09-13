@@ -13,6 +13,11 @@ macos-titlebar-style = transparent
 
 # Keyboard
 macos-option-as-alt = left
+# Ghostty otherwise turns these into Alt+b / Alt+f for shell word navigation;
+# Alt+f toggles Zellij floating panes. Send the legacy Alt-arrow sequences
+# Zellij is configured to consume instead.
+keybind = alt+arrow_left=csi:1;3D
+keybind = alt+arrow_right=csi:1;3C
 
 window-padding-balance = true
 
