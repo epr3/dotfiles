@@ -16,8 +16,3 @@ default_shell "/bin/zsh"
 // Zellij's stock Alt+arrow / Alt+hjkl focus bindings remain reliable.
 // Requires restarting Zellij sessions.
 support_kitty_keyboard_protocol false
-
-
-env {
-  PATH "/opt/homebrew/bin:/usr/local/bin:/bin:/usr/bin:/Users/eduardpredescu/.local/bin"
-}

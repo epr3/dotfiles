@@ -10,7 +10,10 @@ layout {
             plugin location="zellij:tab-bar"
         }
         pane focus=true {
-            command "pi";
+            // Load Zsh's PATH before starting Pi.
+            command "zsh" {
+                args "-lic" "exec pi";
+            }
         }
         pane split_direction="vertical" {
             pane size="70%" {
