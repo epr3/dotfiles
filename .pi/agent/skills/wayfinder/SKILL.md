@@ -47,7 +47,7 @@ The map is an **index, not a store**: each decision lives in exactly one place (
 
 ## Ticket types
 
-Every decision ticket carries a **type** and a **mode**. The mode is **HITL** (worked with a human who speaks for themselves) or **AFK** (driven by the agent alone). A HITL ticket only resolves through the live exchange; an agent that answers its own grilling questions has broken it.
+Every decision ticket title begins `wayfinder: `, then carries a **type** and a **mode**. The mode is **HITL** (worked with a human who speaks for themselves) or **AFK** (driven by the agent alone). A HITL ticket only resolves through the live exchange; an agent that answers its own grilling questions has broken it.
 
 A ticket's body is one precise **Question**, sized to one session: the decision or investigation this ticket resolves. The answer is not part of the body; it is recorded on resolution per the tracker's comment conventions. Assets created while resolving a ticket (prototypes, research notes) are **linked** from it, never pasted in.
 
