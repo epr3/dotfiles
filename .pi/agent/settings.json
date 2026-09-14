@@ -6,6 +6,7 @@
   "theme": "catppuccin-mocha",
   "//": "Pi settings drop-in for the artifact-first skill suite. Skills load via the Agent Skills standard (name+description at startup, body on demand, /skill:<name> to invoke). Extension packages are TypeScript, loaded by Pi via jiti (no build step). Paths are absolute because this is the global file at ~/.pi/agent/settings.json — the shipped relative paths in packages/pi-config/settings.json assume the monorepo root.",
   "extensions": [
+    "/Users/eduardpredescu/dotfiles/.pi/agent/extensions/rtk.ts",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/subagents",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/question",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/todo",
