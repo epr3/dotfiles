@@ -17,7 +17,7 @@ Create a new file under `.scratch/<feature-slug>/` (creating the directory if ne
 
 ## Wayfinding operations
 
-The `wayfinder` map is `.scratch/<effort-slug>/MAP.md`; child **decision tickets** are ticket files beside it under `tickets/`, each with frontmatter `type`, `mode`, `claimed_by`, `status`, and `blocked_by`.
+The `wayfinder` map is `.scratch/<effort-slug>/MAP.md`; child **decision tickets** are ticket files beside it under `tickets/`, each with an H1 title beginning `wayfinder: ` and frontmatter `type`, `mode`, `claimed_by`, `status`, and `blocked_by`.
 
 - **Frontier**: tickets whose `status` is open, whose blockers are all resolved, and whose `claimed_by` is absent. First by number wins.
 - **Claim before any work**: the first write after selection sets `claimed_by: pi:$PI_SESSION_ID`. Re-read to confirm. Cooperative and best-effort, no silent steal; explicit takeover or release is a ticket comment; no auto-expiry; the claim is retained on resolve.
