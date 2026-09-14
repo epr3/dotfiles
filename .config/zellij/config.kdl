@@ -8,7 +8,7 @@ theme "catppuccin-macchiato"
 theme_dark "catppuccin-macchiato"
 explicit_theme_hue "dark"
 
-// Use the built-in bindings, including Ctrl-o then w (sessions) / d (detach).
+// Source .zshenv in shells.
 default_shell "/bin/zsh"
 
 // Pi enables the Kitty keyboard protocol, whose enhanced Alt-arrow sequences

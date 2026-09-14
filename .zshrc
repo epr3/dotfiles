@@ -1,7 +1,3 @@
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -30,31 +26,6 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
-export XDG_CONFIG_HOME=$HOME/.config
-export AGENT_CONTEXT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx"
-export HOMEBREW_PREFIX=/opt/homebrew
-export PATH=$PATH:/opt/homebrew/bin
-# pnpm
-export PNPM_HOME="/Users/eduardpredescu/Library/pnpm"
-case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
-esac
-# pnpm end
-
-export GOROOT="/opt/homebrew/opt/go/libexec"
-export GOPATH=$HOME/go
-
-export PYENV_ROOT=$HOME/.pyenv
-export PATH=$PATH:$PYENV_ROOT/bin
-
-export PATH=$PATH:$GOPATH/bin
-export PATH=$PATH:$GOROOT/bin
-export PATH=$PATH:$HOME/.poetry/bin
-export PATH=$PATH:$HOME/.local/bin
-export PATH=$PATH:$HOME/.cargo/bin
-export PATH=$PATH:$HOME/.rbenv/bin
-export SHELL=$HOMEBREW_PREFIX/bin/zsh
 
 # Keybindings
 bindkey -e
@@ -106,9 +77,6 @@ fi
 [[ -f /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
-# Added by LM Studio CLI (lms)
-export PATH="$PATH:/Users/eduardpredescu/.lmstudio/bin"
-# End of LM Studio CLI section
 
 
 # Claude Code aliases
@@ -129,7 +97,5 @@ claude() {
   command claude "${args[@]}"
 }
 
-# opencode
-export PATH=/Users/eduardpredescu/.opencode/bin:$PATH
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi

@@ -21,6 +21,5 @@ keybind = alt+arrow_right=csi:1;3C
 
 window-padding-balance = true
 
-# Initialize the shell PATH before launching Zellij so layout/resurrect
-# commands (lazygit, pi, etc.) can resolve outside an interactive pane.
-command = /opt/homebrew/bin/zellij
+# Start Zellij with .zshenv exports.
+command = /bin/zsh -c 'exec /opt/homebrew/bin/zellij'
