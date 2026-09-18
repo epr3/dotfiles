@@ -10,6 +10,9 @@ _Avoid_: installation, local state, cache.
 **Curated Pi assets**: The non-secret Pi agent files, skills, themes, and extensions that define the agent environment without including credentials, sessions, installed packages, or context worktrees.
 _Avoid_: whole .pi mirror, Pi cache.
 
+**Model-aware compaction**: A Curated Pi asset that starts compaction from a fraction of the active model's advertised context window rather than a fixed token reserve.
+_Avoid_: fixed compaction threshold.
+
 **Dumb-zone contract**: The Pi statusline's fixed token thresholds that move an agent through sharp, fading, risky, and caveman response modes.
 _Avoid_: model limit, context-window budget.
 
@@ -63,5 +66,6 @@ _Avoid_: install script, setup script.
 ## Flagged ambiguities
 
 - "moving installations here" resolved to **Dotfile-managed tool config** plus guarded package installation, not committing generated local state.
+- "50% context" resolved to **Model-aware compaction** measured against the active model's advertised context window; the fixed 200k **Dumb-zone contract** remains statusline-only.
 - "investigation ticket" resolved to **Decision ticket**; **Research ticket** names the evidence-gathering subtype only.
 - `type` records ticket kind and `mode` records **HITL** or **AFK**; using `type` for both was rejected.

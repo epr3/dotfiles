@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.85.0",
+  "lastChangelogVersion": "0.85.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
   "defaultThinkingLevel": "high",
@@ -12,6 +12,7 @@
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/todo",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/lsp",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/statusline",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/model-compaction",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-fetch",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-search",
     "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/model-presets"
@@ -58,6 +59,11 @@
       "risky": 1
     },
     "meterWidth": 10
+  },
+  "compaction": {
+    "//": "Native fixed-token auto-compaction is off; packages/model-compaction is the sole automatic trigger (50% of the active model's advertised window). keepRecentTokens is the 8k recent-context budget retained by both manual /compact and extension-triggered compaction. The fixed 200k Dumb-zone contract lives in `statusline`, not here.",
+    "enabled": false,
+    "keepRecentTokens": 8000
   },
   "modelPresets": {
     "//": "Coding preset set: default, fast-codex, coding-fallback, deepseek-v4-flash, deep-reasoning. See packages/model-presets/ for the catalog parser and activation flow.",
