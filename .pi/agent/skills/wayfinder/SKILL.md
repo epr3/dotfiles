@@ -107,4 +107,4 @@ Unblocked tickets may be run in parallel, so expect other sessions to be editing
 
 ## Done
 
-The map is cleared when nothing is left to decide before someone goes and builds the thing. Hand the way found to the `to-spec` skill to schedule the build; or, if the effort turned out small, straight to the `implement` skill.
+The map is cleared when nothing is left to decide before someone goes and builds the thing. Report the cleared map, suggest `to-spec` (or `implement` if the effort turned out small), and stop. Starting the next workflow requires a separate explicit user request.

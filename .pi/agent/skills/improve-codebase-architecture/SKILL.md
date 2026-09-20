@@ -46,6 +46,6 @@ Side effects inline:
 
 ### 4. Stop at the design boundary
 
-This skill produces *understanding and recorded decisions* (the HTML report, a sharpened `CONTEXT.md`, any ADRs, optional interface designs) and stops there. When the grilling settles, hand the chosen deepening onward as its own deliberate step: `to-spec` -> `to-tickets` -> `implement`. Rolling straight into production edits is the failure mode here; implement now only when the user explicitly asks for it as a separate action.
+This skill produces *understanding and recorded decisions* (the HTML report, a sharpened `CONTEXT.md`, any ADRs, optional interface designs) and stops there. When the grilling settles, suggest the next step and stop. Starting specifications, tickets, implementation, or any other next workflow requires a separate explicit user request.
 
 Close by reporting: chosen candidate, where decisions were recorded, and the suggested next step.
