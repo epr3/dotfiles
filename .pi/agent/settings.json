@@ -28,7 +28,7 @@
     "//": "explore is read-only by allowlist; grant it extra READ-ONLY tools here. This example grants the lsp navigation set. researcher is read-only + web (web_search/web_fetch). general gets every discovered tool automatically; add names to excludeExtraTools to take some away.",
     "maxConcurrency": 4,
     "explore": {
-      "defaultModel": "opencode-go/glm-5.3-flash",
+      "defaultModel": "opencode-go/qwen3.8-flash",
       "thinkingLevel": "low",
       "extraTools": [
         "lsp_definition",
@@ -43,8 +43,8 @@
       ]
     },
     "general": {
-      "defaultModel": "opencode-go/qwen3.7-plus",
-      "thinkingLevel": "medium",
+      "defaultModel": "opencode-go/glm-5.3-flash",
+      "thinkingLevel": "high",
       "excludeExtraTools": []
     }
   },
@@ -64,10 +64,11 @@
     "keepRecentTokens": 8000
   },
   "modelPresets": {
-    "//": "Coding preset set: gpt-6-astra, deepseek-v4.1-flash. See packages/model-presets/ for the catalog parser and activation flow.",
+    "//": "Coding preset set: gpt-6-astra, glm-5.3-flash, kimi-reviewer. See packages/model-presets/ for the catalog parser and activation flow.",
     "cycle": [
       "gpt-6-astra",
-      "deepseek-v4.1-flash"
+      "glm-5.3-flash",
+      "kimi-reviewer"
     ],
     "presets": {
       "gpt-6-astra": {
@@ -77,11 +78,17 @@
         "thinkingLevel": "medium",
         "repairDefault": true
       },
-      "deepseek-v4.1-flash": {
-        "label": "DeepSeek V4.1 Flash low",
+      "glm-5.3-flash": {
+        "label": "GLM 5.3 Flash low",
         "provider": "opencode-go",
-        "model": "deepseek-v4.1-flash",
+        "model": "glm-5.3-flash",
         "thinkingLevel": "low"
+      },
+      "kimi-reviewer": {
+        "label": "kimi reviewer",
+        "provider": "opencode-go",
+        "model": "kimi-k2.7-code",
+        "thinkingLevel": "high"
       }
     }
   },
