@@ -1,43 +1,17 @@
 ## Code intelligence
 
-`lsp_*` tools available -> prefer over grep/find/read for code navigation — compiler's understanding, not text matching:
+Use `lsp_*` tools for code navigation; use grep/find for text, config, and other non-code searches. Before renaming a symbol or changing its signature, check `lsp_references`. After edits, run `lsp_diagnostics` on each changed code file and fix reported errors.
 
-- `lsp_definition` — symbol's declaration; `lsp_implementation` — concrete code behind interface/abstract member
-- `lsp_references` — every usage across codebase
-- `lsp_workspace_symbols` — find by name when file unknown
-- `lsp_document_symbols` — file outline before reading whole
-- `lsp_hover` — type/signature/docs without opening file
-- `lsp_incoming_calls` / `lsp_outgoing_calls` — who calls this, what this calls
+## Subagents
 
-Positions: 1-based `file:line:column`.
+Use `Agent` (`explore` for read-only discovery; `general` for delegated work, including code-review axes). Use `question` for discrete decisions and `todo_write` / `todo_read` for multi-step work.
 
-**Before** any rename/signature change -> `lsp_references` on it (grep misses dynamic + re-exported usages, over-matches common names). **After** writing/editing -> `lsp_diagnostics` per touched file; fix type errors + missing imports immediately, before moving on.
+## Context and ADRs
 
-Grep/find for what server can't see: comments, strings, config values, TODOs, log messages, non-code files.
+A repo's recorded `## Agent skills` choice overrides these machine-wide defaults. Resolve it in the config home's `agent-skills.md` for a context repo, or the repo's instructions file for in-repo context. If no choice is recorded, use the context-repo default below—except that existing in-tree context stays in-repo. For path resolution, follow *Resolving the context store* in `GLOSSARY-FORMAT.md` in the `domain-modeling` skill.
 
-## Sub-agents & tooling
-
-This harness exposes extension tools — prefer them over doing everything in the main context:
-
-- **`Agent`** — spawn an isolated sub-agent to keep the main context clean. `subagent_type: "explore"` = read-only codebase discovery, `"general"` = off-context work that may write, meaning code review spec and standards axes or something along those lines. Foreground blocks and returns the result; `run_in_background: true` returns an id you poll with `get_subagent_result`. Reach for explore/researcher before large inline reads or web digs.
-- **`question`** — when a decision needs the user, ask through `question` (2–4 mutually-exclusive options, recommended one first), not free prose.
-- **`todo_write` / `todo_read`** — track multi-step work as an explicit list so the plan survives context pressure; update entries as steps complete.
-# Global rules — context store (install once per machine, personal, not per-repo)
-
-The context-store + ADR conventions the engineering skills rely on — repo-agnostic and personal, branch/worktree-independent like the store itself; this is the context side of setup, what `setup-context` establishes. Pi layers global and project instruction files, and `~/.pi/agent/AGENTS.md` keeps applying when a repo has its own instruction file, so it's the right home. The harness tooling (LSP usage) is separate: it ships as `pi-config/AGENTS.md`, pasted into your instructions directly.
-
-Install: paste the `## Agent skills (defaults)` block below into `~/.pi/agent/AGENTS.md`.
-
----
-
-## Agent skills (defaults)
-
-**Precedence.** A repo's own `## Agent skills` block wins. This block is the machine-wide default and applies only when the repo has no block of its own; it supplies the **context store** model, never a path. Resolve **context home** and **config home** per repo with the numbered procedure in GLOSSARY-FORMAT.md (*Resolving the context store*), which reads the code repo first.
-
-### Domain docs
-
-Each repo's domain docs live at `domain.md` in its **config home** — `.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context**, committed with the code. Seeded once per repo by `setup-context`, edit-in-place, branch-independent. Glossaries + ADRs live in the **context worktree**s by default; `offload-context` commits + pushes those to the team remote (skipped under **in-repo context**). Each durable artifact class (glossary, adrs, board, research, explainers) records its own destination in `artifact-locations.md` at the **config home**, resolved per class with `setup-context/resolve-location.sh`; defaults equal the pre-existing effective destinations. Temporary reports and handoffs use the OS temp directory. Layout is self-describing: `GLOSSARY-MAP.md` at the **context home** root = multi-context, a lone `GLOSSARY.md` = single.
-
-### Context & ADRs (personal)
-
-The default **context store** is a **context repo** (the recorded `## Agent skills` block — at the **config home**'s `agent-skills.md`, or the repo's instructions file under **in-repo context** — written by `setup-context`, overrides this per repo: e.g. in-repo context, or a real issue tracker): a bare git repo at `${AGENT_CONTEXT_HOME:-<your harness ctx dir>}/<org>__<repo>` with one **context worktree** paired 1:1 to each code branch. You **edit context directly in that worktree**; `offload-context` commits + pushes the branch to the team remote. You run the trunk merges (`merge-context` reconciles a branch into trunk, `rebase-context` rebases onto a moved base). Structure is grounded by the code manifest (`git ls-files`) — context only at real paths, dangling refs flagged not created. **Unconfigured repo with in-tree docs** (a `GLOSSARY.md` / `GLOSSARY-MAP.md` / `docs/adr/` in the code tree but no recorded block anywhere): treat the in-tree docs as the context and read them — don't init a **context repo** or migrate anything uninvited; suggest running `setup-context` once to record the choice. `AGENT_CONTEXT_HOME` points at the **context root**; set it in the environment Pi runs under to relocate or share that root.
+- Resolve the context home and config home per that procedure; do not assume paths.
+- The default context store is a bare repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, with one worktree per code branch. Edit context in its paired worktree. `offload-context` pushes it; use `merge-context` and `rebase-context` to reconcile branches.
+- Existing in-repo context without recorded setup remains in-repo: read and use it; do not migrate or initialize a context repo. Suggest `setup-context` to record the choice.
+- Domain docs live at `domain.md` in the config home. Context layout and artifact destinations are declared by `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md`; consult them rather than assuming destinations. Temporary reports and handoffs go in the OS temp directory.
+- Context structure follows `git ls-files`; flag dangling references instead of creating paths. `AGENT_CONTEXT_HOME` relocates the context root when set in Pi's environment.
