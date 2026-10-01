@@ -141,7 +141,9 @@ check_ticket_schema() {
     else
       fail "$f" "frontmatter missing both 'type' and 'mode' (check 3)"
     fi
-  done < <(find .scratch -path '*/tickets/*.md' -type f -o -path '*/issues/*.md' -type f)
+  # New local-board layout only (spec.md / map.md / issues/) — no legacy
+  # tickets/ discovery remains (removed with the old-name contract).
+  done < <(find .scratch -path '*/issues/*.md' -type f)
 }
 
 # -- Check 4: executable handoffs target model-invoked skills --
@@ -169,6 +171,26 @@ check_handoffs() {
 # Skills whose removal the upstream-sync spec records. Removing one is a
 # recorded inventory change, not an unrecorded invocation-mode flip.
 SPEC_REMOVED=(caveman zoom-out solve resolving-merge-conflicts)
+
+# The exact installed inventory the upstream-sync spec settles on, pinned to
+# snapshot mattpocock/skills d81f3a183412e71a5b1e84ca21bc1a35eea03a60.
+# Arithmetic (verified against the actual dirs and the snapshot): upstream
+# engineering is 20 dirs incl. setup-matt-pocock-skills, which setup-context
+# substitutes locally -> 19 upstream-named engineering skills; + 7 upstream
+# productivity skills = 26 upstream-named; + 5 retained local skills
+# (setup-context, merge-context, rebase-context, offload-context,
+# explain-diff) = 31. The 4 spec-removed skills above are already absent from
+# this list. Note: the task prose lists implement-spec but omits implement;
+# upstream retains both, both exist in the tree, and 26+5=31 needs both -
+# this list is taken from the actual dir listing.
+EXPECTED_SKILLS=(
+  ask-matt code-review codebase-design diagnosing-bugs domain-modeling
+  grill-me grill-with-docs grilling handoff implement implement-spec
+  improve-codebase-architecture pr prototype research retro tdd teach
+  to-questionnaire to-spec to-tickets triage wait-what wayfinder wizard
+  writing-for-agents
+  setup-context merge-context rebase-context offload-context explain-diff
+)
 
 # Name-membership test for the recorded removal list.
 is_spec_removed() {
@@ -201,7 +223,7 @@ check_inventory() {
 
   while IFS= read -r s; do
     [ -z "$s" ] && continue
-    if [ "$s" = "handoff" ] || [ "$s" = "solve" ]; then
+    if [ "$s" = "handoff" ]; then
       info "$s flipped user-invoked (allowed inventory change, check 5)"
     elif ! git ls-tree -r --name-only "$BASE_REF" -- ".pi/agent/skills/$s/" 2>/dev/null | grep -q .; then
       info "$s is a new skill at work tree (not a flip, check 5)"
@@ -243,6 +265,54 @@ check_removed_references() {
   done < <(find .pi/agent/skills -name '*.md' -type f)
 }
 
+# -- Check 7: installed skill dirs exactly equal the expected inventory --
+check_expected_inventory() {
+  local actual expected diff_out
+  actual=$(find .pi/agent/skills -mindepth 1 -maxdepth 1 -type d | sed 's|.*/||' | sort)
+  expected=$(printf '%s\n' "${EXPECTED_SKILLS[@]}" | sort)
+  diff_out=$(diff <(echo "$expected") <(echo "$actual")) || true
+  if [ -n "$diff_out" ]; then
+    fail ".pi/agent/skills/" "installed inventory differs from the expected skill set (check 7) — diff (< expected, > actual):
+$diff_out"
+  fi
+}
+
+# -- Check 8: no stale domain-artifact names where they denote artifacts --
+# Old names that must never be read or written as domain artifacts. Matched as
+# path-bearing references: the (^|[^[:alnum:]_-]) marker keeps the hyphenated
+# tail of `GLOSSARY-MAP.md` (a legitimate current name) out of the match.
+STALE_NAME_PAT='CONTEXT\.md|CONTEXT-MAP\.md|(^|[^[:alnum:]_-])(SPEC|MAP)\.md|`tickets/`'
+
+# Allowlist (line-level, grep -v'd before matching). Legitimate uses kept:
+# 1. domain-modeling/GLOSSARY-FORMAT.md — its naming note explains that a
+#    CONTEXT.md / CONTEXT-MAP.md artifact found in a repo is a leftover that
+#    is NOT read as the glossary (suggest renaming). Only those two lines
+#    (3 and 94) are allowlisted, not the whole file, so new old-name
+#    path references elsewhere in it still fail. The renamed-file anchor:
+#    a path reference to CONTEXT-FORMAT.md matches none of these old
+#    name patterns either way, and GLOSSARY-FORMAT.md must not be caught.
+# 2. docs/agents/issue-tracker.md — documents the one-time rename ("rename
+#    its SPEC.md / MAP.md and tickets/ files"); only the legacy-layout
+#    lines that name the old layout are allowlisted (line-level, not whole
+#    file) so a fresh old-name path reference added elsewhere in it fails.
+# 3. Legacy ticket metadata compat (`type: HITL|AFK`) in implement and
+#    to-tickets is allowed and never matches these patterns anyway.
+# Anything under .scratch/ is out of scope (never scanned). Bare "context"
+# words — model context, context repo, context worktree, context store, and
+# the other storage terms — denote storage or model context, not artifacts,
+# and never match these patterns.
+STALE_NAME_ALLOW='domain-modeling/GLOSSARY-FORMAT\.md:(3|94):|docs/agents/issue-tracker\.md:[0-9]+:.+rename its `SPEC'
+
+check_stale_names() {
+  local hits h
+  hits=$( { grep -rn -E "$STALE_NAME_PAT" .pi/agent/skills docs AGENTS.md .pi/agent/AGENTS.md 2>/dev/null || true; } \
+    | grep -vE "$STALE_NAME_ALLOW" || true )
+  while IFS= read -r h; do
+    [ -z "$h" ] && continue
+    fail "${h%%:*}" "stale domain-artifact name (old contract): $h (check 8)"
+  done <<< "$hits"
+}
+
 # -- Run --
 check_em_dash
 check_protected_marks
@@ -252,6 +322,8 @@ check_handoffs
 check_inventory
 check_removed_skills
 check_removed_references
+check_expected_inventory
+check_stale_names
 
 if [ "$FAILED" -eq 0 ]; then
   echo "PASS: all checks green"

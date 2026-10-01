@@ -44,7 +44,7 @@ The spec is whatever says what this change was *supposed* to do; it doesn't have
 1. A path, PR, or issue reference the user passed in: treat it as authoritative.
 2. A pull request: its description plus any issues it closes. Pull the PR body and linked issues (`gh pr view`, the GitLab MR page, etc.); issue references in the commit messages (`#123`, `Closes #45`, `!67`) point the way.
 3. The repo's configured tracker (`issue-tracker.md` in the config home, if present): the issue this branch implements, fetched per its conventions. If `issue-tracker.md` is absent, tell the user to run `setup-context` to configure the tracker.
-4. A spec/issue file: common homes are `docs/`, `specs/`, or `.scratch/` matching the branch name or feature; and if this repo runs the workflow, a `.scratch/<feature>/issues/*.md` (legacy: `tickets/`) plus its `spec.md` (legacy: `SPEC.md`) beside it at the board's recorded artifact location - default the context home (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)).
+4. A spec/issue file: common homes are `docs/`, `specs/`, or `.scratch/` matching the branch name or feature; and if this repo runs the workflow, a `.scratch/<feature>/issues/*.md` plus its `spec.md` beside it at the board's recorded artifact location - default the context home (see [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)).
 5. Nothing found -> ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent skips and reports "no spec available".
 
 ### 3. Identify the standards sources

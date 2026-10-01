@@ -11,7 +11,7 @@ This skill is the `grilling` skill and the `domain-modeling` skill run together:
 
 ### 1. Load the documented language
 
-Read `GLOSSARY.md` in this branch's context worktree (the dir mirroring the code it describes), or the worktree's root `GLOSSARY-MAP.md` -> the relevant context (store model, path formula, and multi-context layout: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Multi-context: infer which applies; ask if unclear.
+Read `GLOSSARY.md` in this branch's context worktree (the dir mirroring the code it describes), or the worktree's root `GLOSSARY-MAP.md` -> the relevant context (store model, path formula, and multi-context layout: [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)). Multi-context: infer which applies; ask if unclear.
 
 ADRs (personal, see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)): resolve their destination with `<setup-context skill dir>/resolve-location.sh adrs` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), then grep `docs/adr/` + `<dir>/adr/` beneath the resolved destination for topic terms and read the matches only, since enumerating the dir is partial and racy.
 

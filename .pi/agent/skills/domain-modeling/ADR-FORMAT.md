@@ -1,7 +1,7 @@
 # ADR Format
 
-Personal, in the context worktree alongside `GLOSSARY.md` (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md`, date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to); write the ADR where the decision lives.
-Create dir lazily. Like the glossary, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle; skipped when context is in-repo, where they commit with the code (see [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)).
+Personal, in the context worktree alongside `GLOSSARY.md` (see [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md`, date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to); write the ADR where the decision lives.
+Create dir lazily. Like the glossary, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle; skipped when context is in-repo, where they commit with the code (see [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md)).
 
 > **Why not `NNNN-` sequence numbers.** Two branches both grab the next number and
 > collide on merge; a date prefix is collision-free, still sorts chronologically, and

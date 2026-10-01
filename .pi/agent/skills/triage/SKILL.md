@@ -7,7 +7,7 @@ argument-hint: "what to triage (e.g. 'what needs attention', '#42', 'move #42 to
 
 # Triage
 
-Tracker operations come from `issue-tracker.md`, label strings from `triage-labels.md` (both in the **config home**, CONTEXT-FORMAT.md defines it). Missing either -> stop, point the user at `setup-context` (tracker + triage on). If the issue-tracker config says external PRs are a request surface, triage covers them too; a PR is an issue with attached code: same roles, same states, with the deltas marked "for a PR" below.
+Tracker operations come from `issue-tracker.md`, label strings from `triage-labels.md` (both in the **config home**, GLOSSARY-FORMAT.md defines it). Missing either -> stop, point the user at `setup-context` (tracker + triage on). If the issue-tracker config says external PRs are a request surface, triage covers them too; a PR is an issue with attached code: same roles, same states, with the deltas marked "for a PR" below.
 
 Every comment or issue posted to the tracker during triage starts with this disclaimer:
 

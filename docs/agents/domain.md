@@ -2,14 +2,14 @@
 
 **Code repo:** `git@github.com:epr3/dotfiles.git` (`epr3__dotfiles`) — filled by `setup-context` on write.
 
-How the engineering skills should consume this code repo's domain documentation. This doc lives as `domain.md` — globally at `.agents/domain.md` — written once per context repo, used by all of its branches, edit-in-place, or at `docs/agents/domain.md` when context is in-repo (committed with the code). Either way it lives in the config home; skills resolve it there when orienting. Repo-wide choices live separately at the config home (`.agents/` at the store root — see CONTEXT-FORMAT.md).
+How the engineering skills should consume this code repo's domain documentation. This doc lives as `domain.md` — globally at `.agents/domain.md` — written once per context repo, used by all of its branches, edit-in-place, or at `docs/agents/domain.md` when context is in-repo (committed with the code). Either way it lives in the config home; skills resolve it there when orienting. Repo-wide choices live separately at the config home (`.agents/` at the store root — see GLOSSARY-FORMAT.md).
 
 ## Before exploring, read
 
-Context is personal, living **in the context worktree** by default — you edit it there directly; `offload-context` commits + pushes it to the team remote (in-repo context: skip offload, it commits with the code). See `CONTEXT-FORMAT.md` (ships with the `domain-modeling` skill):
+Context is personal, living **in the context worktree** by default — you edit it there directly; `offload-context` commits + pushes it to the team remote (in-repo context: skip offload, it commits with the code). See `GLOSSARY-FORMAT.md` (ships with the `domain-modeling` skill):
 
 - `GLOSSARY.md` at the worktree root, **or**
-- `GLOSSARY-MAP.md` at the worktree root if it exists — points at per-context `GLOSSARY.md` files (mirroring the code's dirs). Read each one relevant to the topic. (Legacy `CONTEXT.md` / `CONTEXT-MAP.md` names are still discovered read-only until the contraction.)
+- `GLOSSARY-MAP.md` at the worktree root if it exists — points at per-context `GLOSSARY.md` files (mirroring the code's dirs). Read each one relevant to the topic.
 - `docs/adr/`: read ADRs that touch the area you are about to work in. In multi-context repos, also check `<dir>/adr/` for context-scoped decisions.
 
 If none of these exist, **proceed silently**. Don't flag the absence; don't suggest creating files upfront. `grill-with-docs` creates them lazily when terms or decisions actually resolve.

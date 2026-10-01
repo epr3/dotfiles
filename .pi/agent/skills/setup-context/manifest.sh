@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Manifest -- the set of real paths in THIS code repo (branch/worktree-accurate).
 # Grounding rule: context may be created ONLY at a path the manifest contains. A
-# GLOSSARY-MAP (legacy CONTEXT-MAP) link or term pointing at a path not here is dangling -> flag it, do NOT
+# GLOSSARY-MAP link or term pointing at a path not here is dangling -> flag it, do NOT
 # create it. (Whether a grounded term's symbol still exists is a separate LSP
 # check. The manifest grounds paths; LSP grounds symbols.)
 # Answers are repo-root-relative and cwd-independent: run from any directory

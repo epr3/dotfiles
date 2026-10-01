@@ -15,6 +15,7 @@ trap 'rm -rf "$sandbox"' EXIT
 echo "sandbox: $sandbox"
 sandbox="$(cd "$sandbox" && pwd -P)"
 CTXROOT="$sandbox/ctxroot"
+ALL_CLASSES=(glossary adrs board research explainers)
 
 export GIT_CONFIG_NOSYSTEM=1
 export GIT_AUTHOR_NAME="Artloc Test" GIT_AUTHOR_EMAIL="artloc@example.com"
@@ -135,7 +136,7 @@ t_defaults() {
   make_code_repo "$s"
   init_ctx_for_branch "$s/repo" main "$CTXROOT"
   local out
-  for cls in glossary adrs board research explainers; do
+  for cls in "${ALL_CLASSES[@]}"; do
     out="$(resolve_in "$s/repo" "$cls")"
     if [ "$out" = "$CTXROOT/artloc__repo/main" ]; then
       ok "default $cls -> context worktree (main)"
@@ -215,15 +216,16 @@ t_branch_isolation() {
   ( cd "$s/repo" && git checkout -q main )
 }
 
-# --- 4: glossary write + consumer lookup at the recorded location, old-name discovery retained --
-# Canonical glossary lookup (the order CONTEXT-FORMAT.md prescribes during the expand
-# phase): new names first, then the legacy names; the legacy arms are what ticket 0013 removes.
-lookup_glossary() { # <dir> -> prints the first name found GLOSSARY.md | CONTEXT.md | CONTEXT-MAP.md
+# --- 4: glossary write + consumer lookup at the recorded location, new-name discovery only ---
+# Canonical glossary lookup post-contraction (ticket 0013): the new names ONLY.
+# Legacy CONTEXT.md / CONTEXT-MAP.md are no longer discovery candidates: a legacy-only
+# location is simply not found -- clean exit 1, nothing printed.
+lookup_glossary() { # <dir> -> prints the first name found GLOSSARY.md | GLOSSARY-MAP.md, else exit 1
   local d="$1" cand
-  for cand in GLOSSARY.md CONTEXT.md CONTEXT-MAP.md; do
+  for cand in GLOSSARY.md GLOSSARY-MAP.md; do
     [ -f "$d/$cand" ] && { printf '%s' "$cand"; return 0; }
   done
-  return 1
+  return 1   # not found: legacy names are not candidates anymore
 }
 
 t_glossary_roundtrip() {
@@ -246,15 +248,27 @@ t_glossary_roundtrip() {
   else
     fail "glossary new-name roundtrip lookup: got '${found:-nothing}'"
   fi
-  # legacy-only fixture: old-name glossary is still DISCOVERED during expand, read-only
+  # legacy-only fixture: post-contraction (ticket 0013) the old names are NOT discovered --
+  # lookup fails cleanly (nothing on stdout, exit 1); nothing legacy-only resolves.
   local legacy="$s/legacy"
   mkdir -p "$legacy/main"
   printf '# Legacy Repo\n' > "$legacy/main/CONTEXT.md"
-  found="$(lookup_glossary "$legacy/main" && true)"
-  if [ "$found" = "CONTEXT.md" ]; then
-    ok "legacy-only glossary still discovered (old caller keeps working)"
+  printf '# Legacy Map\n' > "$legacy/main/CONTEXT-MAP.md"
+  if found="$(lookup_glossary "$legacy/main")"; then
+    fail "legacy-only glossary must not be discovered anymore: helper matched '$found'"
+  elif [ -n "$found" ]; then
+    fail "legacy-only lookup must fail silently, got output '$found'"
   else
-    fail "legacy-only glossary not discovered: got '${found:-nothing}'"
+    ok "legacy-only CONTEXT.md/CONTEXT-MAP.md: lookup fails clean (no match, exit 1)"
+  fi
+  # new-name control: the same lookup still resolves the new names
+  mkdir -p "$legacy/newmain"
+  printf '# New Name Repo\n' > "$legacy/newmain/GLOSSARY.md"
+  found="$(lookup_glossary "$legacy/newmain" && true)"
+  if [ "$found" = "GLOSSARY.md" ] && grep -q "New Name Repo" "$legacy/newmain/$found"; then
+    ok "new-name GLOSSARY.md still discovered by the same helper"
+  else
+    fail "new-name control lookup: got '${found:-nothing}'"
   fi
   # branch-scoped: glossary written on feature lives at feature's recorded destination only
   ( cd "$s/repo" && git checkout -q feature )
@@ -307,20 +321,17 @@ t_in_repo() {
   git init -q -b main "$s/repo"
   ( cd "$s/repo"
     echo x > README.md; git add README.md; git commit -qm init
-    printf '# Repo\n' > CONTEXT.md; mkdir -p docs/adr; touch docs/adr/2026-01-01-x.md
+    # in-repo seeding starts from the NEW name only (ticket 0013: a legacy CONTEXT.md alone
+    # no longer triggers in-repo detection); a term is present to look up in the same file.
+    printf '# Repo\n\n## Language\n\n**In-repo glossary term**: definition.\n' > "$s/repo/GLOSSARY.md"
+    mkdir -p docs/adr; touch docs/adr/2026-01-01-x.md
   )
   local out
   out="$(resolve_in "$s/repo" glossary)"
-  [ "$out" = "$s/repo" ] && ok "in-repo context (no block, in-tree docs) glossary -> code repo root" \
-    || fail "in-repo glossary: got '$out'"
-  # in-repo under the NEW name alone: detected likewise + write/lookup roundtrip
-  rm "$s/repo/CONTEXT.md"
-  printf '# Repo\n\n## Language\n\n**In-repo glossary term**: definition.\n' > "$s/repo/GLOSSARY.md"
-  out="$(resolve_in "$s/repo" glossary)"
   if [ "$out" = "$s/repo" ] && grep -q "In-repo glossary term" "$out/GLOSSARY.md"; then
-    ok "in-repo: new GLOSSARY.md written and found at the code repo root"
+    ok "in-repo context (no block, in-tree docs) glossary -> code repo root, new name detected + found"
   else
-    fail "in-repo GLOSSARY.md write+lookup: got '${out:-nothing}' - $([ -f "$s/repo/GLOSSARY.md" ] && echo file || echo missing)"
+    fail "in-repo glossary: got '${out:-nothing}' - $([ -f "$s/repo/GLOSSARY.md" ] && echo file || echo missing)"
   fi
   out="$(resolve_in "$s/repo" board)"
   [ "$out" = "$s/repo" ] && ok "in-repo board -> code repo root" || fail "in-repo board: got '$out'"
@@ -330,6 +341,203 @@ t_in_repo() {
   out="$(resolve_in "$s/repo" glossary)"
   [ "$out" = "$s/bucket/gh/main" ] && ok "in-repo recorded doc read from docs/agents" \
     || fail "in-repo recorded doc: got '$out'"
+}
+
+# --- 10: old/new name collision: new names win, nothing overwritten/merged/deleted -----------
+t_glossary_new_name_wins() {
+  local s="$sandbox/collision"
+  make_code_repo "$s" collision
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  local cf="$CTXROOT/collision__repo/.agents"
+  write_locations_doc "$cf" "glossary: custom:$s/gloss-store/{branch}"
+  local dest found
+  dest="$(resolve_in "$s/repo" glossary)"
+  [ "$dest" = "$s/gloss-store/main" ] || fail "collision destination: got '$dest'"
+  mkdir -p "$dest"
+  printf '# New glossary content\n' > "$dest/GLOSSARY.md"
+  printf '# Legacy glossary content\n' > "$dest/CONTEXT.md"
+  # seam: Lookup_glossary (test helper, new-only candidates) must pick the new name's content
+  found="$(lookup_glossary "$dest" && true)"
+  if [ "$found" = "GLOSSARY.md" ] && grep -q "New glossary content" "$dest/$found"; then
+    ok "collision: lookup resolves the new-name file's content (helper seam, new-only candidates)"
+  else
+    fail "collision lookup: got '${found:-nothing}'"
+  fi
+  # nothing overwritten, merged, or deleted: both files survive byte-identical
+  if [ -f "$dest/CONTEXT.md" ] && [ -f "$dest/GLOSSARY.md" ] \
+     && [ "$(cat "$dest/CONTEXT.md")" = "# Legacy glossary content" ] \
+     && [ "$(cat "$dest/GLOSSARY.md")" = "# New glossary content" ]; then
+    ok "collision: both old and new files still exist, contents untouched"
+  else
+    fail "collision mutated the seeded files: legacy=$([ -f "$dest/CONTEXT.md" ] && echo present || echo MISSING) new=$([ -f "$dest/GLOSSARY.md" ] && echo present || echo MISSING)"
+  fi
+  # seam: resolve-location.sh itself must not accept legacy-only detection (ticket 0013
+  # deletes the legacy OR-arms). A repo with ONLY CONTEXT.md in-tree (no recorded block,
+  # no GLOSSARY.md / docs/adr) must NOT resolve as in-repo context (i.e. to the code root).
+  local lg="$sandbox/legonly" out
+  make_code_repo "$lg" legonly
+  printf '# Legacy only\n' > "$lg/repo/CONTEXT.md"
+  out="$(resolve_in "$lg/repo" glossary)"
+  if [ "$out" = "$CTXROOT/legonly__repo/main" ]; then
+    ok "resolve-location.sh: legacy-only CONTEXT.md does not trigger in-repo context (context default)"
+  else
+    fail "resolve-location.sh still accepts legacy-only detection: glossary resolved to '$out' (expected context default $CTXROOT/legonly__repo/main)"
+  fi
+}
+
+# --- 11: local boards: new .scratch layout resolves; legacy board names do not ----------------
+t_board_local_layout() {
+  local s="$sandbox/boards" out
+  # new-layout repo: convention board (.scratch/<slug>/spec.md + issues/0001-x.md), with a
+  # recorded Store: in-repo block like this dotfiles repo's AGENTS.md. Board discovery is
+  # convention-level: assert what resolve-location.sh exposes -- the board destination.
+  make_code_repo "$s" boardloc
+  ( cd "$s/repo"
+    cat > AGENTS.md <<'EOF'
+## Agent skills
+
+Store: in-repo
+- Issues: local markdown files under `.scratch/`; no triage labels
+EOF
+    mkdir -p .scratch/boardloc/issues
+    printf '# boardloc spec\n' > .scratch/boardloc/spec.md
+    printf '## 0001-first\n\nopen\n' > .scratch/boardloc/issues/0001-first.md
+    git add AGENTS.md && git commit -qm "record in-repo store"
+    git checkout -qb feature2
+  )
+  out="$(resolve_in "$s/repo" board)"
+  if [ "$out" = "$s/repo" ] && [ -f "$out/.scratch/boardloc/spec.md" ] \
+     && [ -f "$out/.scratch/boardloc/issues/0001-first.md" ]; then
+    ok "new-layout local board: board destination resolves to the repo root holding it (main)"
+  else
+    fail "new-layout board resolve on main: got '$out'"
+  fi
+  ( cd "$s/repo" && git checkout -q feature2 )
+  out="$(resolve_in "$s/repo" board)"
+  if [ "$out" = "$s/repo" ] && grep -q "boardloc spec" "$out/.scratch/boardloc/spec.md"; then
+    ok "new-layout local board: same convention-level destination on feature2 (per-branch consistent)"
+  else
+    fail "new-layout board on feature2: got '$out'"
+  fi
+  ( cd "$s/repo" && git checkout -q main )
+
+  # legacy board names (SPEC.md / MAP.md / tickets/) must NOT resolve: a repo with only
+  # legacy board markers (no block, no new-name docs) keeps the context default --
+  # seam: resolve-location.sh store detection (ticket 0013 deletes the legacy arms).
+  local lg="$s/legboard"
+  make_code_repo "$lg" legboard
+  ( cd "$lg/repo"
+    mkdir -p tickets
+    printf '## 0001-old\n\nopen\n' > tickets/0001-old.md
+    printf '# old spec\n' > SPEC.md
+    printf '# old map\n' > MAP.md
+  )
+  out="$(resolve_in "$lg/repo" board)"
+  if [ "$out" = "$CTXROOT/legboard__repo/main" ]; then
+    ok "legacy board names (SPEC.md/MAP.md/tickets/) do not resolve as a board destination (context default)"
+  else
+    fail "legacy board still resolves: got '$out' (expected context default $CTXROOT/legboard__repo/main)"
+  fi
+  [ "$out" != "$lg/repo" ] || fail "legacy board resolved to the code repo root"
+}
+
+# --- 12: partial artifact-locations doc: recorded lines win, absent classes keep defaults ------
+t_partial_locations_doc() {
+  local s="$sandbox/partial"
+  make_code_repo "$s" partial
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  local cf="$CTXROOT/partial__repo/.agents"
+  # hand-written partial record: only glossary carries a line
+  write_locations_doc "$cf" "glossary: code"
+  local out cls
+  out="$(resolve_in "$s/repo" glossary)"
+  [ "$out" = "$s/repo" ] && ok "partial doc: class with a recorded line resolves to it (glossary: code)" \
+    || fail "partial recorded class: got '$out'"
+  for cls in adrs board research explainers; do
+    out="$(resolve_in "$s/repo" "$cls")"; local rc=$?
+    if [ "$rc" -eq 0 ] && [ "$out" = "$CTXROOT/partial__repo/main" ]; then
+      ok "partial doc: absent class '$cls' resolves to its default without erroring"
+    else
+      fail "partial doc absent class '$cls': rc=$rc out='$out'"
+    fi
+  done
+}
+
+# --- 13: reruns are idempotent: byte-identical artifacts, same recorded destinations -----------
+t_rerun_no_overwrite() {
+  local s="$sandbox/rerun"
+  make_code_repo "$s" rerun
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  local proj="$CTXROOT/rerun__repo"
+  # seeded artifacts at their default destinations
+  mkdir -p "$proj/main/research" "$proj/main/explainers" "$proj/main/docs/adr"
+  printf '# rerun glossary\n' > "$proj/main/GLOSSARY.md"
+  printf 'decision\n' > "$proj/main/docs/adr/2026-01-01-x.md"
+  printf 'note\n' > "$proj/main/research/note.md"
+  printf '<html>x</html>' > "$proj/main/explainers/x.html"
+  local classes=("${ALL_CLASSES[@]}")
+  local files=("$proj/main/GLOSSARY.md" "$proj/main/docs/adr/2026-01-01-x.md" \
+               "$proj/main/research/note.md" "$proj/main/explainers/x.html")
+  local hashes_before hashes_after i
+  hashes_before="$(for f in "${files[@]}"; do shasum -a 256 "$f"; done)"
+  # first pass: resolve every class + run the index step
+  local r1=() r2=() cls same=true
+  for cls in "${classes[@]}"; do r1+=("$(resolve_in "$s/repo" "$cls")"); done
+  ( cd "$s/repo" && AGENT_CONTEXT_HOME="$CTXROOT" \
+      bash "$repo_root/.pi/agent/skills/setup-context/ctx-index.sh" >/dev/null )
+  # second pass: everything runs again
+  for cls in "${classes[@]}"; do r2+=("$(resolve_in "$s/repo" "$cls")"); done
+  ( cd "$s/repo" && AGENT_CONTEXT_HOME="$CTXROOT" \
+      bash "$repo_root/.pi/agent/skills/setup-context/ctx-index.sh" >/dev/null )
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  hashes_after="$(for f in "${files[@]}"; do shasum -a 256 "$f"; done)"
+  [ "$hashes_before" = "$hashes_after" ] \
+    && ok "rerun: every seeded artifact byte-identical (no overwrite)" \
+    || fail "rerun mutated seeded artifacts"
+  for i in 0 1 2 3 4; do
+    if [ "${r1[$i]}" = "${r2[$i]}" ]; then
+      ok "rerun: class '${classes[$i]}' recorded destination stable across runs (${r1[$i]})"
+    else
+      same=false; fail "rerun: class ${classes[$i]} destination changed: '${r1[$i]}' -> '${r2[$i]}'"
+    fi
+  done
+  $same || fail "rerun destinations diverged"
+  # the index still lists the repo once per run (no duplicate rows)
+  [ "$(grep -c 'rerun__repo' "$CTXROOT/INDEX.md" || true)" -eq 1 ] \
+    && ok "rerun: ctx-index keeps one row per context repo (no duplicates)" \
+    || fail "ctx-index duplicated rows for rerun__repo"
+}
+
+# --- 14: dirty code repo (untracked + modified) does not block resolution or mutate files ------
+t_dirty_tree_resolution() {
+  local s="$sandbox/dirty"
+  make_code_repo "$s" dirty
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  local cf="$CTXROOT/dirty__repo/.agents"
+  write_locations_doc "$cf" "glossary: context"
+  # unrelated untracked + modified files -> the tree is dirty; the resolver asserts
+  # nothing about a clean tree.
+  ( cd "$s/repo"
+    printf 'untracked scratch\n' > untracked.log
+    printf 'modified\n' >> README.md
+  )
+  local hashes_before hashes_after st_before st_after out
+  hashes_before="$(for f in "$s/repo/untracked.log" "$s/repo/README.md"; do shasum -a 256 "$f"; done)"
+  st_before="$( cd "$s/repo" && git status --porcelain )"
+  out="$(resolve_in "$s/repo" glossary)"; local rc=$?
+  if [ "$rc" -eq 0 ] && [ "$out" = "$CTXROOT/dirty__repo/main" ]; then
+    ok "dirty tree (untracked + modified): resolution still succeeds"
+  else
+    fail "dirty tree resolution: rc=$rc out='$out'"
+  fi
+  hashes_after="$(for f in "$s/repo/untracked.log" "$s/repo/README.md"; do shasum -a 256 "$f"; done)"
+  st_after="$( cd "$s/repo" && git status --porcelain )"
+  [ "$hashes_before" = "$hashes_after" ] \
+    && ok "dirty tree: running the resolver changed no seeded/edited file's hash" \
+    || fail "resolver mutated dirty-tree files"
+  [ "$st_before" = "$st_after" ] \
+    && ok "dirty tree: resolver leaves git status untouched (nothing staged or committed)" \
+    || fail "resolver changed the dirty tree's git status"
 }
 
 # --- 7: resolver failures are clean -----------------------------------------------------------
@@ -347,6 +555,11 @@ t_defaults
 t_per_class
 t_branch_isolation
 t_glossary_roundtrip
+t_glossary_new_name_wins
+t_board_local_layout
+t_partial_locations_doc
+t_rerun_no_overwrite
+t_dirty_tree_resolution
 t_rules_in_config_home
 t_in_repo
 t_usage

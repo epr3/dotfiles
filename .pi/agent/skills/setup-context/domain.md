@@ -2,14 +2,14 @@
 
 **Code repo:** `<origin-url>` (`<slug>`), filled by `setup-context` on write.
 
-How the engineering skills should consume this code repo's domain documentation. It lives in the **config home** (`.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context**, committed with the code), one copy per **context repo**, used by all its branches, edit-in-place; skills resolve it there when orienting, beside the repo-wide convention docs (see CONTEXT-FORMAT.md).
+How the engineering skills should consume this code repo's domain documentation. It lives in the **config home** (`.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context**, committed with the code), one copy per **context repo**, used by all its branches, edit-in-place; skills resolve it there when orienting, beside the repo-wide convention docs (see GLOSSARY-FORMAT.md).
 
 ## Before exploring, read
 
-Context is personal, living **in the context worktree** by default; you edit it there directly, and `offload-context` commits + pushes it to the team remote (in-repo context: skip offload, it commits with the code). See `CONTEXT-FORMAT.md` (ships with the `domain-modeling` skill):
+Context is personal, living **in the context worktree** by default; you edit it there directly, and `offload-context` commits + pushes it to the team remote (in-repo context: skip offload, it commits with the code). See `GLOSSARY-FORMAT.md` (ships with the `domain-modeling` skill):
 
 - `GLOSSARY.md` at the worktree root, **or**
-- `GLOSSARY-MAP.md` at the worktree root if it exists: points at per-context `GLOSSARY.md` files (mirroring the code's dirs). Read each one relevant to the topic. (Legacy `CONTEXT.md` / `CONTEXT-MAP.md` names are still discovered read-only until the contraction.)
+- `GLOSSARY-MAP.md` at the worktree root if it exists: points at per-context `GLOSSARY.md` files (mirroring the code's dirs). Read each one relevant to the topic.
 - `docs/adr/`: read ADRs that touch the area you are about to work in. In multi-context repos, also check `<dir>/adr/` for context-scoped decisions.
 
 If none of these exist, **proceed silently**. Don't flag the absence; don't suggest creating files upfront. `grill-with-docs` creates them lazily when terms or decisions actually resolve.

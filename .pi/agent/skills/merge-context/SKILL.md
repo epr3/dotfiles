@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # Merge Context
 
-Resolve the **context store** first: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Resolving the context store*.
+Resolve the **context store** first: [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Resolving the context store*.
 
 Reconcile a **source** glossary + ADRs into a **target** by interview, rather than blindly copying. A line merge can leave a crept-back alias or two surviving definitions for one concept; this skill resolves **meaning**, which git cannot see. Three modes:
 
@@ -19,11 +19,11 @@ Reconcile a **source** glossary + ADRs into a **target** by interview, rather th
 
 ### 1. Resolve source + target
 
-Resolve both sides. For **branch -> trunk**: source = this branch's **context worktree**, target = the trunk worktree; run the `git merge` first, then reconcile the merged result here. For **context -> context**: both sides are dirs under the same **context home**. For **context repo -> context repo**: resolve both repos under the **context root** (slug formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*; dir names and `INDEX.md` identify them). Confirm direction with the user; the reconcile writes into the **target**, and the source is read, never silently destroyed.
+Resolve both sides. For **branch -> trunk**: source = this branch's **context worktree**, target = the trunk worktree; run the `git merge` first, then reconcile the merged result here. For **context -> context**: both sides are dirs under the same **context home**. For **context repo -> context repo**: resolve both repos under the **context root** (slug formula in [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Layout*; dir names and `INDEX.md` identify them). Confirm direction with the user; the reconcile writes into the **target**, and the source is read, never silently destroyed.
 
 ### 2. Inventory + classify
 
-Read both glossaries (`GLOSSARY.md` / per-context; legacy `CONTEXT.md` names still discovered) and ADRs. Classify every term:
+Read both glossaries (`GLOSSARY.md` / per-context) and ADRs. Classify every term:
 
 - **New**: in source, absent in target -> add.
 - **Identical**: same term, same definition -> dedupe.
@@ -38,7 +38,7 @@ Group: N new, N identical, N divergent, alias clashes, ADR conflicts. Lead with 
 
 ### 4. Merge
 
-Write the reconciled glossary + ADRs into the **target**; update its `GLOSSARY-MAP.md` (add the folded context's entries, repoint relationships, drop the merged-away entry). Glossary discipline holds: one sentence per term, opinionated, aliases under `_Avoid_` ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Rules*). A losing definition that's a genuine alias folds into the winner's `_Avoid_` list; one that's simply dead is deleted. Leave the source intact.
+Write the reconciled glossary + ADRs into the **target**; update its `GLOSSARY-MAP.md` (add the folded context's entries, repoint relationships, drop the merged-away entry). Glossary discipline holds: one sentence per term, opinionated, aliases under `_Avoid_` ([GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Rules*). A losing definition that's a genuine alias folds into the winner's `_Avoid_` list; one that's simply dead is deleted. Leave the source intact.
 
 ### 5. Finish
 

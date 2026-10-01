@@ -1,6 +1,6 @@
 # GLOSSARY.md Format
 
-The domain-language artifact is **`GLOSSARY.md`**, and its multi-context index is **`GLOSSARY-MAP.md`**. Skills **write only the new names**; until the legacy-name contraction, **reading** also discovers the old `CONTEXT.md` / `CONTEXT-MAP.md` names at the same location (see *Artifact locations* below). Storage terms (context repo, context worktree, context home) are unrelated to this rename and keep their names.
+The domain-language artifact is **`GLOSSARY.md`**, and its multi-context index is **`GLOSSARY-MAP.md`**. These are the only supported names: skills **write only them, and discover only them**. A `CONTEXT.md` / `CONTEXT-MAP.md` artifact found on disk is a migration leftover, not the glossary: it is not read; suggest renaming it. Storage terms (context repo, context worktree, context home) are unrelated to this rename and keep their names.
 
 ```md
 # {Context Name}
@@ -60,7 +60,7 @@ One word per level, used exactly this way here and in every skill:
 |---|---|
 | **context store** | how a repo's context is stored: the model. Values: **context repo**, **in-repo context**. Never a directory. |
 | **context repo** | the separate mirror of one code repo: a bare git repo holding one **context worktree** per code branch |
-| **in-repo context** | context tracked with the code: `GLOSSARY.md` / `GLOSSARY-MAP.md` at the repo root (legacy `CONTEXT.md` / `CONTEXT-MAP.md` still discovered), ADRs under `docs/adr/` |
+| **in-repo context** | context tracked with the code: `GLOSSARY.md` / `GLOSSARY-MAP.md` at the repo root, ADRs under `docs/adr/` |
 | **context root** | the directory holding every **context repo** plus `INDEX.md`; `AGENT_CONTEXT_HOME` points at it |
 | **context worktree** | one code branch's worktree inside a **context repo** |
 | **context home** | the resolved directory for glossary + ADRs: the **context worktree**, or the code repo root under **in-repo context** |
@@ -72,7 +72,7 @@ One word per level, used exactly this way here and in every skill:
 Resolve **code repo first**: a machine-wide config is a default for the *machine* and may describe **context repo**s belonging to other code repos, so it must never outrank what the code repo itself says. First hit wins, and the first hit is also the precedence winner.
 
 1. The code repo's own instructions file (`AGENTS.md`, else `CLAUDE.md`) carries an `## Agent skills` block -> it decides; stop.
-2. No block, but in-tree `GLOSSARY.md` / `GLOSSARY-MAP.md` / `docs/adr/` (or their legacy `CONTEXT.md` / `CONTEXT-MAP.md` names) -> **in-repo context**: read them, initialise nothing, suggest `setup-context` to record the choice.
+2. No block, but in-tree `GLOSSARY.md` / `GLOSSARY-MAP.md` / `docs/adr/` -> **in-repo context**: read them, initialise nothing, suggest `setup-context` to record the choice.
 3. Still unresolved -> look for a **context repo** matching this repo's slug under the **context root**, and read its recorded block at `.agents/agent-skills.md`.
 4. Nothing found -> the machine-wide `## Agent skills (defaults)` block supplies the default **model** only, never a path.
 
@@ -144,4 +144,4 @@ The structure is **generated from the code, not invented by agents**. Allowed pa
 - **Ordering ↔ Billing**: shared `CustomerId`, `Money`
 ```
 
-`GLOSSARY-MAP.md` links are relative to the repo root and mirror code-relative paths, so `./src/ordering/GLOSSARY.md` is the glossary for that code dir, in the worktree. Inference: `GLOSSARY-MAP.md` (legacy `CONTEXT-MAP.md`) exists → multi. Only a root `GLOSSARY.md` (or a legacy root `CONTEXT.md`) → single. Neither (under either naming) → create `GLOSSARY.md` at the worktree root lazily on first term. Infer current context from topic; ask if unclear.
+`GLOSSARY-MAP.md` links are relative to the repo root and mirror code-relative paths, so `./src/ordering/GLOSSARY.md` is the glossary for that code dir, in the worktree. Inference: `GLOSSARY-MAP.md` exists → multi. Only a root `GLOSSARY.md` → single. Neither → create `GLOSSARY.md` at the worktree root lazily on first term. Infer current context from topic; ask if unclear.

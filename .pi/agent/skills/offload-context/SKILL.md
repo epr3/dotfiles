@@ -7,7 +7,7 @@ disable-model-invocation: true
 
 # Offload Context
 
-Resolve the **context store** first: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Resolving the context store*. **In-repo context** → this skill is a no-op; say so and stop.
+Resolve the **context store** first: [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Resolving the context store*. **In-repo context** → this skill is a no-op; say so and stop.
 
 Under a **context repo** it **commits this branch's context worktree and pushes the branch** to the team remote. It does **not** merge into trunk: that stays your deliberate `git merge` in the context repo, followed by `merge-context` to reconcile the glossary (`rebase-context` when a branch's base has moved).
 

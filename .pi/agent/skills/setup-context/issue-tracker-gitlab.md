@@ -1,6 +1,6 @@
 # Issue tracker: GitLab
 
-Issues for this repo live as GitLab issues; specs stay local files under `.scratch/<feature-slug>/spec.md` at the board's recorded artifact location (default: the context home; legacy boards may still name it `SPEC.md`). Use the `glab` CLI for all issue operations.
+Issues for this repo live as GitLab issues; specs stay local files under `.scratch/<feature-slug>/spec.md` at the board's recorded artifact location (default: the context home). Use the `glab` CLI for all issue operations.
 
 ## Conventions
 

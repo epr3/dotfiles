@@ -16,7 +16,7 @@ case "$class" in glossary|adrs|board|research|explainers) ;; *) echo "unknown cl
 root="$(git rev-parse --show-toplevel 2>/dev/null)" || { echo "not a git repo" >&2; exit 1; }
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"; [ "$branch" = HEAD ] && branch="main"
 
-# --- store + config home, per CONTEXT-FORMAT.md *Resolving the context store* ---------
+# --- store + config home, per GLOSSARY-FORMAT.md *Resolving the context store* ---------
 store="context"   # recorded block's Store line, or the context-repo default
 instruct=""
 for cand in "$root/AGENTS.md" "$root/CLAUDE.md"; do
@@ -25,11 +25,11 @@ done
 if [ -n "$instruct" ]; then
   if grep -qi '^Store:[[:space:]]*in-repo' "$instruct"; then store="in-repo"
   elif grep -qi '^Store:[[:space:]]*context repo' "$instruct"; then store="context"
-  elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
-    store="in-repo"   # no Store line recorded -> in-tree docs decide (in-repo context); legacy names still discovered
+  elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -d "$root/docs/adr" ]; then
+    store="in-repo"   # no Store line recorded -> in-tree docs decide (in-repo context)
   fi
-elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
-  store="in-repo"   # in-tree docs, no recorded block: in-repo context (new names first; legacy names still discovered)
+elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -d "$root/docs/adr" ]; then
+  store="in-repo"   # in-tree docs, no recorded block: in-repo context
 fi
 if [ "$store" = "in-repo" ]; then cf="$root/docs/agents"; else
   # slug, same formula as ctx-init.sh

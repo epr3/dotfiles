@@ -7,7 +7,7 @@ description: Shared vocabulary for designing deep modules. Use when the user wan
 
 Design **deep modules**: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface. Use this language and these principles wherever code is being designed or restructured. The aim is leverage for callers, locality for maintainers, and testability for everyone.
 
-The domain glossary names the *concepts*; this vocabulary names their *shape*. Use the project's domain language (`GLOSSARY.md` in the context worktree; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)) for *what* a module is ("the Order intake module," not "the FooBarHandler") and the terms below for *how* it's built.
+The domain glossary names the *concepts*; this vocabulary names their *shape*. Use the project's domain language (`GLOSSARY.md` in the context worktree; see [../domain-modeling/GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)) for *what* a module is ("the Order intake module," not "the FooBarHandler") and the terms below for *how* it's built.
 
 ## Glossary
 

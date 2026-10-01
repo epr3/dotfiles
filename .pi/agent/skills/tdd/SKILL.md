@@ -44,7 +44,7 @@ When the work is a tracked issue, `tdd` runs on top of `implement`: follow its f
 
 ### 1. Planning
 
-Orient to the project's domain model first: test names and interface vocabulary should match the glossary in this branch's context worktree (`GLOSSARY.md`; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)), and respect ADRs in the area you're touching. A new domain term you surface while testing -> write it into the worktree per `domain-modeling`.
+Orient to the project's domain model first: test names and interface vocabulary should match the glossary in this branch's context worktree (`GLOSSARY.md`; see [../domain-modeling/GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)), and respect ADRs in the area you're touching. A new domain term you surface while testing -> write it into the worktree per `domain-modeling`.
 
 Before writing any code:
 
