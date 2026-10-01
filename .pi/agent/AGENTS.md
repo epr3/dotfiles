@@ -19,7 +19,7 @@ Grep/find for what server can't see: comments, strings, config values, TODOs, lo
 
 This harness exposes extension tools — prefer them over doing everything in the main context:
 
-- **`Agent`** — spawn an isolated sub-agent to keep the main context clean. `subagent_type: "explore"` = read-only codebase discovery, `"researcher"` = read-only web/external research (grounded against the code), `"general"` = off-context work that may write. Foreground blocks and returns the result; `run_in_background: true` returns an id you poll with `get_subagent_result`. Reach for explore/researcher before large inline reads or web digs.
+- **`Agent`** — spawn an isolated sub-agent to keep the main context clean. `subagent_type: "explore"` = read-only codebase discovery, `"general"` = off-context work that may write, meaning code review spec and standards axes or something along those lines. Foreground blocks and returns the result; `run_in_background: true` returns an id you poll with `get_subagent_result`. Reach for explore/researcher before large inline reads or web digs.
 - **`question`** — when a decision needs the user, ask through `question` (2–4 mutually-exclusive options, recommended one first), not free prose.
 - **`todo_write` / `todo_read`** — track multi-step work as an explicit list so the plan survives context pressure; update entries as steps complete.
 # Global rules — context store (install once per machine, personal, not per-repo)
