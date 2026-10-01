@@ -1,53 +1,15 @@
 ---
 name: implement
-description: Pick up a ticket, build the vertical slice it describes, verify it, and set its status to resolved. Use when the user wants a ticket implemented, resolved, or closed. Fourth step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
-argument-hint: "issue number or path under .scratch/*/issues/"
+description: "Implement a piece of work based on a spec or set of tickets."
+disable-model-invocation: true
 ---
 
-# Implement
+Implement the work described by the user in the spec or tickets.
 
-Implement one ticket end-to-end, mark it resolved.
+Use /tdd where possible, at pre-agreed seams.
 
-## Process
+Run typechecking regularly, single test files regularly, and the full test suite once at the end.
 
-### 1. Load the ticket
+Once done, use /code-review to review the work.
 
-Route the claim by tracker **kind**, not by whether a tracker is configured: a configured local-markdown tracker is still local, and local files claimed through it use frontmatter, never hosted operations. **Hosted tracker** (GitHub, GitLab, or another remote issue system) -> fetch the issue there per its conventions; a bare `#42` resolves in the tracker. With triage on, `ready-for-agent` is the pick-up signal, and an attached Agent Brief (`triage`'s output, see [AGENT-BRIEF.md](../triage/AGENT-BRIEF.md)) *is* the spec: its acceptance criteria are the definition of done and its out-of-scope line is binding. Claim the issue as the first write after selection: self-assign plus a claim comment carrying the baseline snapshot described below (prefixed with the AI disclaimer on GitHub / GitLab), then re-read to confirm. Everything below is unchanged.
-
-**Local markdown tracker** (`.scratch/*/issues/*.md`, **at the board's recorded artifact location, resolved with `setup-context`'s `resolve-location.sh board` (default: the context home)** - whether the recorded `## Agent skills` block / `issue-tracker.md` in the config home configures it or nothing does) -> resolve the arg (slug, numbered filename, or full path) by slug match against `.scratch/*/issues/*.md` **at that location**, skipping effort dirs (those with a `map.md`), since wayfinder tickets are decisions to make, not slices to build. Ambiguous -> list candidates, ask.
-
-Arg names a spec, or is omitted with a single spec in play -> don't pick arbitrarily: take the open ticket with the lowest `<NNNN>` for that `parent` whose blockers are all resolved. That's what the filename number is for; implement a spec's tickets in sequence. That set is the **frontier**: open, blockers resolved, and *unclaimed*; a claimed ticket is off the frontier for every other session. Claim before any work: the first write after selection sets `claimed_by: pi:$PI_SESSION_ID` in the ticket's frontmatter, then re-read to confirm it landed. **Capture the baseline before that first write**: the start commit (`git rev-parse HEAD`, full SHA) and the pre-existing dirty-work snapshot, one `<status> <hash> <path>` line per dirty path: the `git status --porcelain` status, the path's content marker (`git hash-object -- <path>`), and the path. Expand directory collapses so every untracked file has its own line (use `git ls-files --others --exclude-standard` for the recursive list). Record both in the claim (a `## Comments` section for local files); review later uses this record to exclude unrelated pre-existing work and to detect overlapping changes. Cooperative and best-effort: no silent steal; explicit takeover or release is a comment on the ticket; no auto-expiry; the claim is retained on resolve.
-
-`status: resolved` already -> stop and tell the user. No `status` field -> treat as `open`.
-
-Read the full body: what to build, acceptance criteria, blocked-by.
-
-Read the frontmatter with legacy compatibility: `type: HITL | AFK` is the older schema that conflated kind and mode, so read that `type` as `mode` with `type` defaulting to `task`. Unified tickets carry `type` (research | prototype | grilling | task) beside `mode` (HITL | AFK); old tickets keep loading either way.
-
-### 2. Check unblocked
-
-Read each "Blocked by" issue. Any not `status: resolved` -> stop, report the open blocker, and offer to resolve it first.
-
-### 3. Build the slice
-
-Explore as needed: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary (`GLOSSARY.md` in the context worktree, see [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)); respect ADRs. Build the thin **vertical slice**: every layer, demoable alone. Acceptance criteria = definition of done. Drive the build with the `tdd` skill's red → green loop at every **pre-agreed seam**: whether the seam is named in the ticket, in the parent spec, or confirmed in conversation, the agreement activates the loop even when the ticket text is silent. A seam nobody agreed is not yours to pick: surface it for confirmation as one **round** in the `grilling` skill's question format before any test is written, and never treat a missing agreement as a silent skip of the discipline. Code comments stay terse: non-obvious WHY only, never narrating WHAT.
-
-Track with `todo_write`/`todo_read`: one entry per step, exactly one `in_progress`, mark completed as each criterion is met; `todo_read` re-reads the set, so a long implementation stays legible.
-
-**Delegate outsized steps.** A step too big to hold alongside the rest (and separable, meaning it has its own acceptance criterion and no dependence on the conversation's working state) goes to a sub-agent: one `Agent` call, `subagent_type: "general"`, brief = the ticket, that step's criterion, the relevant files (and the red → green loop when `tdd` is driving). Prefer delegating **repetitive** steps (the same change across many sites, where you write the brief once and fan out in parallel when the chunks are independent) and **context-heavy** ones, whose reads would fill the main context with material only that step needs. Verify each result against its criterion yourself before marking the todo item `completed`: delegation moves the work, not the responsibility. One level only; sub-agents don't re-delegate, and you stay the integrator.
-
-**HITL** -> surface the decision or review point before committing, as one **round** in the `grilling` skill's question format. **AFK** -> proceed unattended.
-
-### 4. Verify
-
-Run the project's tests/build for the touched area: typecheck and focused tests as you go, the full suite once at the end. Confirm every acceptance box is genuinely checkable. No resolve on red.
-
-### 5. Review
-
-Hand the work to the `code-review` skill as a WIP-scope review of the whole slice: committed changes since the recorded start commit, plus any uncommitted staged, unstaged, and relevant untracked additions (with a clean working tree this is a committed-range review). Pass the recorded baseline so pre-existing user work is excluded, and name the slice's files plus the workflow-record paths (the ticket, its spec, and the claim record) explicitly in the handoff. Never stage or commit to make review possible; offer-not-auto-commit stands. Review owns refactoring: findings include review-identified refactor candidates, each applied as an agreed change with the appropriate tests rerun after it and never while the build is red. Fix every finding before resolving; no resolve on open findings.
-
-### 6. Set status
-
-Frontmatter `status: open` -> `status: resolved`. Tick the acceptance checkboxes. Rest of the file intact.
-
-Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked. Offer a commit as a closing line; never perform it (local convention, superseding upstream's "commit your work to the current branch" step: commits are offered for the user to approve, never auto-performed).
+Commit your work to the current branch.

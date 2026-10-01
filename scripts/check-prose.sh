@@ -245,6 +245,8 @@ check_inventory() {
       info "$s flipped user-invoked (allowed inventory change, check 5)"
     elif ! git ls-tree -r --name-only "$BASE_REF" -- ".pi/agent/skills/$s/" 2>/dev/null | grep -q .; then
       info "$s is a new skill at work tree (not a flip, check 5)"
+    elif parity_is_upstream_skill "$s"; then
+      info "$s invocation mode is owned by the pinned parity seam (check 5)"
     else
       fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s became user-invoked (check 5)"
     fi
@@ -254,6 +256,8 @@ check_inventory() {
     [ -z "$s" ] && continue
     if is_spec_removed "$s" || grep -qx "$s" <<< "${PARITY_RETIRED:-}"; then
       info "$s removed by spec or recorded local retirement (check 5)"
+    elif parity_is_upstream_skill "$s"; then
+      info "$s invocation mode is owned by the pinned parity seam (check 5)"
     else
       fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s no longer user-invoked (check 5)"
     fi

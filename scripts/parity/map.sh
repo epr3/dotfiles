@@ -141,3 +141,15 @@ parity_expected_dirs() {
   for entry in "${PARITY_UPSTREAM_SKILLS[@]}"; do echo "${entry%=*}"; done
   for e in "${PARITY_LOCAL_ONLY[@]}"; do echo "$e"; done
 }
+
+# parity_is_upstream_skill <skill-dir> — rc 0 when the dir has a pinned
+# upstream counterpart. Its frontmatter (including invocation mode) is then
+# owned by the parity seam: either byte-exact upstream or covered by a
+# recorded substitution, so a prose/policy check must not demand a fork.
+parity_is_upstream_skill() { # <skill-dir>
+  local d=$1 entry
+  for entry in "${PARITY_UPSTREAM_SKILLS[@]}"; do
+    [ "${entry%=*}" = "$d" ] && return 0
+  done
+  return 1
+}

@@ -1,81 +1,105 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or conversation into independently-grabbable tracer-bullet tickets, each numbered with its build position. Use when the user wants work sliced into tickets or issues. Third step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
-argument-hint: "optional spec/plan .md path, issue number, or issue URL"
+description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker (edges as text in one file per ticket locally, or native blocking links on a real tracker).
+disable-model-invocation: true
 ---
 
 # To Tickets
 
-If the recorded `## Agent skills` block / `issue-tracker.md` (config home) designates a tracker, publish each issue there per its conventions instead of local files; everything else below is unchanged. Default: break the plan into independently-grabbable tickets = vertical slices (**tracer bullets**) -> local files under `.scratch/<feature-slug>/issues/` at the board's recorded artifact location, resolved with `setup-context`'s `resolve-location.sh board` (default: the context home) ([GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md), *Context home*). Issues always go to `issues/`.
+Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-**Triage on -> publish approved slices in the configured ready state.** A slice approved in step 4 is fully specified (What-to-build + checkable acceptance criteria), so it goes out agent-grabbable by construction: apply the ready role string from [triage-labels.md](../setup-context/triage-labels.md) (`ready-for-agent` in the canonical vocabulary) unless the user explicitly overrides - no `triage` re-run is implied over freshly approved work. A slice left underspecified publishes `needs-triage` instead. The role rides the destination's convention: a label on hosted issues, a `Status:` line in local ticket files (see the `issue-tracker.md` conventions in the config home). **No triage** -> plain open tickets/issues with no role anywhere.
+The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-context`.
 
 ## Process
 
 ### 1. Gather context
 
-Work from whatever the conversation already holds. Path arg (spec/plan `.md`) -> read fully, comments included. Tracker-reference arg (issue number, bare `#NN`, or issue URL) -> resolve through the configured tracker's read operation per the `issue-tracker.md` conventions in the config home, **comments included**, and read the full body and comments before slicing; the supplied reference is the source - never fall back to an unrelated local spec. No arg -> default source: newest spec under `.scratch/*/spec.md` in the context home. Note the parent: the spec path/slug, or the tracker reference when one was supplied. Every issue records it, and step-5 ordering is scoped to it.
+Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
 
-### 2. Explore (optional)
+### 2. Explore the codebase (optional)
 
-Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`GLOSSARY.md` in the context worktree, see [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)); respect ADRs in the area. Look for prefactoring that makes the implementation easier; make the change easy, then make the easy change.
+If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
+
+Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
 
 ### 3. Draft vertical slices
 
-Each issue = thin vertical slice through ALL layers end-to-end (schema, API, UI, tests); NOT horizontal slice of one layer.
-
-Type each ticket with the unified schema: `type` is the kind (**research** read-and-report, **prototype** throwaway answering a design question, **grilling** stress-testing a plan with the user, **task** an implementation slice) and `mode` is **HITL** (needs a human: architectural decision, design review) or **AFK** (implementable + mergeable unattended). Mode constraints: `research` -> AFK; `prototype` -> HITL; `grilling` -> HITL; `task` -> either. Prefer `type: task`, `mode: AFK`.
-
-While drafting, capture each slice's **blocked-by** deps; they determine step-5 build order. Keep the working breakdown in the conversation; step 4 presents it as the numbered list.
-
-**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change (rename a column, retype a shared symbol) whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**: first expand (add the new form beside the old so nothing breaks), then migrate call sites in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, CI staying green batch to batch because the old form still exists, and finally contract (delete the old form once no caller remains) in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket; green is promised only there.
+Break the work into **tracer bullet** tickets.
 
 <vertical-slice-rules>
-- Completed slice demoable/verifiable alone
-- Each slice sized for a single fresh context window
-- Many thin slices > few thick ones
+
+- Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests): vertical, NOT a horizontal slice of one layer
+- A completed slice is demoable or verifiable on its own
+- Each slice is sized to fit in a single fresh context window
+- Any prefactoring should be done first
+
 </vertical-slice-rules>
 
-### 4. Quiz user
+Give each ticket its **blocking edges**: the other tickets that must complete before it can start. A ticket with no blockers can start immediately.
 
-Present breakdown as numbered list **in proposed build order**. Per slice: order · title · type/mode · blocked-by · user stories covered.
+**Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change (rename a column, retype a shared symbol) whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket; green is promised only there.
 
-Review as **round**s in the `grilling` skill's question format. Cover: granularity (coarse/fine/right) · dependency correctness · **build order itself** (anything sequenced before its dependency?) · merge/split · HITL/AFK assignment. Iterate until approved.
+### 4. Quiz the user
 
-### 5. Order and write issue files
+Present the proposed breakdown as a numbered list. For each ticket, show:
 
-Each ticket **declares its blocking edges**: a `blocked_by:` frontmatter list of ticket numbers (empty when unblocked). The linear `<NNNN>` order is the flattened default; the edges are the truth. On a real tracker, express edges as native blocking links where the tracker supports them; then the **frontier** (tickets whose blockers are all done) is queryable and multiple agents can work it in parallel. Slices of an existing issue stay attached to it: each new issue's body records the step-1 parent under `## Parent` when the source was a tracker issue. In local files, work top-to-bottom by `<NNNN>`.
+- **Title**: short descriptive name
+- **Blocked by**: which other tickets (if any) must complete first
+- **What it delivers**: the end-to-end behaviour this ticket makes work
 
-Compute **build order per spec** from dependency graph: topological sort, every blocker ahead of what it blocks. Ties: foundational first (schema/contracts before features built on them), then delivered value.
+Ask the user:
 
-Write each slice to `.scratch/<feature-slug>/issues/<NNNN>-<slug>.md`, where `<feature-slug>` is **the parent spec's directory** (issues live beside their `spec.md`, one dir per feature). No spec (conversation-sourced) -> mint a fresh `<feature-slug>` at the same recorded board location (location rule at the top; never bare CWD). `<NNNN>` = zero-padded build position in this spec (`0001`, `0002`, …), so **order lives in the filename** and `ls issues/` reads as the build sequence with nothing re-derived later. Order is per-spec: a different spec starts again at `0001`, the slug keeps filenames unique. Create blockers-first so `blocked_by` references real issue numbers. New issue starts `status: open`.
+- Does the granularity feel right? (too coarse / too fine)
+- Are the blocking edges correct: does each ticket only depend on tickets that genuinely gate it?
+- Should any tickets be merged or split further?
 
-**Incremental runs:** tickets with this `parent` exist -> continuation, not fresh sequence. Read them, with legacy compatibility: `type: HITL | AFK` is the older schema, read that `type` as `mode` with `type` defaulting to `task`; continue after highest `<NNNN>`. New slice must precede still-open work -> renumber (`git mv`) only open tail; never resolved issues, whose number = history. Read numbering from own parent's issues only: avoided race = *global* sequential numbering across specs/branches (same reason ADRs not numbered); one spec's ticket set normally lives on one branch.
+Iterate until the user approves the breakdown.
+
+### 5. Publish the tickets to the configured tracker
+
+Publish the approved tickets. **How** depends on the tracker `/setup-context` configured; the tickets are the same either way, only the shape of the blocking edges changes:
+
+- **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md` at the board's recorded artifact location (resolve it with `<setup-context skill dir>/resolve-location.sh board` run with cwd in the code repo), numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below: one ticket per file, never a single combined file.
+- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise; the tickets are agent-grabbable by construction.
+
+Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
+
+Do NOT close or modify any parent issue.
+
+<local-ticket-template>
+
+# <NN>: <Ticket title>
+
+**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
+
+**Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
+
+**Status:** ready-for-agent
+
+- [ ] Acceptance criterion 1
+- [ ] Acceptance criterion 2
+
+</local-ticket-template>
 
 <issue-template>
----
-status: open
-type: research | prototype | grilling | task
-mode: HITL | AFK
-parent: <path or slug of the source spec/plan, or "none">
-blocked_by: [<NNNN>, ...]   # ticket numbers; [] when unblocked
----
+
+## Parent
+
+A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
 
 ## What to build
 
-Concise description of this vertical slice. End-to-end behavior, not layer-by-layer.
-
-No file paths or code snippets; they go stale. Exception: a prototype snippet encoding a decision more precisely than prose (state machine, reducer, schema, type shape): inline the decision-rich parts, note it came from a prototype (see the `prototype` skill).
+The end-to-end behaviour this ticket makes work, from the user's perspective, not layer-by-layer implementation.
 
 ## Acceptance criteria
 
 - [ ] Criterion 1
 - [ ] Criterion 2
 
+## Blocked by
+
+- A reference to each blocking ticket, or "None (can start immediately)".
+
 </issue-template>
 
-`claimed_by:` is omitted on a new ticket (unclaimed); a session claims one by writing `claimed_by: pi:$PI_SESSION_ID` as its first work write (claim rules in the `implement` skill).
-
-Keep numbering and `blocked_by` in agreement; a numbering that violates `blocked_by` is a bug.
-
-Leave the parent spec/plan file untouched; never close or modify the source issue a slice came from.
+In either form, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
