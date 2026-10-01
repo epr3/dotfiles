@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Resolve the **context store** first: [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Resolving the context store*.
 
-Reconcile a **source** glossary + ADRs into a **target** by interview, rather than blindly copying. A line merge can leave a crept-back alias or two surviving definitions for one concept; this skill resolves **meaning**, which git cannot see. Three modes:
+Reconcile a **source** glossary + ADRs into a **target** by interview, rather than blindly copying. See [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md) → *Publish + reconcile across branches* for the shared merge/rebase discipline. Three modes:
 
 - **branch -> trunk (reconcile)**: plain `git merge` combines the files mechanically; run this skill on the merged trunk worktree afterwards to interview the diverging terms. **Context repo only**: under **in-repo context** there are no context branches to fold, plain git on the code repo carries it; say so and stop.
 - **context -> context** (within one **context home**): two bounded contexts that turned out to be one; fold `src/orders/` into `src/ordering/`, repoint the map. Runs under either **context store**; two glossary files side by side, no store machinery involved.
@@ -34,7 +34,7 @@ ADRs: union by `YYYY-MM-DD-slug`; identical dedupe; same slug, different body ->
 
 ### 3. Present
 
-Group: N new, N identical, N divergent, alias clashes, ADR conflicts. Lead with conflicts; they need a decision. Ask them as **round**s in the `grilling` skill's question format, one question per conflict: keep target / take source / merge both into one sharper line. **AFK** -> apply the unambiguous adds + dedupes; hold every divergence, alias clash, and ADR conflict for review. Never auto-resolve meaning.
+Group: N new, N identical, N divergent, alias clashes, ADR conflicts. Lead with conflicts; they need a decision. Ask one question per conflict: keep target / take source / merge both into one sharper line. **AFK** -> apply the unambiguous adds + dedupes; hold every divergence, alias clash, and ADR conflict for review. Never auto-resolve meaning.
 
 ### 4. Merge
 
@@ -42,4 +42,4 @@ Write the reconciled glossary + ADRs into the **target**; update its `GLOSSARY-M
 
 ### 5. Finish
 
-Under a **context repo**, run `<skill-dir>/ctx-index.sh` (`<skill-dir>` = the `setup-context` skill's folder; it scans the whole **context root**, so cwd doesn't matter) to refresh the readable index. Report what merged, what conflicted, where the target is. Offer to remove the source (the context folder, or the source **context repo** dir) now that it's folded in; only on explicit confirm.
+Under a **context repo**, run `<setup-context skill dir>/ctx-index.sh` to refresh the readable index. Follow *Running the helper scripts* in [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md). Report what merged, what conflicted, where the target is. Offer to remove the source (the context folder, or the source **context repo** dir) now that it's folded in; only on explicit confirm.
