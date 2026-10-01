@@ -39,7 +39,7 @@ _Avoid_: Client, buyer, account.
 - **Flag conflicts explicitly** in "Flagged ambiguities" with resolution.
 - **One sentence per term.** Define what it IS, not what it does.
 - **Show cardinality.** Use bold term names in relationships.
-- **Context-specific only.** Skip general programming concepts (timeouts, error types, utility patterns).
+- **Context-specific only.** Skip general programming concepts (timeouts, error types, utility patterns). Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
 - **Group with subheadings** only if natural clusters emerge; flat list otherwise.
 - **Example dialogue**: dev + domain expert demonstrating term boundaries.
 

@@ -19,7 +19,7 @@ Wayfinder **plans, it doesn't build**: every decision ticket resolves one decisi
 
 Every map and ticket has a **name**: its title. In everything the human reads (narration, Decisions-so-far entries), refer to maps and tickets by that name, never a bare id, number, or slug; the link carries the identifier inside it.
 
-**Where the map, its child decision tickets, blocking, and frontier queries physically live is tracker-specific.** Consult `issue-tracker.md` in the config home (the "Wayfinding operations" section) for how *this* repo expresses them. If that doc is absent, default to the local-markdown form (`.scratch/<effort-slug>/map.md` + `issues/`, at the board's recorded artifact location; legacy boards may still name them `MAP.md` + `tickets/`).
+**Where the map, its child decision tickets, blocking, and frontier queries physically live is tracker-specific.** Consult `issue-tracker.md` in the config home (the "Wayfinding operations" section) for how *this* repo expresses them. If that doc is absent, tell the user to run `setup-context`, and default to the local-markdown form (`.scratch/<effort-slug>/map.md` + `issues/`, at the board's recorded artifact location; legacy boards may still name them `MAP.md` + `tickets/`).
 
 ## The map body
 

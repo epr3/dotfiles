@@ -168,6 +168,10 @@ check_handoffs() {
 
 # -- Check 5: invocation inventory vs base --
 check_inventory() {
+  if ! git rev-parse --verify --quiet "$BASE_REF" >/dev/null 2>&1; then
+    fail "$BASE_REF" "is not a valid ref (check 5 cannot run)"
+    return
+  fi
   local base_user work_user
   base_user=$({ git ls-tree -r --name-only "$BASE_REF" -- .pi/agent/skills/ 2>/dev/null \
     | grep 'SKILL.md$' || true; } \
@@ -190,6 +194,8 @@ check_inventory() {
     [ -z "$s" ] && continue
     if [ "$s" = "handoff" ] || [ "$s" = "solve" ]; then
       info "$s flipped user-invoked (allowed inventory change, check 5)"
+    elif ! git ls-tree -r --name-only "$BASE_REF" -- ".pi/agent/skills/$s/" 2>/dev/null | grep -q .; then
+      info "$s is a new skill at work tree (not a flip, check 5)"
     else
       fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s became user-invoked (check 5)"
     fi

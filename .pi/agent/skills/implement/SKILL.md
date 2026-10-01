@@ -50,4 +50,4 @@ Hand the work to the `code-review` skill as a WIP-scope review of the whole slic
 
 Frontmatter `status: open` -> `status: resolved`. Tick the acceptance checkboxes. Rest of the file intact.
 
-Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked. Offer a commit as a closing line; never perform it.
+Report: what was built, what was verified, the resolved ticket's path, and which follow-up tickets are now unblocked. Offer a commit as a closing line; never perform it (local convention, superseding upstream's "commit your work to the current branch" step: commits are offered for the user to approve, never auto-performed).

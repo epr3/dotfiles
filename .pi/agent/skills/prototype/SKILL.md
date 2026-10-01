@@ -1,31 +1,32 @@
 ---
 name: prototype
-description: Build a prototype that answers a design question with runnable code, then capture what it taught. Use when the user wants to prototype, sanity-check a data model or state machine, or see several UI options.
+description: Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.
 ---
 
 # Prototype
 
-A prototype is **throwaway, runnable code that answers a design question**. Once it has answered, it is the **primary source** for that answer: the real code that follows is **secondary**, derived from what the prototype showed. The question decides the shape.
+A prototype is **throwaway code that answers a question**. The question decides the shape.
 
 ## Pick a branch
 
-From the prompt, the surrounding code, or by asking the user (`grilling` owns how to ask):
+Identify which question is being answered, using the user's prompt, the surrounding code, or by asking if the user is around (the `grilling` skill owns how to ask):
 
-- **"Does this logic / state model feel right?"** → [LOGIC.md](LOGIC.md): a shareable HTML demo a non-developer can drive, with free-play buttons plus tabbed guided walkthroughs pushing the state model through cases hard to reason about on paper.
-- **"What should this look like?"** → [UI.md](UI.md): several radically different UI variants on one route, switched via `?variant=` and a floating bottom bar.
+- **"Does this logic / state model feel right?"** → [LOGIC.md](LOGIC.md). Build a single shareable HTML file (free-play buttons plus tabbed guided walkthroughs) that pushes the state machine through cases that are hard to reason about on paper, and that a non-developer can drive.
+- **"What should this look like?"** → [UI.md](UI.md). Generate several radically different UI variations on a single route, switchable via a URL search param and a floating bottom bar.
 
-Wrong branch wastes the whole prototype. Genuinely ambiguous + user unreachable → match the surrounding code (backend module → logic; page/component → UI) and state the assumption at the top.
+The two branches produce very different artifacts, so getting this wrong wastes the whole prototype. If the question is genuinely ambiguous and the user isn't reachable, default to whichever branch better matches the surrounding code (a backend module → logic; a page or component → UI) and state the assumption at the top of the prototype.
 
-## Rules (both branches)
+## Rules that apply to both
 
-1. **Throwaway and clearly marked from day one.** Locate it next to the module/page it serves; name it so a casual reader can see it is a prototype, not production code. UI routes follow the project's existing routing convention.
-2. **One command to run** via the project's task runner (`pnpm <name>`, `python <path>`, …).
-3. **No persistence by default.** State in memory. If the question *is* persistence, use a scratch DB/file named "PROTOTYPE (wipe me)".
-4. **Skip the polish.** No tests, no error handling beyond runnable, no abstractions.
-5. **Surface the state**: print/render the full relevant state after every action (logic) or variant switch (UI).
+1. **Throwaway from day one, and clearly marked as such.** Locate the prototype code close to where it will actually be used (next to the module or page it's prototyping for) so context is obvious, but name it so a casual reader can see it's a prototype, not production. For throwaway UI routes, obey whatever routing convention the project already uses; don't invent a new top-level structure.
+2. **Trivial to run.** A UI prototype starts from one command in the project's task runner: `pnpm <name>`, `python <path>`, `bun <path>`, etc. A logic demo is a single HTML file the user double-clicks. Either way, no thinking required to start it.
+3. **No persistence by default.** State lives in memory. Persistence is the thing the prototype is _checking_, not something it should depend on. If the question explicitly involves a database, hit a scratch DB or a local file with a clear "PROTOTYPE, wipe me" name.
+4. **Skip the polish.** No tests, no error handling beyond what makes the prototype _runnable_, no abstractions. The point is to learn something fast.
+5. **Surface the state.** After every action (logic) or on every variant switch (UI), print or render the full relevant state so the user can see what changed.
+6. **Capture it when done.** Fold any validated decision into the real code, then capture the prototype itself as a **primary source**: commit it to a throwaway branch, out of main, and leave a context pointer to that branch on the implementation issue. Capture the answer too (the verdict and the question it settled) in the issue or a commit. The main branch keeps only the validated decision.
 
 ## When done
 
-**Capture what it taught**: the answer is the artifact everything downstream rests on. Record it durably (commit message, ADR, issue, or `NOTES.md` beside the prototype) paired with the question it answered and whichever snippet carries the answer most precisely (state machine, reducer, schema, type shape). `to-spec` and `to-tickets` inline exactly those decision-rich snippets, and they cite the prototype as their source. User unreachable → leave the placeholder for the verdict.
+Record what the prototype taught durably: the answer paired with the question it settled, plus whichever snippet carries the answer most precisely (state machine, reducer, schema, type shape). `to-spec` and `to-tickets` inline exactly those decision-rich snippets and cite the prototype as their source. User unreachable → leave a placeholder for the verdict (`NOTES.md` beside the prototype).
 
-Stop after capturing the prototype and its findings; real implementation requires a separate explicit user request. When requested, it is a rewrite under production constraints, informed by the prototype rather than promoted from it. Capture the prototype itself as a **primary source**: commit it to a throwaway branch off main and leave a pointer to that branch from the ticket; main keeps only the validated decision. Never ship the shell; never promote the prototype.
+Stop after capturing the prototype and its findings; real implementation requires a separate explicit user request. When requested, it is a rewrite under production constraints, informed by the prototype rather than promoted from it.

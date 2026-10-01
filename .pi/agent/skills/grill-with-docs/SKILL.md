@@ -1,9 +1,11 @@
 ---
 name: grill-with-docs
-description: Grill a plan against the project's GLOSSARY.md and ADRs, sharpening both inline as decisions crystallise. Use when the user wants a plan stress-tested against documented domain language. First step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
+description: A relentless interview to sharpen a plan or design, which also creates docs (ADRs and glossary) as we go. First step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
 ---
 
 # Grill With Docs
+
+This skill is the `grilling` skill and the `domain-modeling` skill run together: the interview sharpens the plan while docs (ADRs, glossary) are created inline as decisions crystallise.
 
 ## Process
 
@@ -15,7 +17,7 @@ ADRs (personal, see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)): resolve 
 
 ### 2. Grill, modeling as you go
 
-Run the **grill** loop (see the `grilling` skill), applying the **domain-modeling** moves to each question (see the `domain-modeling` skill, which also owns the inline-write rule, the ADR test, and glossary discipline). System-wide decisions go to the resolved ADR destination's `docs/adr/`; a context's own go to its `<dir>/adr/` beneath the same destination.
+Load the `grilling` and `domain-modeling` skills (read their SKILL.md). Run the **grill** loop, applying the **domain-modeling** moves to each question (domain-modeling also owns the inline-write rule, the ADR test, and glossary discipline). System-wide decisions go to the resolved ADR destination's `docs/adr/`; a context's own go to its `<dir>/adr/` beneath the same destination.
 
 ### 3. Stop at the modeling boundary
 
