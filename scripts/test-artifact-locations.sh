@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Integration tests for branch-scoped artifact locations (setup-context ticket 0002):
+# Integration tests for branch-scoped artifact locations (setup-context ticket 0002,
+# skill routing ticket 0003):
 # per-class destinations recorded in the config home's artifact-locations.md, resolved
 # by setup-context/resolve-location.sh. Sandbox + isolated HOME/git config, real local
 # multi-branch fixtures with context repos; no network, real config untouched.
@@ -25,12 +26,14 @@ fail() { echo "FAIL - $1" >&2; fail_count=$((fail_count + 1)); }
 
 # Code repo with origin (same layout as clone-for-worktrees fixtures) + a context repo
 # via ctx-init.sh per branch, so both context worktrees exist.
+# optional second arg = remote/repo name, giving the context repo a distinct slug
+# (all sandboxes share one CTXROOT, so distinct slugs keep recorded docs separate).
 make_code_repo() {
-  local dir="$1"
-  git init -q --bare "$dir/artloc/repo.git"
+  local dir="$1" name="${2:-artloc}"
+  git init -q --bare "$dir/$name/repo.git"
   git init -q -b main "$dir/repo"
   ( cd "$dir/repo"
-    git remote add origin "$dir/artloc/repo.git"
+    git remote add origin "$dir/$name/repo.git"
     echo "readme" > README.md; git add README.md; git commit -qm "main commit"
     git checkout -qb feature
     echo "feature" > feature.txt; git add feature.txt; git commit -qm "feature commit"
@@ -60,6 +63,70 @@ write_locations_doc() {
 resolve_in() {
   local repo="$1" class="$2"
   ( cd "$repo" && AGENT_CONTEXT_HOME="${CTXROOT:-$AGENT_CONTEXT_HOME}" bash "$resolver" "$class" 2>&1 )
+}
+
+# --- 8: ADR, research, and explainer producers + consumers at their own destinations ----------
+t_other_adrs_code() {
+  local s="$sandbox/adrcode"
+  make_code_repo "$s" adrcode
+  # ADRs at the code worktree, identical filename on two branches: the in-tree docs/adr
+  # dir means the resolver treats this repo as in-repo context (no recorded instructions),
+  # so record the destination under docs/agents as in-repo setups do.
+  local adr=docs/adr/2026-01-01-pick.md
+  ( cd "$s/repo"
+    mkdir -p docs/agents
+    printf 'adrs: code\n' > docs/agents/artifact-locations.md
+    mkdir -p docs/adr && printf 'decision from main\n' > "$adr" && git add . && git commit -qm adr-main
+    git checkout -qb alt
+    printf 'decision from alt\n' > "$adr" && git add . && git commit -qm adr-alt
+  )
+  local dest
+  dest="$(resolve_in "$s/repo" adrs)"
+  grep -q "decision from alt" "$dest/$adr" && ok "ADR written at + read from the code destination, branch-correct on alt" || fail "ADR alt lookup: got '$dest'"
+  ( cd "$s/repo" && git checkout -q main )
+  grep -q "decision from main" "$(resolve_in "$s/repo" adrs)/$adr" && ok "ADR lookup back on main returns main's decision" || fail "ADR main lookup"
+}
+
+# --- 9: research (context) + explainers (custom) producers + consumers, two branches -----------
+t_other_research_explainers() {
+  local s="$sandbox/classes"
+  make_code_repo "$s" classes
+  init_ctx_for_branch "$s/repo" main "$CTXROOT"
+  init_ctx_for_branch "$s/repo" feature "$CTXROOT"
+  local cf="$CTXROOT/classes__repo/.agents"
+  write_locations_doc "$cf" "research: context" "explainers: custom:$s/classes/explain-stash"
+  ( cd "$s/repo" && git checkout -q main )
+
+  # research at the *context* destination: notes in the branch-matching context worktree.
+  local rw="$CTXROOT/classes__repo"
+  mkdir -p "$rw/main/notes" "$rw/feature/notes"
+  printf 'main research\n' > "$rw/main/notes/dev.md"
+  printf 'feature research\n' > "$rw/feature/notes/dev.md"
+  local dest
+  dest="$(resolve_in "$s/repo" research)"
+  grep -q "main research" "$dest/notes/dev.md" && ok "research producer/consumer meet at the matching context worktree (main)" || fail "research main: got '$dest'"
+  ( cd "$s/repo" && git checkout -q feature )
+  dest="$(resolve_in "$s/repo" research)"
+  grep -q "feature research" "$dest/notes/dev.md" && ok "research consumer on feature reads the feature worktree" || fail "research feature: got '$dest'"
+  ( cd "$s/repo" && git checkout -q main )
+
+  # explainers at a *custom* destination: /<branch> appended, branch-scoped.
+  dest="$(resolve_in "$s/repo" explainers)"
+  [ "$dest" = "$s/classes/explain-stash/main" ] || fail "explainers custom: got '$dest'"
+  mkdir -p "$dest/explainers" "$s/classes/explain-stash/feature/explainers"
+  printf '<html>main page</html>' > "$dest/explainers/2026-01-01-diff.html"
+  printf '<html>feature page</html>' > "$s/classes/explain-stash/feature/explainers/2026-01-01-diff.html"
+  grep -q "main page" "$dest/explainers/2026-01-01-diff.html" && ok "explainer saved + found at the custom destination, branch-scoped" || fail "explainer main"
+  ( cd "$s/repo" && git checkout -q feature )
+  grep -q "feature page" "$(resolve_in "$s/repo" explainers)/explainers/2026-01-01-diff.html" && ok "explainer lookup on feature resolves the feature page" || fail "explainer feature"
+  ( cd "$s/repo" && git checkout -q main )
+
+  # one class redirected, the others not: the lines above moved only their own class.
+  [ ! -e "$s/classes/explain-stash/main/notes" ] && [ ! -e "$rw/main/docs" ] \
+    && [ ! -e "$s/repo/notes" ] && [ ! -e "$s/repo/explainers" ] \
+    || fail "a redirected class leaked into another destination"
+  [ ! -e "$s/classes/explain-stash/main/notes" ] && [ ! -e "$s/repo/explainers" ] \
+    && ok "redirecting each class left the other destinations untouched"
 }
 
 # --- 1: defaults without a recorded doc equal the pre-existing context-home destinations ------
@@ -240,6 +307,8 @@ t_usage() {
   case "$out" in *"not a git repo"*) ok "outside a repo rejected" ;; *) fail "outside repo: got '$out'" ;; esac
 }
 
+t_other_research_explainers
+t_other_adrs_code
 t_defaults
 t_per_class
 t_branch_isolation

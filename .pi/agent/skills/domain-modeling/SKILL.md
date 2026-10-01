@@ -18,8 +18,8 @@ Layer these moves onto a grilling pass, or apply them directly when modeling:
 
 ## Writing it down
 
-**Inline updates:** term resolved -> write immediately into the context worktree (the dir mirroring that code; [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): your WIP for the whole cycle, so new terms and corrections alike go there. Decision passes the ADR test -> offer write ([ADR-FORMAT.md](./ADR-FORMAT.md)) into `docs/adr/` (or `<dir>/adr/`) in the worktree. The `offload-context` skill commits + pushes it at cycle end.
+**Inline updates:** term resolved -> write immediately into the context worktree (the dir mirroring that code; [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md)): your WIP for the whole cycle, so new terms and corrections alike go there. Decision passes the ADR test -> offer write ([ADR-FORMAT.md](./ADR-FORMAT.md)) into `docs/adr/` (or `<dir>/adr/`) of the ADR destination: resolve it with `<setup-context skill dir>/resolve-location.sh adrs` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), keeping the default branch worktree when unset. The `offload-context` skill commits + pushes ADRs recorded in the context worktree at cycle end; other destinations commit where they live.
 
 **ADR test (all three or skip):** hard to reverse · surprising without context · real trade-off.
 
-**Glossary discipline:** glossary only (no implementation details, specs, or decisions). One sentence per term, opinionated, aliases under `_Avoid_`. Lazy-create `CONTEXT.md` on first term; same for `docs/adr/`. Growing or retiring terms follows CONTEXT-FORMAT's *Growth & retention*: split when big, delete when obsolete, summarize verbose prose.
+**Glossary discipline:** glossary only (no implementation details, specs, or decisions). One sentence per term, opinionated, aliases under `_Avoid_`. Lazy-create `CONTEXT.md` on first term; lazy-create the ADR dir in the same way at the same resolved `adrs` destination. Growing or retiring terms follows CONTEXT-FORMAT's *Growth & retention*: split when big, delete when obsolete, summarize verbose prose.

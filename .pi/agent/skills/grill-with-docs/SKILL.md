@@ -11,14 +11,14 @@ description: Grill a plan against the project's CONTEXT.md and ADRs, sharpening 
 
 Read `CONTEXT.md` in this branch's context worktree (the dir mirroring the code it describes), or the worktree's root `CONTEXT-MAP.md` -> the relevant context (store model, path formula, and multi-context layout: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Multi-context: infer which applies; ask if unclear.
 
-ADRs (personal, in `docs/adr/` + `<dir>/adr/`, see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)): grep for topic terms and read the matches only, since enumerating the dir is partial and racy.
+ADRs (personal, see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)): resolve their destination with `<setup-context skill dir>/resolve-location.sh adrs` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), then grep `docs/adr/` + `<dir>/adr/` beneath the resolved destination for topic terms and read the matches only, since enumerating the dir is partial and racy.
 
 ### 2. Grill, modeling as you go
 
-Run the **grill** loop (see the `grilling` skill), applying the **domain-modeling** moves to each question (see the `domain-modeling` skill, which also owns the inline-write rule, the ADR test, and glossary discipline). System-wide decisions go to `docs/adr/`; a context's own go to its `<dir>/adr/`.
+Run the **grill** loop (see the `grilling` skill), applying the **domain-modeling** moves to each question (see the `domain-modeling` skill, which also owns the inline-write rule, the ADR test, and glossary discipline). System-wide decisions go to the resolved ADR destination's `docs/adr/`; a context's own go to its `<dir>/adr/` beneath the same destination.
 
 ### 3. Stop at the modeling boundary
 
-The deliverable is *understanding and recorded decisions* (a stress-tested plan plus a sharpened glossary and any ADRs in the context worktree), not code. Once the grill settles and the user confirms it, close and stop. Confirmation approves the understanding, not a workflow transition. Starting `to-spec`, `to-tickets`, implementation, or any other next step requires a separate explicit user request.
+The deliverable is *understanding and recorded decisions* (a stress-tested plan plus a sharpened glossary and any ADRs at the resolved ADR destination), not code. Once the grill settles and the user confirms it, close and stop. Confirmation approves the understanding, not a workflow transition. Starting `to-spec`, `to-tickets`, implementation, or any other next step requires a separate explicit user request.
 
 Close by reporting: what crystallised, where it was recorded, and the suggested next step.

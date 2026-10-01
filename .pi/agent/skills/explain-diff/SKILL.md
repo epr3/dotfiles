@@ -12,4 +12,4 @@ Produce a single long-form HTML page that teaches a reader how a specified code 
 
 **Build the page**: five sections in order: Background · Intuition · Literate diff · Data flow & diagrams · Quiz. Per-section craft and the container conventions: [PAGE-FORMAT.md](./PAGE-FORMAT.md); quiz options and feedback: [QUIZ-FORMAT.md](./QUIZ-FORMAT.md).
 
-**Save it** in the context home as `explainers/<YYYY-MM-DD>-<change-slug>.html` (date-prefixed for time-sorting), out of the code repo's version control (in-repo context: somewhere outside the repo instead, say where). Report the path.
+**Save it** as `explainers/<YYYY-MM-DD>-<change-slug>.html` (date-prefixed for time-sorting) in the explainer destination: resolve it with `<setup-context skill dir>/resolve-location.sh explainers` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), then `explainers/` beneath it (by default the context home), out of the code repo's version control (in-repo context: somewhere outside the repo instead, say where). Report the path.
