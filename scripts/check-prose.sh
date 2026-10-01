@@ -166,6 +166,15 @@ check_handoffs() {
   done < <(find .pi/agent/skills -name '*.md' -type f)
 }
 
+# Skills whose removal the upstream-sync spec records. Removing one is a
+# recorded inventory change, not an unrecorded invocation-mode flip.
+SPEC_REMOVED=(caveman zoom-out solve resolving-merge-conflicts)
+
+# Name-membership test for the recorded removal list.
+is_spec_removed() {
+  printf '%s\n' "${SPEC_REMOVED[@]}" | grep -qx "$1"
+}
+
 # -- Check 5: invocation inventory vs base --
 check_inventory() {
   if ! git rev-parse --verify --quiet "$BASE_REF" >/dev/null 2>&1; then
@@ -203,8 +212,35 @@ check_inventory() {
 
   while IFS= read -r s; do
     [ -z "$s" ] && continue
-    fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s no longer user-invoked (check 5)"
+    if is_spec_removed "$s"; then
+      info "$s removed by spec (recorded inventory change, check 5)"
+    else
+      fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s no longer user-invoked (check 5)"
+    fi
   done <<< "$removed"
+}
+
+# -- Check 6: no removed skill remains in the installed inventory --
+check_removed_skills() {
+  while IFS= read -r f; do
+    local d
+    d=$(basename "$(dirname "$f")")
+    if is_spec_removed "$d"; then
+      fail "$f" "removed-by-spec skill still in the installed inventory (check 6)"
+    fi
+  done < <(find .pi/agent/skills -name 'SKILL.md' -type f)
+}
+
+# -- Check 6b: no live skill file references a removed skill --
+check_removed_references() {
+  local names
+  names=$(printf '%s|' "${SPEC_REMOVED[@]}")
+  names="\\b(${names%|})\\b"
+  while IFS= read -r f; do
+    if grep -qE "$names" "$f"; then
+      fail "$f" "references a removed skill (check 6b)"
+    fi
+  done < <(find .pi/agent/skills -name '*.md' -type f)
 }
 
 # -- Run --
@@ -214,6 +250,8 @@ check_skill_frontmatter
 check_ticket_schema
 check_handoffs
 check_inventory
+check_removed_skills
+check_removed_references
 
 if [ "$FAILED" -eq 0 ]; then
   echo "PASS: all checks green"

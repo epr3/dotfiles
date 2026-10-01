@@ -17,7 +17,7 @@ Typical use: a branch's context was forked off its base (e.g. `feature-3` off `f
 
 ### 1. Resolve source + onto
 
-Parse the argument as `[<source>] onto <onto>`. Source context branch: the named branch, else the current code branch's context. Onto: the named target, else the source's recorded **base**: the fork parent `ctx-init.sh` persisted for that context branch at fork time; read it at `$AGENT_CONTEXT_HOME/<slug>/.git/info/fork-parent/<branch>` (slug formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*), with cwd inside the code repo. An absent record falls back to the designated master. An explicit named `onto` always wins. Both are branches in this repo's **context repo**, their **context worktree**s pairing 1:1 with the code branches. Resolve the source **context worktree**; ensure `onto` exists (materialise its **context worktree** if needed). Confirm direction before any rewrite: the rebase **rewrites the source branch** on top of `onto`; `onto` is read, never changed.
+Parse the argument as `[<source>] onto <onto>`. Source context branch: the named branch, else the current code branch's context. Onto: the named target, else the source's recorded **base**: the fork parent `ctx-init.sh` persisted for that context branch at fork time; read it at `${AGENT_CONTEXT_HOME:-$HOME/.pi/agent/ctx}/<slug>/.git/info/fork-parent/<branch>` (slug formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*), with cwd inside the code repo. An absent record falls back to the designated master. An explicit named `onto` always wins. Both are branches in this repo's **context repo**, their **context worktree**s pairing 1:1 with the code branches. Resolve the source **context worktree**; ensure `onto` exists (materialise its **context worktree** if needed). Confirm direction before any rewrite: the rebase **rewrites the source branch** on top of `onto`; `onto` is read, never changed.
 
 ### 2. Rebase
 
@@ -31,9 +31,9 @@ Stage the resolved files (`git add`) and `git rebase --continue`; repeat until t
 
 ### 4. Ground against the source's code
 
-The authoritative universe after a rebase is the **source code worktree**, not onto's. Take its path universe via `<skill-dir>/manifest.sh` (`<skill-dir>` = the `setup-context` skill's folder, invoked by path with **cwd anywhere inside the source code worktree** — answers are repo-root-relative for that worktree). A `<dir>/GLOSSARY.md` (legacy `<dir>/CONTEXT.md` still discovered), a term keyed to a missing module, or an ADR about absent code that the source's manifest lacks is **dangling**: surface it as a report + question and keep all context content until the user decides — never silently keep or drop anything. A dangling base-inherited path (present on onto, absent from the source) says "context rebased before code".
+The authoritative universe after a rebase is the **source code worktree**, never onto's. Take its path universe via `<skill-dir>/manifest.sh` (`<skill-dir>` = the `setup-context` skill's folder, invoked by path with **cwd anywhere inside the source code worktree**, answers are repo-root-relative for that worktree). A `<dir>/GLOSSARY.md` (legacy `<dir>/CONTEXT.md` still discovered), a term keyed to a missing module, or an ADR about absent code that the source's manifest lacks is **dangling**: surface it as a report + question and keep all context content until the user decides: never silently keep or drop anything. A dangling base-inherited path (present on onto, absent from the source) says "context rebased before code".
 
-Source-only feature paths stay valid — they exist on the source, just not on the base. This step completes once every dangling reference is surfaced and decided; grounding alone drops nothing.
+Source-only feature paths stay valid: they exist on the source, just not on the base. This step completes once every dangling reference is surfaced and decided; grounding alone drops nothing.
 
 ### 5. Finish
 
