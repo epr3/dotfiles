@@ -73,6 +73,18 @@ The GitHub/GitLab seeds carry a **PRs (MRs) as a request surface** flag, default
 - **Single-context**: one `CONTEXT.md` at the context-home root. Most repos.
 - **Multi-context**: `CONTEXT-MAP.md` at the root -> per-context `CONTEXT.md` files (mirroring the code's dirs). Typically monorepo.
 
+**Section E: Artifact locations.** Each durable artifact class records its own destination, one line per class in `artifact-locations.md` at the **config home**; consumers resolve per class with [resolve-location.sh](./resolve-location.sh) (contract in [artifact-locations.md](./artifact-locations.md)). Values: `context` (the context worktree, or the code repo root under in-repo context), `code` (the code repo's worktree), or `custom:<path>` with `{branch}` = the current code branch; a custom path without `{branch}` gets `/<branch>` appended on record, so a **context repo**'s branches never mix outputs even for identical artifact names.
+
+Defaults equal what each class already had, so accepting the recommendation requires no reconfiguration:
+
+- **Glossary + ADRs**: context (default).
+- **Local board** (specs + issues): context (default; `board` records the class, the `.scratch/` subpath stays the consumers').
+- **Research** notes: context (default).
+- **Explainers**: context (default; `explainers/` subpath stays).
+- **Custom**: for any class whose outputs should live elsewhere, name the directory; setup appends `{branch}` when the path lacks it.
+
+Temporary reports and handoffs are never recorded here (they use the OS temp directory), and repo-wide rules stay in the config home regardless of these choices.
+
 ### 4. Confirm + edit
 
 Show a draft of everything step 5 writes and let the user edit it first. The `## Agent skills` block gets one line per decision from sections A–D, section A's first (e.g. "Store: context repo" or "Store: in-repo" / "Issues: GitHub via `gh`, triage labels on; see `issue-tracker.md` in the config home" / "Layout: single-context").
@@ -86,7 +98,7 @@ Show a draft of everything step 5 writes and let the user edit it first. The `##
 
 Either way: update an existing block in place; never duplicate, never touch surrounding content.
 
-**Write the convention docs** into the same **config home**, per the choices: `issue-tracker.md` is **always written** (from [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), or [issue-tracker-local.md](./issue-tracker-local.md) to match section B, or from the user's description for "other"). Triage on -> also `triage-labels.md` from [triage-labels.md](./triage-labels.md) with the user's mappings. Re-running updates them in place.
+**Write the convention docs** into the same **config home**, per the choices: `issue-tracker.md` is **always written** (from [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), or [issue-tracker-local.md](./issue-tracker-local.md) to match section B, or from the user's description for "other"). Triage on -> also `triage-labels.md` from [triage-labels.md](./triage-labels.md) with the user's mappings. Section E -> also `artifact-locations.md` from the seed [artifact-locations.md](./artifact-locations.md), the five class lines filled from section E's answers (durable classes only; custom paths carry `{branch}` as recorded). Re-running updates them in place.
 
 **Then scaffold the context home.** **In-repo context**: create `CONTEXT.md` (or `CONTEXT-MAP.md` + per-context stubs) and `docs/adr/` at the code repo root, seed `domain.md` into `docs/agents/` (the config home, beside the convention docs), commit with the code; the scripts below don't apply, plain git carries it. **Context repo** (default): continue below.
 
@@ -95,7 +107,7 @@ Resolve `<slug>` from the code repo's origin (formula in [CONTEXT-FORMAT.md](../
 Run every script below **by its path with cwd in the code repo**; they read the repo + branch from the cwd and locate their siblings themselves; don't `cd` into the skill folder (rule stated once in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Running the helper scripts*). `<skill-dir>` below is this skill's folder.
 
 1. **Ensure the context repo + worktree**: run `<skill-dir>/ctx-init.sh [team-remote]`, passing `--base <branch>` with the parent confirmed in section A whenever it differs from the auto-detected base (matching answer -> omit the flag, detection is the default). It ensures the bare context repo at `$proj/.git` (clones the team remote when given, else `git init --bare` + a seed) and a **context worktree** for the current code branch at `$proj/<branch>`, forked off the parent's context so the ancestry's glossary/ADRs carry over. Prints the worktree path: **edit context there.**
-2. **Build the manifest**: `<skill-dir>/manifest.sh` from any directory inside the code repo — answers are repo-root-relative; directory mode lists the root plus every ancestor directory of a tracked path (never root files, never untracked-only dirs), `--files` lists tracked files, `--has PATH` checks membership with the path taken literally. This is the allowed-path universe.
+2. **Build the manifest**: `<skill-dir>/manifest.sh` from any directory inside the code repo, answers repo-root-relative; directory mode lists the root plus every ancestor directory of a tracked path (never root files, never untracked-only dirs), `--files` lists tracked files, `--has PATH` checks membership with the path taken literally. This is the allowed-path universe.
 3. **Inherited context**: the worktree was forked off its base, so it already carries the ancestry's glossary / ADRs. Nothing to copy. (A legacy per-branch `domain.md` found at the worktree root is from the old layout; move it to `.agents/domain.md`.)
 4. **Write `domain.md` to `$proj/.agents/domain.md`** (create `.agents/` if missing) from the seed template [domain.md](./domain.md), its **Code repo** line filled with the origin URL + `<slug>`. This is in the config home, outside the worktree; the manifest doesn't govern it. Re-run: update in place.
 5. **Scaffold the worktree, from the manifest only**: (multi-context) `CONTEXT-MAP.md` at the **worktree root**; for each manifest dir you designate a context that has no `CONTEXT.md` yet, a stub `<dir>/CONTEXT.md` (glossary header only) + `<dir>/adr/`. A `CONTEXT-MAP` link or term pointing at a path **not** in the manifest is flagged dangling and **not** created; that is the grounding guarantee.

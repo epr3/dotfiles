@@ -12,7 +12,7 @@ Install: paste the `## Agent skills (defaults)` block below into `~/.pi/agent/AG
 
 ### Domain docs
 
-Each repo's domain docs live at `domain.md` in its **config home** (`.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context**), committed with the code. Seeded once per repo by `setup-context`, edit-in-place, branch-independent. Glossaries + ADRs live in the **context worktree**s instead; `offload-context` commits + pushes those to the team remote (skipped under **in-repo context**). Layout is self-describing: `CONTEXT-MAP.md` at the **context home** root = multi-context, a lone `CONTEXT.md` = single.
+Each repo's domain docs live at `domain.md` in its **config home** (`.agents/domain.md` at the **context repo** root, or `docs/agents/domain.md` under **in-repo context**), committed with the code. Seeded once per repo by `setup-context`, edit-in-place, branch-independent. Glossaries + ADRs live in the **context worktree**s by default; `offload-context` commits + pushes those to the team remote (skipped under **in-repo context**). Each durable artifact class (glossary, adrs, board, research, explainers) records its own destination in `artifact-locations.md` at the **config home**, resolved per class with `setup-context/resolve-location.sh`; defaults equal the pre-existing effective destinations. Temporary reports and handoffs use the OS temp directory. Layout is self-describing: `CONTEXT-MAP.md` at the **context home** root = multi-context, a lone `CONTEXT.md` = single.
 
 ### Context & ADRs (personal)
 
