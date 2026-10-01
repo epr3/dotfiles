@@ -1,6 +1,6 @@
 # Quiz Format
 
-Discipline for multiple-choice quizzes (`explain-diff` explainers, `teach` lessons). The failure mode this exists to kill: **the correct answer is guessable without understanding**.
+Discipline for multiple-choice quizzes in `explain-diff` explainers. The failure mode this exists to kill: **the correct answer is guessable without understanding**.
 
 ## Options
 
@@ -14,4 +14,4 @@ Before shipping, read only the options (material and questions covered). If a pa
 
 ## Feedback
 
-On click, don't just verdict. Wrong pick -> name the misconception that option embodies and point back to the section that corrects it. Right pick -> one line on *why*, so a lucky guess still teaches.
+On click, don't just verdict. Wrong pick → name the misconception that option embodies and point back to the section that corrects it. Right pick → one line on *why*, so a lucky guess still teaches.

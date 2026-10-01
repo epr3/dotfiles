@@ -12,4 +12,4 @@ The craft for an explainer page: what each section does, then the container conv
 
 ## Container
 
-One self-contained HTML file: CSS and JavaScript inlined, no external requests. One long page: section headers + a table of contents, no top-level tabs. Basic responsive styling so it reads on a phone.
+One file, plain HTML/CSS/JS: no framework, no bundler, no server, everything inline so it opens by double-click; no external requests. One long page: section headers + a table of contents, no top-level tabs. Basic responsive styling so it reads on a phone.
