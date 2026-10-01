@@ -172,19 +172,25 @@ check_handoffs() {
 # recorded inventory change, not an unrecorded invocation-mode flip.
 SPEC_REMOVED=(caveman zoom-out solve resolving-merge-conflicts)
 
+# Local-only removals, recorded here: ask-matt dropped from the suite by
+# explicit user request (2026-10-01) after the upstream sync - present at
+# the pinned snapshot, removed locally on purpose.
+LOCAL_RETIRED=(ask-matt)
+
 # The exact installed inventory the upstream-sync spec settles on, pinned to
 # snapshot mattpocock/skills d81f3a183412e71a5b1e84ca21bc1a35eea03a60.
 # Arithmetic (verified against the actual dirs and the snapshot): upstream
-# engineering is 20 dirs incl. setup-matt-pocock-skills, which setup-context
-# substitutes locally -> 19 upstream-named engineering skills; + 7 upstream
-# productivity skills = 26 upstream-named; + 5 retained local skills
+# engineering is 20 dirs incl. setup-matt-pocock-skills (substituted locally
+# by setup-context) and ask-matt; with setup-context a retained local skill
+# and ask-matt dropped locally -> 18 upstream-named engineering skills; + 7
+# upstream productivity skills = 25 upstream-named; + 5 retained local skills
 # (setup-context, merge-context, rebase-context, offload-context,
 # explain-diff) = 31. The 4 spec-removed skills above are already absent from
 # this list. Note: the task prose lists implement-spec but omits implement;
 # upstream retains both, both exist in the tree, and 26+5=31 needs both -
 # this list is taken from the actual dir listing.
 EXPECTED_SKILLS=(
-  ask-matt code-review codebase-design diagnosing-bugs domain-modeling
+  code-review codebase-design diagnosing-bugs domain-modeling
   grill-me grill-with-docs grilling handoff implement implement-spec
   improve-codebase-architecture pr prototype research retro tdd teach
   to-questionnaire to-spec to-tickets triage wait-what wayfinder wizard
@@ -234,8 +240,8 @@ check_inventory() {
 
   while IFS= read -r s; do
     [ -z "$s" ] && continue
-    if is_spec_removed "$s"; then
-      info "$s removed by spec (recorded inventory change, check 5)"
+    if is_spec_removed "$s" || printf '%s\n' "${LOCAL_RETIRED[@]}" | grep -qx "$s"; then
+      info "$s removed by spec or recorded local retirement (check 5)"
     else
       fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s no longer user-invoked (check 5)"
     fi
