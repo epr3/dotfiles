@@ -1,9 +1,9 @@
-# Compression prunes wording, never mechanisms
+# Preserve upstream wording except at local seams
 
-When selectively porting upstream skills, compression may remove repetition and stylistic expansion but must preserve every behavioral mechanism and branch. Removing a mechanism requires its own explicit ADR; otherwise a shorter document can silently change behavior in later sessions, where the loss is difficult to diagnose.
+When porting upstream skills, keep their wording and behavioral branches wherever they apply; adapt only passages that must express the local context-store architecture, independently configured artifact locations, or the `setup-context` substitution. Use upstream's voice in the local context skills. Compression is not a reason to rewrite upstream prose; dropping a mechanism still requires an explicit decision because it silently changes behavior in later sessions.
 
 ## Considered Options
 
-- Copy upstream prose wholesale: preserves mechanisms but discards the suite's Pi-specific voice and local context-store adaptations.
-- Compress both prose and behavior: produces the smallest files but makes mechanism loss accidental and invisible.
-- Compress wording only: keeps the local suite concise while making behavioral divergence deliberate and reviewable.
+- Preserve upstream wording with narrow local substitutions: keeps updates traceable to upstream without breaking local storage and setup conventions.
+- Compress wording only: preserved mechanisms but obscured which passages still matched upstream and made future updates harder to compare.
+- Copy upstream prose without adaptation: would discard the context-store architecture and misdirect artifacts.

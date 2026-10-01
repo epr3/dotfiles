@@ -19,7 +19,10 @@ _Avoid_: model limit, context-window budget.
 **Caveman boundary**: The inclusive dumb-zone threshold at which Pi enters caveman mode, independent of a model's advertised context window.
 _Avoid_: overflow limit, remaining-context warning.
 
-**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of ideas, not a runtime dependency; sync record: selectively ported `6654f6b` (2026-08-25).
+**Upstream**: github.com/mattpocock/skills — the curated skill suite's source of skill wording, not a runtime dependency; sync record: selectively ported `6654f6b` (2026-08-25).
+
+**Artifact location**: A configured destination for one kind of skill output, independent of the destinations chosen for other kinds.
+_Avoid_: context home, one output directory.
 
 **Trigger loss**: A compression defect in agent instructions that removes a prerequisite, activation condition, or timing rule while retaining the action it governs.
 
