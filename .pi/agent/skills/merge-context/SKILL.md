@@ -23,7 +23,7 @@ Resolve both sides. For **branch -> trunk**: source = this branch's **context wo
 
 ### 2. Inventory + classify
 
-Read both glossaries (`CONTEXT.md` / per-context) and ADRs. Classify every term:
+Read both glossaries (`GLOSSARY.md` / per-context; legacy `CONTEXT.md` names still discovered) and ADRs. Classify every term:
 
 - **New**: in source, absent in target -> add.
 - **Identical**: same term, same definition -> dedupe.
@@ -38,7 +38,7 @@ Group: N new, N identical, N divergent, alias clashes, ADR conflicts. Lead with 
 
 ### 4. Merge
 
-Write the reconciled glossary + ADRs into the **target**; update its `CONTEXT-MAP.md` (add the folded context's entries, repoint relationships, drop the merged-away entry). Glossary discipline holds: one sentence per term, opinionated, aliases under `_Avoid_` ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Rules*). A losing definition that's a genuine alias folds into the winner's `_Avoid_` list; one that's simply dead is deleted. Leave the source intact.
+Write the reconciled glossary + ADRs into the **target**; update its `GLOSSARY-MAP.md` (add the folded context's entries, repoint relationships, drop the merged-away entry). Glossary discipline holds: one sentence per term, opinionated, aliases under `_Avoid_` ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Rules*). A losing definition that's a genuine alias folds into the winner's `_Avoid_` list; one that's simply dead is deleted. Leave the source intact.
 
 ### 5. Finish
 

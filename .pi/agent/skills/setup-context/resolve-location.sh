@@ -25,11 +25,11 @@ done
 if [ -n "$instruct" ]; then
   if grep -qi '^Store:[[:space:]]*in-repo' "$instruct"; then store="in-repo"
   elif grep -qi '^Store:[[:space:]]*context repo' "$instruct"; then store="context"
-  elif [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
-    store="in-repo"   # no Store line recorded -> in-tree docs decide (in-repo context)
+  elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
+    store="in-repo"   # no Store line recorded -> in-tree docs decide (in-repo context); legacy names still discovered
   fi
-elif [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
-  store="in-repo"   # in-tree docs, no recorded block: in-repo context
+elif [ -f "$root/GLOSSARY.md" ] || [ -f "$root/GLOSSARY-MAP.md" ] || [ -f "$root/CONTEXT.md" ] || [ -f "$root/CONTEXT-MAP.md" ] || [ -d "$root/docs/adr" ]; then
+  store="in-repo"   # in-tree docs, no recorded block: in-repo context (new names first; legacy names still discovered)
 fi
 if [ "$store" = "in-repo" ]; then cf="$root/docs/agents"; else
   # slug, same formula as ctx-init.sh

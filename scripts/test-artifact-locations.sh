@@ -216,35 +216,60 @@ t_branch_isolation() {
 }
 
 # --- 4: glossary write + consumer lookup at the recorded location, old-name discovery retained --
+# Canonical glossary lookup (the order CONTEXT-FORMAT.md prescribes during the expand
+# phase): new names first, then the legacy names; the legacy arms are what ticket 0013 removes.
+lookup_glossary() { # <dir> -> prints the first name found GLOSSARY.md | CONTEXT.md | CONTEXT-MAP.md
+  local d="$1" cand
+  for cand in GLOSSARY.md CONTEXT.md CONTEXT-MAP.md; do
+    [ -f "$d/$cand" ] && { printf '%s' "$cand"; return 0; }
+  done
+  return 1
+}
+
 t_glossary_roundtrip() {
+  # Expand phase: writes use the NEW names only; lookup prefers new names yet
+  # still discovers legacy CONTEXT.md / CONTEXT-MAP.md (the fallback ticket 0013 removes).
   local s="$sandbox/glossary"
   make_code_repo "$s"
   init_ctx_for_branch "$s/repo" main "$CTXROOT"
   local cf="$CTXROOT/artloc__repo/.agents"
   write_locations_doc "$cf" "glossary: custom:$s/gloss-store/{branch}"
-  local dest
+  local dest found
   dest="$(resolve_in "$s/repo" glossary)"
   [ "$dest" = "$s/gloss-store/main" ] || fail "glossary custom destination resolve: got '$dest'"
-  # consumer writes a new glossary term at the recorded location
   mkdir -p "$dest"
-  printf '# Repo\n\n## Language\n\n**Artifact location**: a term.\n' > "$dest/CONTEXT.md"
-  # consumer lookup: recorded location first, legacy old-name fallback still discovered
-  local found
-  for cand in "$dest/GLOSSARY.md" "$dest/CONTEXT.md" "$dest/CONTEXT-MAP.md"; do
-    [ -f "$cand" ] && { found="$cand"; break; }
-  done
-  if [ "$(basename "${found:-}")" = "CONTEXT.md" ] && grep -q "Artifact location" "$found"; then
-    ok "newly configured glossary written and found at its recorded location (old-name discovery retained)"
+  # consumer writes a glossary under the NEW name at the recorded location
+  printf '# Repo\n\n## Language\n\n**Artifact location**: a term.\n' > "$dest/GLOSSARY.md"
+  found="$(lookup_glossary "$dest" && true)"
+  if [ "$found" = "GLOSSARY.md" ] && grep -q "Artifact location" "$dest/$found"; then
+    ok "new-name glossary written at the recorded destination and found first (context-repo setup)"
   else
-    fail "glossary roundtrip lookup: got '${found:-nothing}'"
+    fail "glossary new-name roundtrip lookup: got '${found:-nothing}'"
   fi
-  # a new-name glossary is also discovered first when present
-  printf '# Repo\n' > "$dest/GLOSSARY.md"
-  for cand in "$dest/GLOSSARY.md" "$dest/CONTEXT.md" "$dest/CONTEXT-MAP.md"; do
-    [ -f "$cand" ] && { found="$cand"; break; }
-  done
-  [ "$(basename "$found")" = "GLOSSARY.md" ] && ok "new-name glossary takes precedence in lookup" \
-    || fail "GLOSSARY.md precedence: got '$found'"
+  # legacy-only fixture: old-name glossary is still DISCOVERED during expand, read-only
+  local legacy="$s/legacy"
+  mkdir -p "$legacy/main"
+  printf '# Legacy Repo\n' > "$legacy/main/CONTEXT.md"
+  found="$(lookup_glossary "$legacy/main" && true)"
+  if [ "$found" = "CONTEXT.md" ]; then
+    ok "legacy-only glossary still discovered (old caller keeps working)"
+  else
+    fail "legacy-only glossary not discovered: got '${found:-nothing}'"
+  fi
+  # branch-scoped: glossary written on feature lives at feature's recorded destination only
+  ( cd "$s/repo" && git checkout -q feature )
+  local fdest
+  fdest="$(resolve_in "$s/repo" glossary)"
+  [ "$fdest" = "$s/gloss-store/feature" ] || fail "feature glossary destination: got '$fdest'"
+  mkdir -p "$fdest"
+  printf '# Feature\n' > "$fdest/GLOSSARY-MAP.md"
+  if [ -f "$fdest/GLOSSARY-MAP.md" ] && [ ! -f "$s/gloss-store/feature/CONTEXT.md" ]; then
+    ok "branch-specific glossary honors the recorded destination, written under the new name"
+  else
+    fail "branch-scoped glossary map (feature): map found: $([ -f "$fdest/GLOSSARY-MAP.md" ] \
+      && echo yes || echo no), legacy wrote: $([ -f "$s/gloss-store/feature/CONTEXT.md" ] && echo yes || echo no)"
+  fi
+  ( cd "$s/repo" && git checkout -q main )
 }
 
 # --- 5: repo-wide rules (config home) never land in the per-branch destinations --------------
@@ -288,6 +313,15 @@ t_in_repo() {
   out="$(resolve_in "$s/repo" glossary)"
   [ "$out" = "$s/repo" ] && ok "in-repo context (no block, in-tree docs) glossary -> code repo root" \
     || fail "in-repo glossary: got '$out'"
+  # in-repo under the NEW name alone: detected likewise + write/lookup roundtrip
+  rm "$s/repo/CONTEXT.md"
+  printf '# Repo\n\n## Language\n\n**In-repo glossary term**: definition.\n' > "$s/repo/GLOSSARY.md"
+  out="$(resolve_in "$s/repo" glossary)"
+  if [ "$out" = "$s/repo" ] && grep -q "In-repo glossary term" "$out/GLOSSARY.md"; then
+    ok "in-repo: new GLOSSARY.md written and found at the code repo root"
+  else
+    fail "in-repo GLOSSARY.md write+lookup: got '${out:-nothing}' - $([ -f "$s/repo/GLOSSARY.md" ] && echo file || echo missing)"
+  fi
   out="$(resolve_in "$s/repo" board)"
   [ "$out" = "$s/repo" ] && ok "in-repo board -> code repo root" || fail "in-repo board: got '$out'"
   # recorded doc under docs/agents wins

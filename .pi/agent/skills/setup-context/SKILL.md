@@ -26,8 +26,8 @@ Check current state, don't assume:
 
 - `git remote -v` + `.git/config`: GitHub? GitLab? which repo?
 - the repo's own agent-instructions file: does an `## Agent skills` block from a prior run already exist? (Re-running updates it in place.)
-- what the repo resolves to today: run the numbered procedure in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Resolving the context store*, which also fixes the vocabulary used from here on. Then look at what's on disk: a **context repo** at `${AGENT_CONTEXT_HOME:-<harness ctx dir>}/<slug>`? a **context worktree** for the current branch? existing `domain.md` / `CONTEXT.md` / `CONTEXT-MAP.md`?
-- in-tree `CONTEXT.md` / `CONTEXT-MAP.md` / `docs/adr/` in the code repo: either a prior **in-repo context** choice or leftovers from an older setup; don't move anything yet, section A decides what it is.
+- what the repo resolves to today: run the numbered procedure in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Resolving the context store*, which also fixes the vocabulary used from here on. Then look at what's on disk: a **context repo** at `${AGENT_CONTEXT_HOME:-<harness ctx dir>}/<slug>`? a **context worktree** for the current branch? existing `domain.md` / `GLOSSARY.md` / `GLOSSARY-MAP.md` (legacy `CONTEXT.md` / `CONTEXT-MAP.md` names still discovered)
+- in-tree `GLOSSARY.md` / `GLOSSARY-MAP.md` / `docs/adr/` (or the legacy `CONTEXT.md` / `CONTEXT-MAP.md` names) in the code repo: either a prior **in-repo context** choice or leftovers from an older setup; don't move anything yet, section A decides what it is.
 - is the `triage` skill installed (a `triage` folder beside this one, or `triage` among the available skills)? Decides whether section C runs at all.
 - monorepo signals: a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, a populated `packages/*` with its own `src/`. Their absence means single-context, which is almost every repo.
 
@@ -37,10 +37,10 @@ Summarise present/missing, then ask as **round**s in the `grilling` skill's ques
 
 **Section A: Context store.** This picks a *model*, not a location; the location follows from it.
 
-> Domain context + ADRs are what the skills read to orient and write as decisions crystallise. Two models: a **context repo** (a bare git repo mirroring this code repo, one **context worktree** per branch; personal, branch-aware, off the code tree; `offload-context` / `merge-context` / `rebase-context` manage it) or **in-repo context** (a plain `CONTEXT.md` + `docs/adr/` committed with the code: simpler, team-shared by default, no context repo machinery, and those three skills don't apply).
+> Domain context + ADRs are what the skills read to orient and write as decisions crystallise. Two models: a **context repo** (a bare git repo mirroring this code repo, one **context worktree** per branch; personal, branch-aware, off the code tree; `offload-context` / `merge-context` / `rebase-context` manage it) or **in-repo context** (a plain `GLOSSARY.md` + `docs/adr/` committed with the code: simpler, team-shared by default, no context repo machinery, and those three skills don't apply).
 
 - **Context repo** (default): the suite's standard model; pick this unless you want context in the code repo.
-- **In-repo context**: `CONTEXT.md` / `CONTEXT-MAP.md` at the code repo root, ADRs under `docs/adr/`, committed like any code.
+- **In-repo context**: `GLOSSARY.md` / `GLOSSARY-MAP.md` at the code repo root, ADRs under `docs/adr/`, committed like any code.
 
 If explore found in-tree context and the user picks **context repo**, offer to migrate it into the **context worktree**; if they pick **in-repo context**, it stays where it is.
 
@@ -66,12 +66,12 @@ The GitHub/GitLab seeds carry a **PRs (MRs) as a request surface** flag, default
 - **No triage** (default): skills create/read tickets and issues with no label conventions.
 - **Yes**: record the five canonical roles, each overridable to match existing labels (seed table: [triage-labels.md](./triage-labels.md)): `needs-triage` (maintainer evaluates), `needs-info` (waiting on reporter), `ready-for-agent` (fully specified, AFK-ready), `ready-for-human`, `wontfix`. `to-tickets` publishes approved fully specified slices straight to `ready-for-agent` (agent-grabbable by construction, no re-triage); only slices left underspecified open `needs-triage`. `implement` treats `ready-for-agent` as the pick-up signal.
 
-**Section D: Domain docs layout.** No monorepo signals in explore -> **single-context**, one `CONTEXT.md` at the context-home root; write it without asking. Signals found -> confirm which:
+**Section D: Domain docs layout.** No monorepo signals in explore -> **single-context**, one `GLOSSARY.md` at the glossary destination (the context-home default); write it without asking (at the recorded `glossary` destination, via [resolve-location.sh](./resolve-location.sh)). Signals found -> confirm which:
 
-> The skills read `CONTEXT.md` for the project's domain language. Need to know: one global context or multiple (e.g. monorepo, separate frontend/backend) -> look in the right place.
+> The skills read `GLOSSARY.md` for the project's domain language (legacy `CONTEXT.md` still discovered until the contraction). Need to know: one global context or multiple (e.g. monorepo, separate frontend/backend) -> look in the right place.
 
-- **Single-context**: one `CONTEXT.md` at the context-home root. Most repos.
-- **Multi-context**: `CONTEXT-MAP.md` at the root -> per-context `CONTEXT.md` files (mirroring the code's dirs). Typically monorepo.
+- **Single-context**: one `GLOSSARY.md` at the glossary destination. Most repos.
+- **Multi-context**: `GLOSSARY-MAP.md` -> per-context `GLOSSARY.md` files (mirroring the code's dirs). Typically monorepo.
 
 **Section E: Artifact locations.** Each durable artifact class records its own destination, one line per class in `artifact-locations.md` at the **config home**; consumers resolve per class with [resolve-location.sh](./resolve-location.sh) (contract in [artifact-locations.md](./artifact-locations.md)). Values: `context` (the context worktree, or the code repo root under in-repo context), `code` (the code repo's worktree), or `custom:<path>` with `{branch}` = the current code branch; a custom path without `{branch}` gets `/<branch>` appended on record, so a **context repo**'s branches never mix outputs even for identical artifact names.
 
@@ -83,7 +83,7 @@ Defaults equal what each class already had, so accepting the recommendation requ
 - **Explainers**: context (default; `explainers/` subpath stays).
 - **Custom**: for any class whose outputs should live elsewhere, name the directory; setup appends `{branch}` when the path lacks it.
 
-Temporary reports and handoffs are never recorded here (they use the OS temp directory), and repo-wide rules stay in the config home regardless of these choices.
+Temporary reports and handoffs are never recorded here (they use the OS temp directory), and repo-wide rules stay in the config home regardless of these choices. Glossary files are written as `GLOSSARY.md` / `GLOSSARY-MAP.md` (legacy `CONTEXT.md` / `CONTEXT-MAP.md` still discovered read-only; see CONTEXT-FORMAT's temporal note).
 
 ### 4. Confirm + edit
 
@@ -100,7 +100,7 @@ Either way: update an existing block in place; never duplicate, never touch surr
 
 **Write the convention docs** into the same **config home**, per the choices: `issue-tracker.md` is **always written** (from [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), or [issue-tracker-local.md](./issue-tracker-local.md) to match section B, or from the user's description for "other"). Triage on -> also `triage-labels.md` from [triage-labels.md](./triage-labels.md) with the user's mappings. Section E -> also `artifact-locations.md` from the seed [artifact-locations.md](./artifact-locations.md), the five class lines filled from section E's answers (durable classes only; custom paths carry `{branch}` as recorded). Re-running updates them in place.
 
-**Then scaffold the context home.** **In-repo context**: create `CONTEXT.md` (or `CONTEXT-MAP.md` + per-context stubs) and `docs/adr/` at the code repo root, seed `domain.md` into `docs/agents/` (the config home, beside the convention docs), commit with the code; the scripts below don't apply, plain git carries it. **Context repo** (default): continue below.
+**Then scaffold the context home.** **In-repo context**: create `GLOSSARY.md` (or `GLOSSARY-MAP.md` + per-context stubs) and `docs/adr/` at the code repo root, seed `domain.md` into `docs/agents/` (the config home, beside the convention docs), commit with the code; the scripts below don't apply, plain git carries it. **Context repo** (default): continue below.
 
 Resolve `<slug>` from the code repo's origin (formula in [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md) → *Layout*) and `proj="${AGENT_CONTEXT_HOME:-<harness ctx dir>}/<slug>"`.
 
@@ -110,7 +110,7 @@ Run every script below **by its path with cwd in the code repo**; they read the 
 2. **Build the manifest**: `<skill-dir>/manifest.sh` from any directory inside the code repo, answers repo-root-relative; directory mode lists the root plus every ancestor directory of a tracked path (never root files, never untracked-only dirs), `--files` lists tracked files, `--has PATH` checks membership with the path taken literally. This is the allowed-path universe.
 3. **Inherited context**: the worktree was forked off its base, so it already carries the ancestry's glossary / ADRs. Nothing to copy. (A legacy per-branch `domain.md` found at the worktree root is from the old layout; move it to `.agents/domain.md`.)
 4. **Write `domain.md` to `$proj/.agents/domain.md`** (create `.agents/` if missing) from the seed template [domain.md](./domain.md), its **Code repo** line filled with the origin URL + `<slug>`. This is in the config home, outside the worktree; the manifest doesn't govern it. Re-run: update in place.
-5. **Scaffold the worktree, from the manifest only**: (multi-context) `CONTEXT-MAP.md` at the **worktree root**; for each manifest dir you designate a context that has no `CONTEXT.md` yet, a stub `<dir>/CONTEXT.md` (glossary header only) + `<dir>/adr/`. A `CONTEXT-MAP` link or term pointing at a path **not** in the manifest is flagged dangling and **not** created; that is the grounding guarantee.
+5. **Scaffold the worktree, from the manifest only**: (multi-context) `GLOSSARY-MAP.md` at the **worktree root**; for each manifest dir you designate a context that has no `GLOSSARY.md` yet, a stub `<dir>/GLOSSARY.md` (glossary header only) + `<dir>/adr/`. A legacy-named artifact found at the destination is discovered read-only; a `GLOSSARY-MAP` link or term pointing at a path **not** in the manifest is flagged dangling and **not** created; that is the grounding guarantee.
 6. Run `<skill-dir>/ctx-index.sh` to refresh `INDEX.md`.
 
 You edit this context directly in the **context worktree**; `offload-context` commits + pushes it to the team remote.

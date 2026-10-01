@@ -19,7 +19,7 @@ Run `<skill-dir>/offload-context.sh --check` with **cwd inside the code repo** (
 
 ### 2. Present
 
-Summarise what will be committed (new / changed CONTEXT.md, ADRs, map), then get explicit confirmation before pushing; offload now, or cancel.
+Summarise what will be committed (new / changed GLOSSARY.md, ADRs, map), then get explicit confirmation before pushing; offload now, or cancel.
 
 ### 3. Apply
 

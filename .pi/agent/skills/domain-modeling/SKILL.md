@@ -1,11 +1,11 @@
 ---
 name: domain-modeling
-description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Use while actively pinning down codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR; inside a grill or outside one.
+description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Use while actively pinning down codebase terminology, writing or editing a GLOSSARY.md (legacy name CONTEXT.md still discovered), or recording or editing an ADR; inside a grill or outside one.
 ---
 
 # Domain Modeling
 
-The *active* discipline of building + sharpening the domain model: for when you're *changing* it. (Merely *reading* `CONTEXT.md` for vocabulary is a one-line habit any skill does, not this skill.)
+The *active* discipline of building + sharpening the domain model: for when you're *changing* it. (Merely *reading* the glossary for vocabulary is a one-line habit any skill does, not this skill.)
 
 ## During the session
 
@@ -22,4 +22,4 @@ Layer these moves onto a grilling pass, or apply them directly when modeling:
 
 **ADR test (all three or skip):** hard to reverse · surprising without context · real trade-off.
 
-**Glossary discipline:** glossary only (no implementation details, specs, or decisions). One sentence per term, opinionated, aliases under `_Avoid_`. Lazy-create `CONTEXT.md` on first term; lazy-create the ADR dir in the same way at the same resolved `adrs` destination. Growing or retiring terms follows CONTEXT-FORMAT's *Growth & retention*: split when big, delete when obsolete, summarize verbose prose.
+**Glossary discipline:** glossary only (no implementation details, specs, or decisions). One sentence per term, opinionated, aliases under `_Avoid_`. Lazy-create `GLOSSARY.md` on first term (existing glossaries under the legacy `CONTEXT.md` name are found and edited in place, never duplicated); lazy-create the ADR dir in the same way at the same resolved `adrs` destination. Growing or retiring terms follows CONTEXT-FORMAT's *Growth & retention*: split when big, delete when obsolete, summarize verbose prose.

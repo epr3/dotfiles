@@ -8,8 +8,8 @@ How the engineering skills should consume this code repo's domain documentation.
 
 Context is personal, living **in the context worktree** by default; you edit it there directly, and `offload-context` commits + pushes it to the team remote (in-repo context: skip offload, it commits with the code). See `CONTEXT-FORMAT.md` (ships with the `domain-modeling` skill):
 
-- `CONTEXT.md` at the worktree root, **or**
-- `CONTEXT-MAP.md` at the worktree root if it exists: points at per-context `CONTEXT.md` files (mirroring the code's dirs). Read each one relevant to the topic.
+- `GLOSSARY.md` at the worktree root, **or**
+- `GLOSSARY-MAP.md` at the worktree root if it exists: points at per-context `GLOSSARY.md` files (mirroring the code's dirs). Read each one relevant to the topic. (Legacy `CONTEXT.md` / `CONTEXT-MAP.md` names are still discovered read-only until the contraction.)
 - `docs/adr/`: read ADRs that touch the area you are about to work in. In multi-context repos, also check `<dir>/adr/` for context-scoped decisions.
 
 If none of these exist, **proceed silently**. Don't flag the absence; don't suggest creating files upfront. `grill-with-docs` creates them lazily when terms or decisions actually resolve.
@@ -19,20 +19,20 @@ If none of these exist, **proceed silently**. Don't flag the absence; don't sugg
 **Single-context** (most repos):
 
 ```
-CONTEXT.md
+GLOSSARY.md
 ```
 
-**Multi-context** (`CONTEXT-MAP.md` at the worktree root):
+**Multi-context** (`GLOSSARY-MAP.md` at the worktree root):
 
 ```
-CONTEXT-MAP.md
-src/ordering/CONTEXT.md
-src/billing/CONTEXT.md
+GLOSSARY-MAP.md
+src/ordering/GLOSSARY.md
+src/billing/GLOSSARY.md
 ```
 
 ## Use the glossary's vocabulary
 
-When naming a domain concept (issue title, refactor proposal, hypothesis, test name), use the term as defined in the project's `CONTEXT.md` (in the context worktree). Don't drift to synonyms the glossary explicitly avoids.
+When naming a domain concept (issue title, refactor proposal, hypothesis, test name), use the term as defined in the project's `GLOSSARY.md` (in the context worktree). Don't drift to synonyms the glossary explicitly avoids.
 
 If the concept isn't in the glossary yet, that's a signal: either you're inventing language the project doesn't use (reconsider), or there's a real gap (note it for `grill-with-docs`).
 
