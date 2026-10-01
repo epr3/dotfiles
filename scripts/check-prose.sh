@@ -305,7 +305,7 @@ STALE_NAME_PAT='CONTEXT\.md|CONTEXT-MAP\.md|(^|[^[:alnum:]_-])(SPEC|MAP)\.md|`ti
 # 1. domain-modeling/GLOSSARY-FORMAT.md — its naming note explains that a
 #    CONTEXT.md / CONTEXT-MAP.md artifact found in a repo is a leftover that
 #    is NOT read as the glossary (suggest renaming). Only those two lines
-#    (3 and 94) are allowlisted, not the whole file, so new old-name
+#    (lines referenced in STALE_NAME_ALLOW below) are allowlisted, not the whole file, so new old-name
 #    path references elsewhere in it still fail. The renamed-file anchor:
 #    a path reference to CONTEXT-FORMAT.md matches none of these old
 #    name patterns either way, and GLOSSARY-FORMAT.md must not be caught.
@@ -319,7 +319,7 @@ STALE_NAME_PAT='CONTEXT\.md|CONTEXT-MAP\.md|(^|[^[:alnum:]_-])(SPEC|MAP)\.md|`ti
 # words — model context, context repo, context worktree, context store, and
 # the other storage terms — denote storage or model context, not artifacts,
 # and never match these patterns.
-STALE_NAME_ALLOW='domain-modeling/GLOSSARY-FORMAT\.md:(3|94):|docs/agents/issue-tracker\.md:[0-9]+:.+rename its `SPEC'
+STALE_NAME_ALLOW='domain-modeling/GLOSSARY-FORMAT\.md:(3|82):|docs/agents/issue-tracker\.md:[0-9]+:.+rename its `SPEC'
 
 check_stale_names() {
   local hits h

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Setup Context
 
-Scaffold the config the engineering skills assume. Prompt-driven: explore, present, confirm, write. Machine-wide defaults live in global config; per-repo choices (made below) are recorded as an `## Agent skills` block + convention docs in the **config home**; every skill reads them without extra wiring.
+Scaffold the per-repo configuration that the engineering skills assume. This is a prompt-driven skill, not a deterministic script: explore, present what you found, confirm with the user, then write. Machine-wide defaults live in global config; per-repo choices (made below) are recorded as an `## Agent skills` block + convention docs in the **config home**; every skill reads them without extra wiring.
 
 ## Process
 
@@ -22,7 +22,7 @@ Optional: shared **context root**. To put every **context repo** under one fixed
 
 ### 2. Explore
 
-Check current state, don't assume:
+Look at the current state. Read whatever exists; don't assume:
 
 - `git remote -v` + `.git/config`: GitHub? GitLab? which repo?
 - the repo's own agent-instructions file: does an `## Agent skills` block from a prior run already exist? (Re-running updates it in place.)
@@ -33,7 +33,7 @@ Check current state, don't assume:
 
 ### 3. Present + ask
 
-Summarise present/missing, then ask as **round**s in the `grilling` skill's question format. Lead each section with the recommended answer so the user can accept it in a word; assume they don't know the terms, so give the explainer only where the choice genuinely branches, and skip a section outright when exploration already settled it. Section B depends on A's answer and C on B's, so they land in later rounds.
+Summarise what's present and what's missing. Then take the sections in order, as **round**s in the `grilling` skill's question format. Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip the section entirely when exploration already settled it. Section B depends on A's answer and C on B's, so they land in later rounds.
 
 **Section A: Context store.** This picks a *model*, not a location; the location follows from it.
 
@@ -91,12 +91,12 @@ Show a draft of everything step 5 writes and let the user edit it first. The `##
 
 ### 5. Write
 
-**Record the choices** as an `## Agent skills` block (`Store: context repo` or `Store: in-repo` first, then one line per section B–D) in the **config home** the procedure resolves for the chosen store:
+**Record the choices** as an `## Agent skills` block (`Store: context repo` or `Store: in-repo` first, then one line per section B–D) in the **config home** the procedure resolves for the chosen store, then write the docs files using the seed templates in this skill folder as a starting point:
 
 - **Context repo** (default) -> `agent-skills.md` there (`$proj/.agents/`, beside the **context worktree**s): one copy per context repo, read by all of its branches, never duplicated into them; do **not** import or append it into the global `AGENTS.md` or the code repo's instructions file. The code repo stays untouched.
 - **In-repo context** -> the code repo's instructions file, auto-loaded by the harness, so its lines may reference the convention docs directly (e.g. "see `docs/agents/issue-tracker.md`"). `AGENTS.md` at the repo root if it exists, else `CLAUDE.md` if that exists; if neither, ask the user which to create; never pick for them, never create one when the other exists.
 
-Either way: update an existing block in place; never duplicate, never touch surrounding content.
+If an `## Agent skills` block already exists in the chosen file, update its contents in-place rather than appending a duplicate.
 
 **Write the convention docs** into the same **config home**, per the choices: `issue-tracker.md` is **always written** (from [issue-tracker-github.md](./issue-tracker-github.md), [issue-tracker-gitlab.md](./issue-tracker-gitlab.md), or [issue-tracker-local.md](./issue-tracker-local.md) to match section B, or from the user's description for "other"). Triage on -> also `triage-labels.md` from [triage-labels.md](./triage-labels.md) with the user's mappings. Section E -> also `artifact-locations.md` from the seed [artifact-locations.md](./artifact-locations.md), the five class lines filled from section E's answers (durable classes only; custom paths carry `{branch}` as recorded). Re-running updates them in place.
 

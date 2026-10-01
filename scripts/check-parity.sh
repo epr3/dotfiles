@@ -183,23 +183,23 @@ pattern_match() {
   esac
 }
 
-# verify_covered_file <entry idx> <upstream file> <local file path> — every
+# verify_covered_file <skill dir> <entry idx> <upstream file> <local file path> — every
 # changed line (+ local side / - upstream side) must itself carry one of that
 # entry's exact-change markers: line-level accounting keeps an unrecorded edit
 # beside the approved substitution failing even when hunks merge.
 verify_covered_file() {
-  local idx=$1 u=$2 l=$3 raw line ok_line
+  local sk=$1 idx=$2 u=$3 l=$4 raw line ok_line
   raw=$(diff -U0 "$u" "$l" 2>/dev/null | tail -n +3)
   while IFS= read -r line; do
     case $line in
       '@@'*|'+++'*|'---'*) ;;
       +*) ok_line="${line#+}"; [ -z "$ok_line" ] && continue
            marker_in "${EX_MARKERS[idx]}" "$ok_line" \
-             || fail "$l" "changed line lacks an exact-change marker: $ok_line"
+             || fail_scope "$sk" "$l" "changed line lacks an exact-change marker: $ok_line"
            ;;
       -*) ok_line="${line#-}"; [ -z "$ok_line" ] && continue
            marker_in "${EX_MARKERS[idx]}" "$ok_line" \
-             || fail "$l" "removed line lacks an exact-change marker: $ok_line"
+             || fail_scope "$sk" "$l" "removed line lacks an exact-change marker: $ok_line"
            ;;
     esac
   done <<< "$raw"
@@ -258,11 +258,13 @@ check_packaging() {
     if [ -e "$p" ]; then
       fail "$p" "category index or nested packaging present; flat packaging recorded for the suite"
     fi
-  done < ".pi/agent/skills/README.md
+  done <<'PACKAGING_FLAT'
+.pi/agent/skills/README.md
 .pi/agent/skills/engineering
 .pi/agent/skills/productivity
 .pi/agent/skills/in-progress
-.pi/agent/skills/misc"
+.pi/agent/skills/misc
+PACKAGING_FLAT
 }
 
 # Local-only retention (exceptions 0005): the recorded five must exist and not
@@ -330,7 +332,7 @@ check_directories() {
       rel=${rel#./}
       cov=$(exc_cover "$SUBSTITUTION_KINDS" "$(parity_upstream_rel "$sk")/$rel" "$ldir/$rel")
       if [ -n "$cov" ]; then
-        verify_covered_file "$cov" "$udir/$rel" "$ldir/$rel"
+        verify_covered_file "$sk" "$cov" "$udir/$rel" "$ldir/$rel"
       elif cmp -s "$udir/$rel" "$ldir/$rel"; then
         [ "$quiet" = 1 ] || echo "ok  - parity: byte-exact $ldir/$rel"
       else

@@ -1,51 +1,51 @@
 # ADR Format
 
-Personal, in the context worktree alongside `GLOSSARY.md` (see [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md)): `docs/adr/YYYY-MM-DD-slug.md`, date-prefixed, **not** sequentially numbered. Multi-context: system-wide ADRs at `docs/adr/`, context-specific at `<dir>/adr/` (the code dir the decision belongs to); write the ADR where the decision lives.
-Create dir lazily. Like the glossary, ADRs live in the context worktree; `offload-context` commits + pushes them at the end of a cycle; skipped when context is in-repo, where they commit with the code (see [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md)).
+ADRs live in `docs/adr/` by default; the `adrs` destination resolves per class with `<setup-context skill dir>/resolve-location.sh adrs`, run with cwd in the code repo. Multiple contexts: system-wide ADRs at the destination, context-specific at `<dir>/adr/`, and write the ADR where the decision lives.
 
-> **Why not `NNNN-` sequence numbers.** Two branches both grab the next number and
-> collide on merge; a date prefix is collision-free, still sorts chronologically, and
-> needs no directory listing to pick an ID. Take the slug from the decision; never
-> derive an identifier by counting existing ADRs.
+Create the `docs/adr/` directory lazily: only when the first ADR is needed.
+
+Like the glossary, ADRs recorded in the **context worktree** are committed + pushed by `offload-context` at the end of a cycle; skipped when the destination is the code repo, where they commit with the code.
 
 ## Template
 
 ```md
-# {Short title}
+# {Short title of the decision}
 
-{1–3 sentences: context, decision, why.}
+{1-3 sentences: what's the context, what did we decide, and why.}
 ```
 
-A single paragraph is fine. Value is recording *that* a decision was made and *why*; not filling sections.
+That's it. An ADR can be a single paragraph. The value is in recording *that* a decision was made and *why*, not in filling out sections.
 
-## Optional (only if they add value)
+## Optional sections
 
-- **Status** frontmatter (`proposed | accepted | deprecated | superseded`): when decisions are revisited. To point at the superseding decision, reference it by its `YYYY-MM-DD-slug` filename, not by number.
-- **Considered Options**: when rejected alternatives are worth remembering
-- **Consequences**: when non-obvious downstream effects need calling out
+Only include these when they add genuine value. Most ADRs won't need them.
 
-## Finding related ADRs
+- **Status** frontmatter (`proposed | accepted | deprecated | superseded by {filename}`): useful when decisions are revisited
+- **Considered Options**: only when the rejected alternatives are worth remembering
+- **Consequences**: only when non-obvious downstream effects need to be called out
 
-**Search by topic**, don't enumerate the directory; on a shared repo a listing is
-partial (ADRs live on unmerged branches) and racy. Grep `docs/adr/` (plus any
-`<dir>/adr/`) for the terms of the decision at hand (module names, the seam, the
-technology) and read only the matches. That is "the ADRs I could find on this
-topic", never "all ADRs"; none matching is not proof none exists elsewhere, so proceed.
+## Names
 
-## ADR test: all three or skip
+Filenames are **date-prefixed**: `YYYY-MM-DD-slug.md`, not sequentially numbered: two context branches both grabbing the next number collide on merge; a date prefix is collision-free, still sorts chronologically, and needs no directory listing to pick an ID.
 
-1. **Hard to reverse**: cost of changing your mind is meaningful
-2. **Surprising without context**: future reader wonders "why?"
-3. **Real trade-off**: genuine alternatives, specific reasons
+Take the slug from the decision; never derive an identifier by counting existing ADRs.
 
-Easy to reverse → skip. Not surprising → nobody wonders. No alternative → nothing to record.
+## When to offer an ADR
 
-## What qualifies
+All three of these must be true:
 
-- Architectural shape (monorepo, event-sourced, CQRS)
-- Cross-context integration patterns (events vs sync HTTP)
-- Lock-in tech (DB, message bus, auth, deploy target; quarter-to-swap level)
-- Boundary/scope decisions (ownership, ID-only references; the explicit no-s are as valuable as the yes-s)
-- Deliberate deviations from the obvious path (manual SQL over ORM; stops the next engineer "fixing" something deliberate)
-- Invisible constraints (compliance, partner SLAs)
-- Rejected alternatives when rejection is non-obvious (REST over GraphQL for subtle reasons)
+1. **Hard to reverse**: the cost of changing your mind later is meaningful
+2. **Surprising without context**: a future reader will look at the code and wonder "why on earth did they do it this way?"
+3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
+
+If a decision is easy to reverse, skip it: you'll just reverse it. If it's not surprising, nobody will wonder why. If there was no real alternative, there's nothing to record beyond "we did the obvious thing."
+
+### What qualifies
+
+- **Architectural shape.** "We're using a monorepo." "The write model is event-sourced, the read model is projected into Postgres."
+- **Integration patterns between contexts.** "Ordering and Billing communicate via domain events, not synchronous HTTP."
+- **Technology choices that carry lock-in.** Database, message bus, auth provider, deployment target. Not every library: just the ones that would take a quarter to swap out.
+- **Boundary and scope decisions.** "Customer data is owned by the Customer context; other contexts reference it by ID only." The explicit no-s are as valuable as the yes-s.
+- **Deliberate deviations from the obvious path.** "We're using manual SQL instead of an ORM because X." Anything where a reasonable reader would assume the opposite. These stop the next engineer from "fixing" something that was deliberate.
+- **Constraints not visible in the code.** "We can't use AWS because of compliance requirements." "Response times must be under 200ms because of the partner API contract."
+- **Rejected alternatives when the rejection is non-obvious.** If you considered GraphQL and picked REST for subtle reasons, record it; otherwise someone will suggest GraphQL again in six months.

@@ -1,47 +1,35 @@
 # GLOSSARY.md Format
 
-The domain-language artifact is **`GLOSSARY.md`**, and its multi-context index is **`GLOSSARY-MAP.md`**. These are the only supported names: skills **write only them, and discover only them**. A `CONTEXT.md` / `CONTEXT-MAP.md` artifact found on disk is a migration leftover, not the glossary: it is not read; suggest renaming it. Storage terms (context repo, context worktree, context home) are unrelated to this rename and keep their names.
+The domain-language artifact is **`GLOSSARY.md`**, and its multi-context index is **`GLOSSARY-MAP.md`**. These are the only supported names: skills **write only them, and discover only them**. A `CONTEXT.md` / `CONTEXT-MAP.md` artifact found on disk is a migration leftover, not the glossary: it is not read; suggest renaming it.
+
+## Structure
 
 ```md
 # {Context Name}
 
-{One or two sentence description.}
+{One or two sentence description of what this context is and why it exists.}
 
 ## Language
 
-**Order**: A concise description of the term.
-_Avoid_: Purchase, transaction.
+**Order**:
+{A one or two sentence description of the term}
+_Avoid_: Purchase, transaction
 
-**Invoice**: A request for payment sent to a customer after delivery.
-_Avoid_: Bill, payment request.
+**Invoice**:
+A request for payment sent to a customer after delivery.
+_Avoid_: Bill, payment request
 
-**Customer**: A person or organization that places orders.
-_Avoid_: Client, buyer, account.
-
-## Relationships
-
-- An **Order** produces one or more **Invoices**
-- An **Invoice** belongs to exactly one **Customer**
-
-## Example dialogue
-
-> **Dev:** "When a **Customer** places an **Order**, do we create the **Invoice** immediately?"
-> **Domain expert:** "No; an **Invoice** is only generated once a **Fulfillment** is confirmed."
-
-## Flagged ambiguities
-
-- "account" was used to mean both **Customer** and **User**; resolved: these are distinct concepts.
+**Customer**:
+A person or organization that places orders.
+_Avoid_: Client, buyer, account
 ```
 
 ## Rules
 
-- **Opinionated.** Pick the best word, list others as aliases to avoid.
-- **Flag conflicts explicitly** in "Flagged ambiguities" with resolution.
-- **One sentence per term.** Define what it IS, not what it does.
-- **Show cardinality.** Use bold term names in relationships.
-- **Context-specific only.** Skip general programming concepts (timeouts, error types, utility patterns). Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
-- **Group with subheadings** only if natural clusters emerge; flat list otherwise.
-- **Example dialogue**: dev + domain expert demonstrating term boundaries.
+- **Be opinionated.** When multiple words exist for the same concept, pick the best one and list the others under `_Avoid_`.
+- **Keep definitions tight.** One or two sentences max. Define what it IS, not what it does.
+- **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
+- **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
 
 ## Growth & retention
 
@@ -83,15 +71,15 @@ Resolve **code repo first**: a machine-wide config is a default for the *machine
 | no block, in-tree docs | code repo root | `docs/agents/` (may not exist yet) |
 | nothing anywhere | defaults to a **context repo**; `setup-context` has not run | n/a |
 
-Every skill saying "context home" or "config home" means the row this resolves to; resolve it *before* writing anywhere. Under **in-repo context** every "worktree root" reference in this file and in the skills reads as the code repo root, the **context repo** machinery and its scripts don't apply, and `offload-context` / `merge-context` / `rebase-context` are no-ops: plain git on the code repo carries the context. Everything below describes the **context repo**.
+Every skill saying "context home" or "config home" means the row this resolves to; resolve it *before* writing anywhere. Under **in-repo context**, worktree-root reads as the code repo root; the context-repo scripts and lifecycle skills do not apply, and plain git on the code repo carries the context. Everything below describes the **context repo**.
 
 **What sits in the config home:** the `## Agent skills` block and the convention docs (issue tracker, triage labels, out-of-scope) plus `domain.md`: rules for the whole repo, not one branch. Under a **context repo** that is `.agents/` at the context repo root: one copy shared by every **context worktree**, never duplicated into them; plain files, edit in place; never imported into global or repo instructions files; skills read them at orientation. Under **in-repo context** it is `docs/agents/`, committed with the code, and the block sits in the repo's instructions file (auto-loaded; its lines may reference the `docs/agents/` files directly).
 
 ### Artifact locations: per-class destinations
 
-Every durable class resolves its own destination **independently**: read the class line (`glossary`, `adrs`, `board`, `research`, `explainers`) from `artifact-locations.md` in the **config home**, or resolve it with `<setup-context skill>/resolve-location.sh <class>` run with cwd in the code repo. Values: `code` (the code repo's worktree), `context` (the **context home** in the table above), or `custom:<path>` (`{branch}` = the current code branch; a path without it gets `/<branch>` appended, so under a **context repo** even identical branch-local artifact names stay separate per branch). A class absent from the doc keeps its default, which equals its pre-existing effective destination, so no setup changes meaning until a line is recorded. Repo-wide rules remain in the config home, branch-independent; temporary reports and handoffs are not durable classes and stay in the OS temp directory. Skills that write or consume a class resolve through this contract rather than assuming all classes share the context home.
+Every durable class resolves its own destination **independently**: read the class line (`glossary`, `adrs`, `board`, `research`, `explainers`) from `artifact-locations.md` in the **config home**, or resolve it with `<setup-context skill dir>/resolve-location.sh <class>` run with cwd in the code repo. Values: `code` (the code repo's worktree), `context` (the **context home** in the table above), or `custom:<path>` (`{branch}` = the current code branch; a path without it gets `/<branch>` appended, so under a **context repo** even identical branch-local artifact names stay separate per branch). A class absent from the doc keeps its default, which equals its pre-existing effective destination, so no setup changes meaning until a line is recorded. Repo-wide rules remain in the config home, branch-independent; temporary reports and handoffs are not durable classes and stay in the OS temp directory. Skills that write or consume a class resolve through this contract rather than assuming all classes share the context home.
 
-**Temporal note on names (expand phase):** writes always use `GLOSSARY.md` / `GLOSSARY-MAP.md`, never the legacy names. Discovery of an existing glossary at the resolved location checks `GLOSSARY.md` / `GLOSSARY-MAP.md` first, then falls back to the old `CONTEXT.md` / `CONTEXT-MAP.md` names, read-only. The fallback clause itself is what the contraction slice removes: do not write more legacy-name artifacts.
+**Temporal note on names:** writes always use `GLOSSARY.md` / `GLOSSARY-MAP.md`, never the legacy names. Discovery of an existing glossary at the resolved location checks `GLOSSARY.md` / `GLOSSARY-MAP.md` first, then falls back to the old `CONTEXT.md` / `CONTEXT-MAP.md` names, read-only. Do not write more legacy-name artifacts.
 
 **Running the helper scripts** (stated once, here): invoke each **by its path, with cwd inside the code repo** (`ctx-init.sh`, `offload-context.sh`, and `manifest.sh` read the repo + branch from the cwd to resolve the worktree / manifest, and locate their siblings via `$(dirname "$0")`); never `cd` into the skill folder. `manifest.sh` answers are repo-root-relative no matter which subdirectory you run it from. `ctx-index.sh` scans the whole **context root** and is cwd-independent.
 
@@ -99,11 +87,11 @@ Every durable class resolves its own destination **independently**: read the cla
 
 A **context repo** is a **bare git repo**, one per code repo, with a **team remote** and one **`git worktree` per code branch**. Context is **personal to the codebase** and never lives in the code tree; you edit it **directly in the context worktree**; there is no in-tree copy and nothing to sync, the worktree *is* the source of truth.
 
-      $AGENT_CONTEXT_HOME/<slug>/        # slug = <org>__<repo> from the code repo's origin
-      # bare repo at <slug>/.git; worktrees are siblings <slug>/<branch>
-      # default context root ~/.pi/agent/ctx (Claude: ~/.claude/ctx, OpenCode: ~/.config/opencode/ctx)
+    $AGENT_CONTEXT_HOME/<slug>/        # slug = <org>__<repo> from the code repo's origin
+    # bare repo at <slug>/.git; worktrees are siblings <slug>/<branch>
+    # default context root: set AGENT_CONTEXT_HOME to the context root
 
-`<slug>` derives from `remote.origin.url` (no remote -> the repo's folder name). `AGENT_CONTEXT_HOME` points at the **context root**; set it via your harness config to relocate or share that root. Inside a **context worktree**, files **mirror the code paths**:
+`<slug>` derives from `remote.origin.url` (no remote -> the repo's folder name). `AGENT_CONTEXT_HOME` points at the **context root**; set it in the environment to relocate or share that root. Inside a **context worktree**, files **mirror the code paths**:
 
 - `<dir>/GLOSSARY.md`: the glossary for that code dir.
 - `GLOSSARY-MAP.md` at the worktree root; `domain.md` globally at `.agents/domain.md` (see the config-home note above).
@@ -124,10 +112,11 @@ The structure is **generated from the code, not invented by agents**. Allowed pa
 - `setup-context` scaffolds the skeleton from the manifest; agents extend it only along real paths.
 - Liveness (whether a grounded term's *symbol* still exists) is a separate LSP check (`lsp_references` / `lsp_workspace_symbols`). The manifest grounds *paths*; LSP grounds *symbols*.
 
-## Single vs multi-context
+## Single vs multi-context repos
 
-- **Single context:** one `GLOSSARY.md` at the worktree root (mirroring the code repo root).
-- **Multiple:** `GLOSSARY-MAP.md` at the worktree root lists contexts + relationships:
+**Single context (most repos):** One `GLOSSARY.md` at the repo root.
+
+**Multiple contexts:** A `GLOSSARY-MAP.md` at the repo root lists the contexts, where they live, and how they relate to each other:
 
 ```md
 # Glossary Map
@@ -136,12 +125,19 @@ The structure is **generated from the code, not invented by agents**. Allowed pa
 
 - [Ordering](./src/ordering/GLOSSARY.md): receives and tracks customer orders
 - [Billing](./src/billing/GLOSSARY.md): generates invoices and processes payments
+- [Fulfillment](./src/fulfillment/GLOSSARY.md): manages warehouse picking and shipping
 
 ## Relationships
 
-- **Ordering → Fulfillment**: `OrderPlaced` events trigger picking
-- **Fulfillment → Billing**: `ShipmentDispatched` events trigger invoices
-- **Ordering ↔ Billing**: shared `CustomerId`, `Money`
+- **Ordering → Fulfillment**: Ordering emits `OrderPlaced` events; Fulfillment consumes them to start picking
+- **Fulfillment → Billing**: Fulfillment emits `ShipmentDispatched` events; Billing consumes them to generate invoices
+- **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
 ```
 
-`GLOSSARY-MAP.md` links are relative to the repo root and mirror code-relative paths, so `./src/ordering/GLOSSARY.md` is the glossary for that code dir, in the worktree. Inference: `GLOSSARY-MAP.md` exists → multi. Only a root `GLOSSARY.md` → single. Neither → create `GLOSSARY.md` at the worktree root lazily on first term. Infer current context from topic; ask if unclear.
+The skill infers which structure applies:
+
+- If `GLOSSARY-MAP.md` exists, read it to find contexts
+- If only a root `GLOSSARY.md` exists, single context
+- If neither exists, create a root `GLOSSARY.md` lazily when the first term is resolved
+
+When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

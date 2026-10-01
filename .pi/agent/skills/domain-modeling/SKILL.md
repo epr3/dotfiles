@@ -1,25 +1,78 @@
 ---
 name: domain-modeling
-description: The reusable discipline for building and sharpening the project's domain model, and writing the glossary + ADRs the moment decisions crystallise. Use while actively pinning down codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR; inside a grill or outside one.
+description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR.
 ---
 
 # Domain Modeling
 
-The *active* discipline of building + sharpening the domain model: for when you're *changing* it. (Merely *reading* the glossary for vocabulary is a one-line habit any skill does, not this skill.)
+Actively build and sharpen the project's domain model as you design. This is the *active* discipline: challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `GLOSSARY.md` for vocabulary is not this skill: that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
+
+## File structure
+
+Most repos have a single context:
+
+```
+/
+├── GLOSSARY.md
+├── docs/
+│   └── adr/
+│       ├── 0001-event-sourced-orders.md
+│       └── 0002-postgres-for-write-model.md
+└── src/
+```
+
+If a `GLOSSARY-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
+
+```
+/
+├── GLOSSARY-MAP.md
+├── docs/
+│   └── adr/                          ← system-wide decisions
+├── src/
+│   ├── ordering/
+│   │   ├── GLOSSARY.md
+│   │   └── docs/adr/                 ← context-specific decisions
+│   └── billing/
+│       ├── GLOSSARY.md
+│       └── docs/adr/
+```
+
+Create files lazily: only when you have something to write. If no `GLOSSARY.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+
+Resolve where these live before writing: under the retained context store the glossary + ADR home is the **context worktree** for the current code branch, or the code repo root under **in-repo context**; resolve it with the procedure in [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md) → *Resolving the context store*.
 
 ## During the session
 
-Layer these moves onto a grilling pass, or apply them directly when modeling:
+### Challenge against the glossary
 
-- **Challenge glossary conflicts.** When a term conflicts with the glossary, call it out immediately: `Keep glossary definition (recommended)` / `Update glossary` / `Two distinct terms`.
-- **Sharpen fuzzy language.** Propose candidate canonical terms for vague or overloaded words: `Customer` / `User` / `Both: needs splitting`.
-- **Discuss concrete scenarios.** Invent edge cases that force precision about concept boundaries: `Cancel whole order` / `Cancel line item` / `Not allowed`. Do not wait for the user to supply them.
-- **Cross-reference the code.** When the user states how something works, check whether the code agrees. If you find a contradiction, surface it using the existing choices: `Code is right, update plan` / `Plan is right, code is wrong` / `Both partially right`.
+When the user uses a term that conflicts with the existing language in `GLOSSARY.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y. Which is it?"
 
-## Writing it down
+### Sharpen fuzzy language
 
-**Inline updates:** term resolved -> write immediately into the context worktree (the dir mirroring that code; [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md)): your WIP for the whole cycle, so new terms and corrections alike go there. Decision passes the ADR test -> offer write ([ADR-FORMAT.md](./ADR-FORMAT.md)) into `docs/adr/` (or `<dir>/adr/`) of the ADR destination: resolve it with `<setup-context skill dir>/resolve-location.sh adrs` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), keeping the default branch worktree when unset. The `offload-context` skill commits + pushes ADRs recorded in the context worktree at cycle end; other destinations commit where they live.
+When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account': do you mean the Customer or the User? Those are different things."
 
-**ADR test (all three or skip):** hard to reverse · surprising without context · real trade-off.
+### Discuss concrete scenarios
 
-**Glossary discipline:** glossary only (no implementation details, specs, or decisions). One sentence per term, opinionated, aliases under `_Avoid_`. Lazy-create `GLOSSARY.md` on first term (existing glossaries are found and edited in place, never duplicated); lazy-create the ADR dir in the same way at the same resolved `adrs` destination. Growing or retiring terms follows GLOSSARY-FORMAT's *Growth & retention*: split when big, delete when obsolete, summarize verbose prose.
+When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
+
+### Cross-reference with code
+
+When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible. Which is right?"
+
+### Update GLOSSARY.md inline
+
+When a term is resolved, update `GLOSSARY.md` right there. Don't batch these up: capture them as they happen. Use the format in [GLOSSARY-FORMAT.md](./GLOSSARY-FORMAT.md).
+
+`GLOSSARY.md` should be totally devoid of implementation details. Do not treat `GLOSSARY.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+
+### Offer ADRs sparingly
+
+Only offer to create an ADR when all three are true:
+
+1. **Hard to reverse**: the cost of changing your mind later is meaningful
+2. **Surprising without context**: a future reader will wonder "why did they do it this way?"
+3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
+
+If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](./ADR-FORMAT.md).
+
+The ADR destination resolves per class with `<setup-context skill dir>/resolve-location.sh adrs`, run with cwd in the code repo.
