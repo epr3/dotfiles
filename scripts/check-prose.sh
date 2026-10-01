@@ -3,6 +3,10 @@ set -euo pipefail
 # check-prose.sh — skill suite policy + base-ref validation seam.
 # Usage: check-prose.sh [base-ref]   (defaults to "main")
 
+# Suite membership and retirement live in one place: the parity seam's map.
+# shellcheck source=parity/map.sh
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/parity/map.sh"
+
 BASE_REF="${1:-main}"
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" || {
   echo "FAIL: not in a git repository" >&2
@@ -31,10 +35,21 @@ MARK_1=$'\xe2\x9d\x93'      # U+2753 ❓
 MARK_2=$'\xe2\x9e\xa1'      # U+27A1 ➡
 
 # -- Check 1: no U+2014 em dash in skill prose --
+# Files byte-identical at the pinned upstream revision are owned by the
+# parity seam (scripts/check-parity.sh) instead: a policy check must not
+# demand a deviation from exact upstream content.
 check_em_dash() {
   while IFS= read -r f; do
     if grep -qF "$EM_DASH" "$f"; then
-      fail "$f" "contains U+2014 em dash (check 1)"
+      ./scripts/check-parity.sh --is-exact-file "$f" 2>/dev/null
+      parity_rc=$?
+      if [ "$parity_rc" -eq 2 ]; then
+        fail "$f" "contains U+2014 em dash (check 1); parity snapshot unavailable, ownership skipped"
+      elif [ "$parity_rc" -eq 0 ]; then
+        info "$f upstream-exact at pinned revision; parity seam owns it (check 1 skipped)"
+      else
+        fail "$f" "contains U+2014 em dash (check 1)"
+      fi
     fi
   done < <(find .pi/agent/skills -name '*.md' -type f)
 }
@@ -62,6 +77,19 @@ check_protected_marks() {
     fi
 
     if [ "$base_has" = true ] && [ "$work_has" = false ]; then
+      if [ -f "$f" ]; then
+        ./scripts/check-parity.sh --is-exact-file "$f" 2>/dev/null
+        parity_rc=$?
+      else
+        parity_rc=1
+      fi
+      if [ "$parity_rc" -eq 2 ]; then
+        fail "$f" "lost protected question-format marks present at base ref (check 2); parity snapshot unavailable, ownership skipped"
+        continue
+      elif [ "$parity_rc" -eq 0 ]; then
+        info "$f upstream-exact at pinned revision; parity seam owns it (check 2 skipped)"
+        continue
+      fi
       fail "$f" "lost protected question-format marks present at base ref (check 2)"
     fi
   done <<< "$all_files"
@@ -172,31 +200,15 @@ check_handoffs() {
 # recorded inventory change, not an unrecorded invocation-mode flip.
 SPEC_REMOVED=(caveman zoom-out solve resolving-merge-conflicts)
 
-# Local-only removals, recorded here: ask-matt dropped from the suite by
-# explicit user request (2026-10-01) after the upstream sync - present at
-# the pinned snapshot, removed locally on purpose.
-LOCAL_RETIRED=(ask-matt)
+# Local-only removals come from the parity map (PARITY_RETIRED); ask-matt is
+# dropped by explicit user request, recorded in scripts/parity/exceptions/.
 
-# The exact installed inventory the upstream-sync spec settles on, pinned to
-# snapshot mattpocock/skills d81f3a183412e71a5b1e84ca21bc1a35eea03a60.
-# Arithmetic (verified against the actual dirs and the snapshot): upstream
-# engineering is 20 dirs incl. setup-matt-pocock-skills (substituted locally
-# by setup-context) and ask-matt; with setup-context a retained local skill
-# and ask-matt dropped locally -> 18 upstream-named engineering skills; + 7
-# upstream productivity skills = 25 upstream-named; + 5 retained local skills
-# (setup-context, merge-context, rebase-context, offload-context,
-# explain-diff) = 31. The 4 spec-removed skills above are already absent from
-# this list. Note: the task prose lists implement-spec but omits implement;
-# upstream retains both, both exist in the tree, and 26+5=31 needs both -
-# this list is taken from the actual dir listing.
-EXPECTED_SKILLS=(
-  code-review codebase-design diagnosing-bugs domain-modeling
-  grill-me grill-with-docs grilling handoff implement implement-spec
-  improve-codebase-architecture pr prototype research retro tdd teach
-  to-questionnaire to-spec to-tickets triage wait-what wayfinder wizard
-  writing-for-agents
-  setup-context merge-context rebase-context offload-context explain-diff
-)
+# The exact installed inventory is owned by the parity seam: map.sh computes
+# it (25 upstream counterparts - ask-matt retired, setup-matt-pocock-skills
+# substituted - plus the 5 retained local-only skills = 30), and check 7
+# mirrors that computation rather than keeping its own list.
+EXPECTED_SKILLS=()
+while IFS= read -r _dir; do EXPECTED_SKILLS+=("$_dir"); done < <(parity_expected_dirs)
 
 # Name-membership test for the recorded removal list.
 is_spec_removed() {
@@ -240,7 +252,7 @@ check_inventory() {
 
   while IFS= read -r s; do
     [ -z "$s" ] && continue
-    if is_spec_removed "$s" || printf '%s\n' "${LOCAL_RETIRED[@]}" | grep -qx "$s"; then
+    if is_spec_removed "$s" || grep -qx "$s" <<< "${PARITY_RETIRED:-}"; then
       info "$s removed by spec or recorded local retirement (check 5)"
     else
       fail ".pi/agent/skills/$s/SKILL.md" "unrecorded invocation-mode change: $s no longer user-invoked (check 5)"
