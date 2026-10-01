@@ -34,7 +34,7 @@ Use this template for writing the PR body:
 
 ## Sections
 
-Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`. Resolve the glossary's recorded artifact location first (see `setup-context`'s `resolve-location.sh`; under in-repo context this is the code repo root; under a context repo, glossaries and ADRs live in the matching branch's context worktree).
+Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`, resolving the `glossary` artifact location with `<setup-context skill dir>/resolve-location.sh glossary` run with cwd in the code repo.
 
 ### Summary
 

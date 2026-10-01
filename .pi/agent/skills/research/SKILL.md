@@ -1,16 +1,12 @@
 ---
 name: research
-description: Investigate a question against high-trust primary sources and capture the findings as a cited Markdown note in the resolved research destination. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
+description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
 ---
 
-# Research
-
-Spin up a **background agent** to do the reading: `Agent` with `subagent_type: "general"` and `run_in_background: true`, with web access (`web_search` / `web_fetch`); poll it with `get_subagent_result`, so you stay unblocked while it works.
+Spin up a **background agent** to do the research, so you keep working while it reads.
 
 Its job:
 
-1. Investigate the question against **primary sources** (official docs, source code, specs, first-party APIs), not secondary write-ups. Follow every claim back to the source that owns it.
-2. Write the findings to a single Markdown note, citing the primary source for each claim.
-3. Save it into the research destination: resolve it with `<setup-context skill dir>/resolve-location.sh research` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)); by default this branch's context worktree, or the repo's context location if the repo's `## Agent skills` block puts context in-repo (see [GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)). Match the existing convention there; if there's none, put it somewhere sensible and say where.
-
-**Already running inside a sub-agent** (sub-agents can't spawn further)? Do the research yourself, directly, to the same brief: primary sources, cited note, same destination.
+1. Investigate the question against **primary sources** (official docs, source code, specs, first-party APIs), not a secondary write-up of them. Follow every claim back to the source that owns it.
+2. Write the findings to a single Markdown file, citing each claim's source.
+3. Save it at the recorded `research` artifact location (resolve it with `<setup-context skill dir>/resolve-location.sh research` run with cwd in the code repo); match the existing convention there, and if there is none, put it somewhere sensible and say where.

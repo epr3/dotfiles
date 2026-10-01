@@ -7,7 +7,7 @@ description: Diagnosis loop for hard bugs and performance regressions. Use when 
 
 A discipline for hard bugs. Skip phases only when explicitly justified.
 
-When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching. Resolve the glossary's recorded artifact location first (see `setup-context`'s `resolve-location.sh`; under in-repo context this is the code repo root; under a context repo, glossaries and ADRs live in the matching branch's context worktree).
+When exploring the codebase, read `GLOSSARY.md` (if it exists) to get a clear mental model of the relevant modules, and check ADRs in the area you're touching, resolving the `glossary` and `adrs` artifact locations with `<setup-context skill dir>/resolve-location.sh <class>` run with cwd in the code repo.
 
 ## Redact
 

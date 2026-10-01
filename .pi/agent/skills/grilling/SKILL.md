@@ -1,30 +1,28 @@
 ---
 name: grilling
-description: The reusable relentless-interview loop. Reach for it whenever a plan, decision, or idea needs stress-testing - building or not - or the user asks to be grilled.
+description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
 ---
 
-**Grill** the user: be **relentless**. Map what's being grilled as a **design tree**: every decision branches into the decisions that hang off it. Work the tree in **round**s until every branch is resolved or the user calls it. A branch the user settled stays settled; reopen one only when new information contradicts it, and say so when you do.
+Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
-**Frontier.** The **frontier** is every decision whose prerequisites are already settled (the questions you can ask _now_, without guessing at answers you haven't heard yet). A question depending on one still open belongs to a _later_ round, not this one, which is what keeps a round answerable in a single pass. Ask the whole frontier in one round: number each question and give your recommended answer, a horizontal rule between questions, in this format:
+Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled: the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
+
+Format a round like so:
 
 ```
-❓ **Q1**: **Per-user cache or one global cache?** The data is already scoped per-user; a global cache would need invalidation we'd have to build.
+❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
 
-➡️ **Per-user.** Same shape as the data; nothing new to invalidate.
+➡️ <your recommended answer>
 
 ---
 
-❓ **Q2**: **Evict eagerly or lazily?** Eager eviction needs a background sweep we don't otherwise run.
+❓ **Q2** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
 
-➡️ **Lazily.** Stale entries are harmless; the sweep is not.
+➡️ <your recommended answer>
 ```
 
-Wait for the user's answers before the next round. Each answered round reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and put the newly eligible questions in the next round; a question still waits until its own prerequisites are answered.
+Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
-When the frontier has exactly one truly discrete question, use Pi's `question` tool. When it has multiple questions, ask the whole numbered frontier in the assistant message above; the tool would serialize the round into separate prompts. Use the tool for a single discrete confirmation gate too. This affordance stays subject to higher-priority harness instructions governing actual tool use.
+Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
 
-**Legwork.** A fact you can discover from the environment, filesystem, or tools, look up rather than ask; the decisions are the user's, so put each one to them and wait for the answer. Look a fact up in-process when a quick check settles it; delegate only broad digging, to a sub-agent (`Agent` tool) with the capabilities the fact needs: read-only `explore` for codebase and filesystem reading, `general` when the lookup needs tools an explore worker cannot run. Never offload a fact to the user just because the default worker lacks a tool. A running lookup is an unsettled prerequisite: only the questions downstream of it wait for the worker to report. Dispatch broad digging in the background (`run_in_background: true`), ask the rest of the frontier now, and collect the result (`get_subagent_result`) before asking any dependent question. A foreground dispatch blocks the parent in this turn either way, and same-turn parallelism among workers is not evidence that the parent stayed unblocked.
-
-**The user answers.** A round closes on their reply: the answers are theirs to give, not yours to supply. Your recommendation is your view, never a substitute for their answer.
-
-**Confirmation gate.** When the frontier empties (every branch visited, nothing left silently assumed), state the understanding back: what was decided and what it commits to. Get explicit confirmation. An empty currently-askable frontier is not completion while a lookup still governs an open branch: collect it, settle the dependent questions, then confirm. Confirmation completes this interview, not permission to start another workflow. When used inside a skill, return to that skill's remaining in-scope steps; otherwise report the settled understanding and stop. A suggested next workflow stays a suggestion until the user explicitly requests it as a separate action.
+The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
