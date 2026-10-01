@@ -19,7 +19,7 @@ Turn something the user can't answer alone into a **questionnaire**: a Markdown 
 
 ## Document structure
 
-Frame the document as a **discovery questionnaire**: the user lacks context, the recipient holds it. Order questions most-important-first (async means you may only get one pass), and group them under `##` headings by theme once there are more than a handful. Write it using the template below.
+Frame the document as a **discovery questionnaire**: the user lacks context, the recipient holds it. Order questions most-important-first, since async means you may only get one pass, and group them under `##` headings by theme once there are more than a handful. Write it using the template below.
 
 <questionnaire-template>
 
@@ -35,11 +35,11 @@ One paragraph orienting a recipient who wasn't in the user's head. Enough to ans
 
 ## How to answer
 
-Deadline and rough effort. Partial answers and "I don't know" are useful; flag anything you're unsure of rather than skipping it.
+Deadline and rough effort. Partial answers and "I don't know" are useful: flag anything you're unsure of rather than skipping it.
 
 ## <Theme heading>
 
-One `##` section per theme. Under each, its questions, most-important-first. Every question is one idea; never compound. With an answer stub directly beneath, and a one-line _why this matters_ only where the question could be misread or invite a throwaway answer.
+One `##` section per theme. Under each, its questions, most-important-first. Every question is one idea, never compound, with an answer stub directly beneath, and a one-line _why this matters_ only where the question could be misread or invite a throwaway answer.
 
 <question-example>
 ### What load is the system expected to handle at launch?
