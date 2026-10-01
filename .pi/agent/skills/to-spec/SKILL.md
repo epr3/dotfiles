@@ -12,7 +12,7 @@ Synthesize the spec from current conversation + codebase understanding. **No int
 
 2. Sketch the **seams** to test the feature at. Prefer existing seams, at the highest point available; new ones only if needed. Fewer seams is better; the ideal number is one. Confirm they match the user's expectations; put them as one **round** in the `grilling` skill's question format.
 
-3. Write the spec to `.scratch/<feature-slug>/SPEC.md` **at the context home** ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md), *Context home*). `<feature-slug>` = the arg if given, else kebab-case the topic; `to-tickets` writes this feature's tickets beside it. Specs stay local files even when issues live in a tracker. Open or report the path.
+3. Write the spec to `.scratch/<feature-slug>/spec.md` **at the board's recorded artifact location, resolved with `setup-context`'s `resolve-location.sh board` (default: the context home; legacy boards may still use `SPEC.md`)** ([CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md), *Context home*). `<feature-slug>` = the arg if given, else kebab-case the topic; `to-tickets` writes this feature's issues beside it. Specs stay local files even when issues live in a tracker. Open or report the path.
 
 <prd-template>
 

@@ -141,7 +141,7 @@ check_ticket_schema() {
     else
       fail "$f" "frontmatter missing both 'type' and 'mode' (check 3)"
     fi
-  done < <(find .scratch -path '*/tickets/*.md' -type f)
+  done < <(find .scratch -path '*/tickets/*.md' -type f -o -path '*/issues/*.md' -type f)
 }
 
 # -- Check 4: executable handoffs target model-invoked skills --

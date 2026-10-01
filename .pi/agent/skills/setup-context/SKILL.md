@@ -50,7 +50,7 @@ If explore found in-tree context and the user picks **context repo**, offer to m
 
 > `to-spec` writes specs and `to-tickets` breaks them into tickets; `implement` picks tickets up, `code-review` reads them as the spec, and `wayfinder` keeps its planning map there. They need to know where that lives: local markdown (`.scratch/` in the **context home** section A resolves to) or a real tracker.
 
-- **Local files** (default): `.scratch/<feature-slug>/` in that **context home** (its `SPEC.md` + `tickets/`); no external service, and whether they're kept or discarded is the user's call (conventions in [issue-tracker-local.md](./issue-tracker-local.md)).
+- **Local files** (default): `.scratch/<feature-slug>/` at the board's recorded artifact location (default: the context home; its `spec.md` + `issues/`, lowercase - legacy `SPEC.md`/`tickets/` boards stay readable until migration); no external service, and whether they're kept or discarded is the user's call (conventions in [issue-tracker-local.md](./issue-tracker-local.md)).
 - **GitHub**: issues in the repo's GitHub Issues via the `gh` CLI; specs stay local files. Conventions seed: [issue-tracker-github.md](./issue-tracker-github.md).
 - **GitLab**: issues in GitLab Issues via the `glab` CLI; specs stay local files. Conventions seed: [issue-tracker-gitlab.md](./issue-tracker-gitlab.md).
 - **Other** (Jira, Linear, …): user describes the workflow in one paragraph; recorded as freeform prose for the skills to follow.
