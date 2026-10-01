@@ -1,6 +1,7 @@
 ---
 name: improve-codebase-architecture
-description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick. Use when the user wants the architecture improved or refactoring opportunities found.
+description: Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
+disable-model-invocation: true
 ---
 
 # Improve Codebase Architecture
@@ -9,8 +10,8 @@ Surface architectural friction and propose **deepening opportunities**: refactor
 
 This command is _informed_ by the project's domain model and built on a shared design vocabulary:
 
-- Load the `codebase-design` skill (read its SKILL.md) for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
-- The domain language in `GLOSSARY.md` gives names to good seams; ADRs in `docs/adr/` record decisions this command should not re-litigate.
+- Call the Skill tool with "codebase-design" for the architecture vocabulary (**module**, **interface**, **depth**, **seam**, **adapter**, **leverage**, **locality**) and its principles (the deletion test, "the interface is the test surface", "one adapter = hypothetical seam, two = real"). Use these terms exactly in every suggestion, and don't drift into "component," "service," "API," or "boundary."
+- The domain language in `GLOSSARY.md` gives names to good seams; ADRs at the recorded `adrs` destination record decisions this command should not re-litigate.
 
 ## Process
 
@@ -21,11 +22,9 @@ This command is _informed_ by the project's domain model and built on a shared d
 - If the user named a direction (a module, a subsystem, a pain point), take it, and skip the inference below.
 - Otherwise, walk back a good stretch of the commit history (`git log --oneline`) to find the codebase's hot spots, the files and areas that keep coming up, and let those paths pull your attention first. If the changes are scattered with no clear hot spot, widen the net.
 
-Locally (adaptation): when no scope is named, derive the area from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
+Read the project's domain glossary (`GLOSSARY.md`) and any ADRs in the area you're touching first, resolving the `glossary` and `adrs` artifact destinations with `<setup-context skill dir>/resolve-location.sh <class>` run with cwd in the code repo; the step-3 updates land there too.
 
-Read the project's domain glossary (`GLOSSARY.md`) and any ADRs in the area you're touching first. Resolve the recorded artifact location for each class first (see setup-context's `resolve-location.sh`; under in-repo context this is the code repo root; under a context repo they live in the matching branch's context worktree).
-
-Then spawn a sub-agent (`Agent` tool, `subagent_type: "explore"`) to walk the codebase. Don't follow rigid heuristics; explore organically and note where you experience friction:
+Then spawn a sub-agent to walk the codebase. Don't follow rigid heuristics; explore organically and note where you experience friction:
 
 - Where does understanding one concept require bouncing between many small modules?
 - Where are modules **shallow**, with an interface nearly as complex as the implementation?
@@ -58,21 +57,15 @@ End the report with a **Top recommendation** section: which candidate you'd tack
 
 See [HTML-REPORT.md](HTML-REPORT.md) for the full HTML scaffold, diagram patterns, and styling guidance.
 
-Do NOT propose interfaces yet. After the file is written, ask which candidate to explore, in `grilling`'s question format: one option per candidate plus "None: re-explore". Wait for the answer.
+Do NOT propose interfaces yet. After the file is written, ask the user: "Which of these would you like to explore?"
 
 ### 3. Grilling loop
 
-Once the user picks a candidate, load the `grilling` skill to walk the decision tree with them: constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
+Once the user picks a candidate, call the Skill tool with "grilling" to walk the decision tree with them: constraints, dependencies, the shape of the deepened module, what sits behind the seam, what tests survive.
 
-Side effects happen inline as decisions crystallize; load the `domain-modeling` skill to keep the domain model current as you go:
+Side effects happen inline as decisions crystallize; call the Skill tool with "domain-modeling" to keep the domain model current as you go:
 
 - **Naming a deepened module after a concept not in `GLOSSARY.md`?** Add the term to `GLOSSARY.md`. Create the file lazily if it doesn't exist.
 - **Sharpening a fuzzy term during the conversation?** Update `GLOSSARY.md` right there.
 - **User rejects the candidate with a load-bearing reason?** Offer an ADR, framed as: _"Want me to record this as an ADR so future architecture reviews don't re-suggest it?"_ Only offer when the reason would actually be needed by a future explorer to avoid re-suggesting the same thing; skip ephemeral reasons ("not worth it right now") and self-evident ones.
-- **Want to explore alternative interfaces for the deepened module?** Load the `codebase-design` skill and use its design-it-twice parallel sub-agent pattern.
-
-### 4. Stop at the design boundary
-
-This skill produces *understanding and recorded decisions* (the HTML report, a sharpened `GLOSSARY.md`, any ADRs, optional interface designs) and stops there. When the grilling settles, suggest the next step and stop. Starting specifications, tickets, implementation, or any other next workflow requires a separate explicit user request.
-
-Close by reporting: chosen candidate, where decisions were recorded, and the suggested next step.
+- **Want to explore alternative interfaces for the deepened module?** Call the Skill tool with "codebase-design" and use its design-it-twice parallel sub-agent pattern.

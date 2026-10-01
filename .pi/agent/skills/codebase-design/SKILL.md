@@ -7,8 +7,6 @@ description: Shared vocabulary for designing deep modules. Use when the user wan
 
 Design **deep modules**: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface. Use this language and these principles wherever code is being designed or restructured. The aim is leverage for callers, locality for maintainers, and testability for everyone.
 
-The domain glossary names the *concepts*; this vocabulary names their *shape*. Use the project's domain language (`GLOSSARY.md` in the context worktree; see [../domain-modeling/GLOSSARY-FORMAT.md](../domain-modeling/GLOSSARY-FORMAT.md)) for *what* a module is ("the Order intake module," not "the FooBarHandler") and the terms below for *how* it's built.
-
 ## Glossary
 
 Use these terms exactly: don't substitute "component," "service," "API," or "boundary." Consistent language is the whole point.
@@ -19,7 +17,7 @@ Use these terms exactly: don't substitute "component," "service," "API," or "bou
 
 **Implementation**: what's inside a module, its body of code. Distinct from **Adapter**: a thing can be a small adapter with a large implementation (a Postgres repo) or a large adapter with a small implementation (an in-memory fake). Reach for "adapter" when the seam is the topic; "implementation" otherwise.
 
-**Depth**: leverage at the interface. The amount of behaviour a caller (or test) can exercise per unit of interface they have to learn. A module is **deep** when a large amount of behaviour sits behind a small interface, **shallow** when the interface is nearly as complex as the implementation. Designing an interface is therefore a hunt for three things: fewer methods, simpler parameters, more complexity hidden inside. _Avoid_: depth as a ratio of implementation-lines to interface-lines (Ousterhout); it rewards padding the implementation.
+**Depth**: leverage at the interface. The amount of behaviour a caller (or test) can exercise per unit of interface they have to learn. A module is **deep** when a large amount of behaviour sits behind a small interface, **shallow** when the interface is nearly as complex as the implementation.
 
 **Seam** _(Michael Feathers)_: a place where you can alter behaviour without editing in that place; the *location* at which a module's interface lives. Where to put the seam is its own design decision, distinct from what goes behind it. _Avoid_: boundary (overloaded with DDD's bounded context).
 
@@ -62,7 +60,7 @@ When designing an interface, ask:
 ## Principles
 
 - **Depth is a property of the interface, not the implementation.** A deep module can be internally composed of small, mockable, swappable parts; they just aren't part of the interface. A module can have **internal seams** (private to its implementation, used by its own tests) as well as the **external seam** at its interface.
-- **The deletion test.** Imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep. Count N; don't guess it: `lsp_references` (or `lsp_incoming_calls`) on the interface gives the real fan-in (grep misses dynamic + re-exported usages); that number is your evidence for depth and leverage, not an estimate.
+- **The deletion test.** Imagine deleting the module. If complexity vanishes, it was a pass-through. If complexity reappears across N callers, it was earning its keep.
 - **The interface is the test surface.** Callers and tests cross the same seam. If you want to test *past* the interface, the module is probably the wrong shape.
 - **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a seam unless something actually varies across it.
 
