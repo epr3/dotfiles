@@ -1,6 +1,6 @@
 ---
 name: grill-with-docs
-description: Grill a plan against the project's CONTEXT.md and ADRs, sharpening both inline as decisions crystallise. Use when the user wants a plan stress-tested against documented domain language. First step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
+description: Grill a plan against the project's GLOSSARY.md and ADRs, sharpening both inline as decisions crystallise. Use when the user wants a plan stress-tested against documented domain language. First step of the workflow (grill-with-docs → to-spec → to-tickets → implement → offload-context).
 ---
 
 # Grill With Docs
@@ -9,7 +9,7 @@ description: Grill a plan against the project's CONTEXT.md and ADRs, sharpening 
 
 ### 1. Load the documented language
 
-Read `CONTEXT.md` in this branch's context worktree (the dir mirroring the code it describes), or the worktree's root `CONTEXT-MAP.md` -> the relevant context (store model, path formula, and multi-context layout: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Multi-context: infer which applies; ask if unclear.
+Read `GLOSSARY.md` in this branch's context worktree (the dir mirroring the code it describes), or the worktree's root `GLOSSARY-MAP.md` -> the relevant context (store model, path formula, and multi-context layout: [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). Multi-context: infer which applies; ask if unclear.
 
 ADRs (personal, see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)): resolve their destination with `<setup-context skill dir>/resolve-location.sh adrs` run with cwd in the code repo (contract: [artifact-locations.md](../setup-context/artifact-locations.md)), then grep `docs/adr/` + `<dir>/adr/` beneath the resolved destination for topic terms and read the matches only, since enumerating the dir is partial and racy.
 

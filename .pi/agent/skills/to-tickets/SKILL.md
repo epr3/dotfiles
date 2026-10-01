@@ -18,7 +18,7 @@ Work from whatever the conversation already holds. Path arg (spec/plan `.md`) ->
 
 ### 2. Explore (optional)
 
-Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`CONTEXT.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area. Look for prefactoring that makes the implementation easier; make the change easy, then make the easy change.
+Not explored yet -> broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Issue titles use the domain glossary (`GLOSSARY.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area. Look for prefactoring that makes the implementation easier; make the change easy, then make the easy change.
 
 ### 3. Draft vertical slices
 

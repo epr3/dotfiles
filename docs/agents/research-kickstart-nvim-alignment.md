@@ -23,7 +23,7 @@
 
 ## Where this repo stands
 
-The repo's stated posture is **Kickstart alignment** — "current Kickstart patterns and `vim.pack`, not vendor Kickstart unchanged" (`.config/CONTEXT.md`). Structure is multi-file (`init.lua` → `options`/`keymaps`/`pack`/`plugins` | `plugins-vscode`, plus `lua/nvim/plugins/*` and `lua/nvim/servers/*`), which is a deliberate divergence and fine.
+The repo's stated posture is **Kickstart alignment** — "current Kickstart patterns and `vim.pack`, not vendor Kickstart unchanged" (`.config/GLOSSARY.md`). Structure is multi-file (`init.lua` → `options`/`keymaps`/`pack`/`plugins` | `plugins-vscode`, plus `lua/nvim/plugins/*` and `lua/nvim/servers/*`), which is a deliberate divergence and fine.
 
 ### The core gap: `pack.lua` is not `vim.pack`
 

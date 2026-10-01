@@ -8,7 +8,7 @@ Synthesize the spec from current conversation + codebase understanding. **No int
 
 ## Process
 
-1. Explore the repo if you haven't: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary's vocabulary throughout (`CONTEXT.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
+1. Explore the repo if you haven't: broad digging goes to a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`). Use the domain glossary's vocabulary throughout (`GLOSSARY.md` in the context worktree, see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)); respect ADRs in the area.
 
 2. Sketch the **seams** to test the feature at. Prefer existing seams, at the highest point available; new ones only if needed. Fewer seams is better; the ideal number is one. Confirm they match the user's expectations; put them as one **round** in the `grilling` skill's question format.
 

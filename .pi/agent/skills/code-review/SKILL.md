@@ -49,7 +49,7 @@ The spec is whatever says what this change was *supposed* to do; it doesn't have
 
 ### 3. Identify the standards sources
 
-Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`. If the repo keeps ADRs or a domain glossary (e.g. `CONTEXT.md`), those count too; naming and structure should match them.
+Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`. If the repo keeps ADRs or a domain glossary (e.g. `GLOSSARY.md`), those count too; naming and structure should match them.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline**, a fixed set of Fowler code smells that applies even when a repo documents nothing. A documented repo standard always wins: where it endorses something the baseline would flag, suppress that smell. Baseline smells are labelled heuristics, never hard violations, and skip anything tooling already enforces. The full baseline is pasted into the Standards brief; the sub-agent never needs to read a separate file.
 

@@ -25,7 +25,7 @@ Give each design a different constraint:
 - **Common-case**: optimise for the most common caller; make the default case trivial.
 - **Ports & adapters** (if applicable): design around ports & adapters for cross-seam dependencies.
 
-Brief each design with the technical details (file paths, coupling, dependency category from [DEEPENING.md](./DEEPENING.md), what sits behind the seam), plus both this skill's vocabulary and the project's domain glossary (`CONTEXT.md` in the context worktree; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)).
+Brief each design with the technical details (file paths, coupling, dependency category from [DEEPENING.md](./DEEPENING.md), what sits behind the seam), plus both this skill's vocabulary and the project's domain glossary (`GLOSSARY.md` in the context worktree; see [../domain-modeling/CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)).
 
 Each design outputs:
 

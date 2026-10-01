@@ -1,13 +1,13 @@
 ---
 name: improve-codebase-architecture
-description: Find deepening opportunities in a codebase (refactors that turn shallow modules deep), informed by CONTEXT.md and ADRs. Use when the user wants the architecture improved or refactoring opportunities found.
+description: Find deepening opportunities in a codebase (refactors that turn shallow modules deep), informed by GLOSSARY.md and ADRs. Use when the user wants the architecture improved or refactoring opportunities found.
 ---
 
 # Improve Codebase Architecture
 
 Surface architectural friction, propose **deepening opportunities** (refactors turning shallow modules deep). Aim: testability + AI-navigability.
 
-Every suggestion is phrased in the `codebase-design` vocabulary: **module, interface, depth, seam, adapter, leverage, locality**, and judged by its principles; don't drift into "component", "service", "API", or "boundary". Invoke that skill and use its terms; domain language from `CONTEXT.md` names good seams, and ADRs record decisions not to re-litigate. A candidate contradicting an ADR is surfaced only when the friction is real enough to warrant reopening the ADR, marked with the ADR callout [HTML-REPORT.md](HTML-REPORT.md) already defines; don't list every theoretical refactor an ADR forbids.
+Every suggestion is phrased in the `codebase-design` vocabulary: **module, interface, depth, seam, adapter, leverage, locality**, and judged by its principles; don't drift into "component", "service", "API", or "boundary". Invoke that skill and use its terms; domain language from `GLOSSARY.md` names good seams, and ADRs record decisions not to re-litigate. A candidate contradicting an ADR is surfaced only when the friction is real enough to warrant reopening the ADR, marked with the ADR callout [HTML-REPORT.md](HTML-REPORT.md) already defines; don't list every theoretical refactor an ADR forbids.
 
 ## Process
 
@@ -15,7 +15,7 @@ Every suggestion is phrased in the `codebase-design` vocabulary: **module, inter
 
 Scan **where change is actually landing**: YAGNI; a deepening in code nobody is touching is a suggestion nobody will act on, so extra weight goes on the parts that have recently changed. Take the area from the user when they name one; otherwise derive it from the current branch's diff, recent commit churn (`git log --format= --name-only -n 100 | sort | uniq -c | sort -rn`), and what the open specs/tickets point at. When no scope is named and recent changes are scattered with no clear hot spot, widen the net before scanning. State the scope before scanning, and widen it only when friction found inside plainly originates outside.
 
-Read `CONTEXT.md` for that area first, in the relevant folder (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). ADRs: grep `docs/adr/` + `<dir>/adr/` (see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)) for area terms, read matches; treat the grep as partial and racy rather than an authoritative list.
+Read `GLOSSARY.md` for that area first, in the relevant folder (see [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md)). ADRs: grep `docs/adr/` + `<dir>/adr/` (see [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md)) for area terms, read matches; treat the grep as partial and racy rather than an authoritative list.
 
 Explore the scoped area with a read-only `explore` sub-agent (`Agent` tool, `subagent_type: "explore"`); it can't touch the repo, which is what makes this step safe. Walk organically. Note friction:
 
@@ -39,13 +39,13 @@ Run the `grilling` loop over the chosen candidate: constraints, dependencies, th
 
 Side effects inline:
 
-- Module named after a concept not in `CONTEXT.md` -> add it per [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md). Lazy-create.
-- Fuzzy term sharpened -> update `CONTEXT.md`.
+- Module named after a concept not in `GLOSSARY.md` -> add it per [CONTEXT-FORMAT.md](../domain-modeling/CONTEXT-FORMAT.md). Lazy-create.
+- Fuzzy term sharpened -> update `GLOSSARY.md`.
 - User rejects a candidate for a load-bearing reason -> offer an ADR per [ADR-FORMAT.md](../domain-modeling/ADR-FORMAT.md). Only when a future explorer needs it to avoid re-suggesting; skip ephemeral ("not worth it now") and self-evident reasons.
 - Want alternative interfaces -> [codebase-design's design-it-twice](../codebase-design/DESIGN-IT-TWICE.md).
 
 ### 4. Stop at the design boundary
 
-This skill produces *understanding and recorded decisions* (the HTML report, a sharpened `CONTEXT.md`, any ADRs, optional interface designs) and stops there. When the grilling settles, suggest the next step and stop. Starting specifications, tickets, implementation, or any other next workflow requires a separate explicit user request.
+This skill produces *understanding and recorded decisions* (the HTML report, a sharpened `GLOSSARY.md`, any ADRs, optional interface designs) and stops there. When the grilling settles, suggest the next step and stop. Starting specifications, tickets, implementation, or any other next workflow requires a separate explicit user request.
 
 Close by reporting: chosen candidate, where decisions were recorded, and the suggested next step.
