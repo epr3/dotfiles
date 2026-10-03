@@ -16,3 +16,20 @@ Brewfile.lock.json
 .pi/pnpm-lock.yaml
 .pi/.DS_Store
 .pi/agent/.DS_Store
+.pi/agent/crashes.json
+
+# OpenCode local runtime state and installed dependencies are never tracked.
+.config/opencode/auth.json
+.config/opencode/antigravity-accounts.json
+.config/opencode/ctx/
+.config/opencode/*.db
+.config/opencode/*.log
+.config/opencode/service.json
+.config/opencode/node_modules/
+.config/opencode/package.json
+.config/opencode/package-lock.json
+.config/opencode/pnpm-lock.yaml
+.config/opencode/yarn.lock
+.config/opencode/bun.lock
+.config/opencode/bun.lockb
+.config/opencode/.DS_Store

@@ -1,0 +1,45 @@
+# Issue tracker: GitHub
+
+Issues for this repo live as GitHub issues; specs stay local files under `.scratch/<feature-slug>/spec.md` at the board's recorded artifact location (default: the context home). Use the `gh` CLI for all issue operations.
+
+## Conventions
+
+- **Create an issue**: `gh issue create --title "..." --body "..."`. Use a heredoc for multi-line bodies.
+- **Read an issue**: `gh issue view <number> --comments`, filtering comments by `jq` and also fetching labels.
+- **List issues**: `gh issue list --state open --json number,title,body,labels,comments --jq '[.[] | {number, title, body, labels: [.labels[].name], comments: [.comments[].body]}]'` with appropriate `--label` and `--state` filters.
+- **Comment on an issue**: `gh issue comment <number> --body "..."`
+- **Apply / remove labels**: `gh issue edit <number> --add-label "..."` / `--remove-label "..."`
+- **Close**: `gh issue close <number> --comment "..."`
+
+Infer the repo from `git remote -v`; `gh` does this automatically when run inside a clone.
+
+## When a skill says "publish to the issue tracker"
+
+Create a GitHub issue.
+
+## Wayfinding operations
+
+The `wayfinder` map is a single issue titled `wayfinder: <effort>`; child tickets are issues linked from it.
+
+- **Map**: a single issue labelled `wayfinder:map`, holding the Notes / Decisions-so-far / Fog body. `gh issue create --label wayfinder:map`.
+- **Child ticket**: an issue titled `wayfinder: <decision>`, linked to the map as a GitHub sub-issue (`gh api` on the sub-issues endpoint). Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body. Labels: `wayfinder:<type>` (`research`/`prototype`/`grilling`/`task`).
+- **Claim before any work**: `gh issue edit <n> --add-assignee @me`, the session's first write, then add a claim comment `claimed_by: opencode:<session-id>` (or a unique `opencode:<timestamp>-<short-random>` token if the session ID is not exposed) prefixed with the AI disclaimer (`_Posted by an AI triage agent on behalf of the maintainer._`). Re-read to confirm. Cooperative and best-effort, no silent steal; takeover or release is a comment on the issue; no auto-expiry; the claim is retained on resolve.
+- **Blocking**: GitHub's native issue dependencies, the canonical, UI-visible representation. Add an edge with `gh api --method POST repos/<owner>/<repo>/issues/<child>/dependencies/blocked_by -F issue_id=<blocker-db-id>`, where `<blocker-db-id>` is the blocker's numeric database id (`gh api repos/<owner>/<repo>/issues/<n> --jq .id`, not the `#number` or `node_id`). GitHub reports `issue_dependencies_summary.blocked_by` (open blockers only, the live gate). Where dependencies aren't available, fall back to a `Blocked by: #<n>, #<n>` line at the top of the child body. A ticket is unblocked when every blocker is closed.
+- **Frontier**: the map's open children, dropping any with an open blocker (`issue_dependencies_summary.blocked_by > 0`, or an open issue in the `Blocked by` line) or an assignee; first in map order wins.
+- **Closing a ticket**: post the decision as the closing comment, then update the map's "Decisions so far" with a one-line gist + link.
+
+## When a skill says "fetch the relevant issue"
+
+Run `gh issue view <number> --comments`.
+
+## PRs as a request surface
+
+**Off.** Flip to on to have `triage` pull *external* pull requests into the same queue, roles, and states as issues (collaborators' in-flight PRs are left alone); useful in open-source repos that receive feature requests as PRs.
+
+When on, PRs run through the same labels and states as issues, using the `gh pr` equivalents:
+
+- **Read a PR**: `gh pr view <number> --comments` and `gh pr diff <number>` for the diff.
+- **List external PRs for triage**: `gh pr list --state open --json number,title,body,labels,author,authorAssociation,comments` then keep only `authorAssociation` of `CONTRIBUTOR`, `FIRST_TIME_CONTRIBUTOR`, or `NONE` (drop `OWNER`/`MEMBER`/`COLLABORATOR`).
+- **Comment / label / close**: `gh pr comment`, `gh pr edit --add-label`/`--remove-label`, `gh pr close`.
+
+GitHub shares one number space across issues and PRs, so a bare `#42` may be either: resolve PR-first with `gh pr view 42`, falling back to `gh issue view 42`.

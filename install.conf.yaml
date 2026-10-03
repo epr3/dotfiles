@@ -9,7 +9,7 @@
 - link:
     ~/.config/:
       path: .config/*
-      exclude: [.config/superfile]
+      exclude: [.config/superfile, .config/opencode]
     ~/.config/superfile/config.toml:
       path: .config/superfile/config.toml
       glob: false
