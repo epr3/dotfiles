@@ -20,7 +20,7 @@ git submodule update --init dotbot
 
 | Directory | What |
 |---|---|
-| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, zellij, ghostty, btop, Superfile, yazi (pending retirement) |
+| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, zellij, ghostty, btop, Superfile |
 | `.pi/` | pi coding agent config, skills, themes, extensions |
 | `vscode/` | VS Code settings, keybindings, snippets |
 | `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
@@ -28,7 +28,7 @@ git submodule update --init dotbot
 
 > **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.
 >
-> **File manager migration**: Launch Superfile directly with `spf`. Its curated configuration is linked at `~/.config/superfile/config.toml`; upstream hotkeys remain unchanged. Repository changes do not uninstall Yazi or remove its existing configuration. After validating Superfile, remove only an obsolete Yazi config symlink (if present) and uninstall Yazi explicitly with `brew uninstall yazi` if desired. Natural sorting, case-insensitive comparison, Neovim, previews, and no change-directory-on-quit are configured. Persistent hidden-file and directories-first preferences and explicit file-size display are not exposed by Superfile 1.6.0's configuration schema; hidden files can be toggled with its upstream default hotkey.
+> **File manager migration**: Launch Superfile directly with `spf`. Its curated configuration is linked at `~/.config/superfile/config.toml`; upstream hotkeys remain unchanged. Repository changes do not uninstall Yazi or remove its existing configuration. See [validation results and safe optional cleanup](docs/superfile-migration.md), including conversion of any old whole-directory Superfile symlink. After those checks pass, remove only a verified obsolete repository-managed Yazi config symlink and uninstall Yazi explicitly with `brew uninstall yazi` if desired. Natural case-insensitive sorting (directories first), file sizes where panel width permits, Neovim, previews, and no change-directory-on-quit are configured. Persistent hidden-file visibility is not exposed by Superfile 1.6.0's configuration schema; hidden files can be toggled with its upstream default hotkey.
 
 ## Zellij tips
 

@@ -7,7 +7,13 @@
 - clean: ['~']
 
 - link:
-    ~/.config/: .config/*
+    ~/.config/:
+      path: .config/*
+      exclude: [.config/superfile]
+    ~/.config/superfile/config.toml:
+      path: .config/superfile/config.toml
+      glob: false
+      if: 'test ! -L "$HOME/.config/superfile"'
     ~/.pi/: .pi/*
     ~/.zshenv: .zshenv
     ~/.zshrc: .zshrc
