@@ -1,7 +1,36 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "openai/gpt-6.1-sol",
   "compaction": {
     "auto": false,
     "preserve_recent_tokens": 8000
+  },
+  "agents": {
+    "explore": {
+      "model": {
+        "providerID": "opencode-go",
+        "model": "qwen3.8-flash",
+        "variant": "low"
+      },
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "general": {
+      "model": {
+        "providerID": "opencode-go",
+        "model": "glm-5.3-flash",
+        "variant": "high"
+      }
+    }
   }
 }

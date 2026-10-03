@@ -49,7 +49,7 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 
 | Pi asset | Disposition | OpenCode mechanism |
 | --- | --- | --- |
-| `.pi/agent/AGENTS.md` | adapted | `.config/opencode/AGENTS.md`, loaded as the v2 **global** `AGENTS.md`. Pi tool names (`lsp_*`, `Agent`, `todo_write`) were rewritten to OpenCode's native LSP, `explore`/`general` subagents, and native question/todo workflows. The v2 `instructions` config array is accepted but **not resolved** by V2, so it is not used; `AGENTS.md` is the supported mechanism and is verified by `scripts/test-opencode-assets.sh`. |
+| `.pi/agent/AGENTS.md` | adapted | `.config/opencode/AGENTS.md`, loaded as the v2 **global** `AGENTS.md`. Pi tool names were rewritten to what v2.0.22 actually exposes (grep/read navigation — no agent-facing LSP tools; `explore`/`general` subagents; `question`; conversation-tracked plans — no native todo tool), per the ticket `0003` runtime verification. The v2 `instructions` config array is accepted but **not resolved** by V2, so it is not used; `AGENTS.md` is the supported mechanism and is verified by `scripts/test-opencode-assets.sh`. |
 
 ## Theme material
 
@@ -61,18 +61,18 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 
 | Pi asset | Disposition | Notes |
 | --- | --- | --- |
-| `.pi/agent/extensions/rtk.ts` | unsupported | Pi command-rewrite extension; **not** copied or loaded unchanged. Native-equivalent assessment is ticket `0003`. |
+| `.pi/agent/extensions/rtk.ts` | rebuilt for v2 | Pi command-rewrite extension was **not** copied or loaded unchanged; ticket `0003` built a v2-approved equivalent at `.config/opencode/plugins/rtk.ts` (thin delegation to `rtk rewrite`; version floor, `RTK_DISABLED` env guard, advisory exit-3 accepted, timeout and fail-open preserved). Pi's file is byte-unchanged. |
 | `.pi/agent/extensions/session-name/index.ts` | native | OpenCode generates session titles natively. |
 | `.pi/agent/extensions/usage.ts` | native | OpenCode tracks usage natively; footer usage display is ticket `0004`. |
-| `pi-extensions` `subagents` | native | OpenCode `explore` / `general` subagents (ticket `0003`). |
-| `pi-extensions` `question` | native | OpenCode native question workflow (ticket `0003`). |
-| `pi-extensions` `todo` | native | OpenCode native todo workflow (ticket `0003`). |
-| `pi-extensions` `lsp` | native | OpenCode native LSP tools (ticket `0003`). |
-| `pi-extensions` `web-fetch` | native | OpenCode native web fetch (ticket `0003`). |
-| `pi-extensions` `web-search` | native | OpenCode native web search (ticket `0003`). |
+| `pi-extensions` `subagents` | native | OpenCode `explore` / `general` subagents; model/reasoning preferences and hard read-only semantics verified (ticket `0003`). |
+| `pi-extensions` `question` | native | OpenCode native question workflow present in the primary tool catalog (ticket `0003`). |
+| `pi-extensions` `todo` | unsupported | **No native todo tool exists in v2.0.22** (the release migrates `todowrite` away as a removed v1 tool). Reported as a gap; `AGENTS.md` tells agents to track multi-step work in conversation. |
+| `pi-extensions` `lsp` | unsupported | v2.0.22 exposes no agent-facing LSP tools (a config `lsp` key exists but yields nothing tool-level). Reported as a gap; grep + build/test commands replace them per the adapted instructions (ticket `0003`). |
+| `pi-extensions` `web-fetch` | native | OpenCode `webfetch` tool; Pi's extraction-model selection has no v2 config surface (ticket `0003` gap report). |
+| `pi-extensions` `web-search` | native | OpenCode `websearch` tool (ticket `0003`). |
 | `pi-extensions` `statusline` | unsupported in Pi form | Rebuilt as an OpenCode CLI footer slot adapter (ticket `0004`). |
 | `pi-extensions` `model-compaction` | unsupported in Pi form | OpenCode native compaction configuration (ticket `0005`). |
-| `pi-extensions` `model-presets` | unsupported in Pi form | Model/variant preferences (ticket `0003`). |
+| `pi-extensions` `model-presets` | unsupported | No native preset/cycle mechanism verified on v2.0.22 (ticket `0003` gap report; per-session `--model provider/model#variant` is the manual mitigation). |
 
 No Pi runtime extension or external Pi extension package is imported as an OpenCode plugin.
 
