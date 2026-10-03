@@ -30,7 +30,7 @@ fi
 [ -n "$slug" ] || { slug="$(basename "$(git rev-parse --show-toplevel 2>/dev/null || pwd)")"; slug="$(printf '%s' "$slug" | tr -c 'A-Za-z0-9._-' '_')"; }
 [ -n "$slug" ] || { echo "could not determine a repo name for the context repo" >&2; exit 1; }
 
-root="${AGENT_CONTEXT_HOME:-$HOME/.pi/agent/ctx}"; proj="$root/$slug"; bare="$proj/.git"
+root="${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}"; proj="$root/$slug"; bare="$proj/.git"
 branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo main)"; [ "$branch" = HEAD ] && branch="main"
 
 # --- designated master = the code repo's default branch ------------------------------

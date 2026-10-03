@@ -2,7 +2,7 @@
 # List the context repos (bare context repos) under the context root, into INDEX.md.
 # Each <slug>/ is a separate bare context repo for one code repo -- readable by name.
 set -euo pipefail
-root="${AGENT_CONTEXT_HOME:-$HOME/.pi/agent/ctx}"
+root="${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}"
 [ -d "$root" ] || { echo "no context root at $root"; exit 0; }
 idx="$root/INDEX.md"
 { echo "# Context repos"; echo

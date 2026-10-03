@@ -40,7 +40,7 @@ if [ "$store" = "in-repo" ]; then cf="$root/docs/agents"; else
     slug="$(printf '%s' "$slug" | tr -c 'A-Za-z0-9._-' '_')"
   fi
   [ -n "$slug" ] || slug="$(printf '%s' "$(basename "$root")" | tr -c 'A-Za-z0-9._-' '_')"
-  proj="${AGENT_CONTEXT_HOME:-$HOME/.pi/agent/ctx}/$slug"
+  proj="${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}/$slug"
   cf="$proj/.agents"
 fi
 

@@ -110,7 +110,7 @@ The structure is **generated from the code, not invented by agents**. Allowed pa
 
 - Context attaches **only at a path the manifest contains**; a `GLOSSARY.md` or a `GLOSSARY-MAP.md` link pointing at a path not in the manifest is **flagged dangling, not created**.
 - `setup-context` scaffolds the skeleton from the manifest; agents extend it only along real paths.
-- Liveness (whether a grounded term's *symbol* still exists) is a separate LSP check (`lsp_references` / `lsp_workspace_symbols`). The manifest grounds *paths*; LSP grounds *symbols*.
+- Liveness (whether a grounded term's *symbol* still exists) is a separate LSP check (native references / workspace-symbol lookup). The manifest grounds *paths*; LSP grounds *symbols*.
 
 ## Single vs multi-context repos
 
