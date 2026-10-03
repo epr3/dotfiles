@@ -12,6 +12,10 @@ Per-skill attribution that travels with the prose lives beside it, for example [
 
 No Pi theme file is copied. OpenCode ships the Catppuccin variants the setup selects (`cli.json` → `catppuccin`) and exposes resolved theme tokens to CLI plugins, so the footer adapter consumes OpenCode's own theme rather than a copied palette. Pi theme files remain unmodified in `.pi/agent/themes/`.
 
+## Host-API prior art
+
+The dumb-zone footer plugin (`.config/opencode/plugins/dumb-zone/`) is this repository's own implementation of the deployed Dumb-zone contract (see `docs/adr/2026-08-20-dumb-zone-contract-200k.md`); its pure zone and segment modules are independent code with no imports from Pi or from any external package. The OpenCode v2 CLI-plugin host-API patterns it follows — the TUI entry layout, the `prompt.footer.status` slot claim, the event set and session-record reads, and the teardown/hot-reload discipline — were adapted from the MIT-licensed [github.com/rashidrazak/opencode-status-line](https://github.com/rashidrazak/opencode-status-line) (Copyright (c) rashidrazak) documentation and prior art, and were re-verified against the installed v2.0.22 release.
+
 ## Not copied
 
 Pi runtime extensions and external Pi extension packages are not copied or loaded as OpenCode plugins. See `docs/opencode-v2-asset-inventory.md` for the disposition of each (native equivalent, later ticket, or unsupported).

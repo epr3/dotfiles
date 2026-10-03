@@ -70,7 +70,7 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `pi-extensions` `lsp` | unsupported | v2.0.22 exposes no agent-facing LSP tools (a config `lsp` key exists but yields nothing tool-level). Reported as a gap; grep + build/test commands replace them per the adapted instructions (ticket `0003`). |
 | `pi-extensions` `web-fetch` | native | OpenCode `webfetch` tool; Pi's extraction-model selection has no v2 config surface (ticket `0003` gap report). |
 | `pi-extensions` `web-search` | native | OpenCode `websearch` tool (ticket `0003`). |
-| `pi-extensions` `statusline` | unsupported in Pi form | Rebuilt as an OpenCode CLI footer slot adapter (ticket `0004`). |
+| `pi-extensions` `statusline` | unsupported in Pi form | Rebuilt as an OpenCode CLI footer slot adapter, delivered at `.config/opencode/plugins/dumb-zone/` (ticket `0004`; zone contract per the 200k ADR, host-API patterns credited in `.config/opencode/CREDITS.md`). |
 | `pi-extensions` `model-compaction` | unsupported in Pi form | OpenCode native compaction configuration (ticket `0005`). |
 | `pi-extensions` `model-presets` | unsupported | No native preset/cycle mechanism verified on v2.0.22 (ticket `0003` gap report; per-session `--model provider/model#variant` is the manual mitigation). |
 
