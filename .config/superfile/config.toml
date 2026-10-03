@@ -1,0 +1,7 @@
+# Curated settings for Superfile v1.6.0; upstream defaults/hotkeys otherwise.
+editor = "nvim"
+cd_on_quit = false
+default_open_file_preview = true
+show_image_preview = true
+default_sort_type = 4 # Natural sort
+case_sensitive_sort = false
