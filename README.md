@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal dotfiles — Shell, Zellij, Neovim, VS Code, pi (coding agent), and macOS dev tools.
+Personal dotfiles — Shell, Zellij, Neovim (standalone and the VS Code Neovim profile), pi (coding agent), and macOS dev tools.
 
 Managed with [Dotbot](https://github.com/anishathalye/dotbot).
 
@@ -13,16 +13,15 @@ git submodule update --init dotbot
 ./install           # link configs + run bootstrap scripts, including pi
 ```
 
-> To install only the config links (skip Homebrew, VS Code extensions, etc.):
+> To install only the config links (skip Homebrew, package installs, git identity, etc.):
 > `./install --only link`
 
 ## What's inside
 
 | Directory | What |
 |---|---|
-| `.config/` | worktrunk, gh-dash, oh-my-posh, lazygit, nvim, zellij, ghostty, btop, Superfile |
+| `.config/` | Dotfile-managed tool config: worktrunk, gh-dash, oh-my-posh, lazygit, nvim (standalone + VS Code Neovim profile), zellij, ghostty, btop, Superfile, OpenCode |
 | `.pi/` | pi coding agent config, skills, themes, extensions |
-| `vscode/` | VS Code settings, keybindings, snippets |
 | `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
 | `dotbot/` | Dotbot submodule for symlink management |
 
