@@ -74,11 +74,21 @@ case "$ACTION" in
     discovery=unavailable
     debug_paths=$("$executable" debug paths 2>/dev/null || true)
     [ -n "$debug_paths" ] && discovery=opencode-debug-paths
-    discovered_row() { # <key> -> prints the tool-reported path or nothing
-      [ "$discovery" = opencode-debug-paths ] || return
-      awk -v key="$1" '$1==key {$1=""; sub(/^ +/, ""); print; exit}' <<< "$debug_paths"
+    discovered_row() { # <key> -> prints the tool-reported path (or empty); rc 0 always
+      if [ "$discovery" = opencode-debug-paths ]; then
+        awk -v key="$1" '$1==key {$1=""; sub(/^ +/, ""); print; exit}' <<< "$debug_paths"
+      fi
+      return 0
     }
-    data_dir=$(discovered_row data)
+    record_credential() { # <key> <path> -> manifest row; locations only, never contents
+      if [ -e "$2" ]; then
+        printf '%s=%s\n' "$1" "$2"
+      else
+        printf '%s=not-found\n' "$1"
+      fi
+    }
+    data_row=$(discovered_row data)
+    data_dir=$data_row
     [ -n "$data_dir" ] || data_dir=$DATA_HOME/opencode
     state_dir=$(discovered_row state)
     [ -n "$state_dir" ] || state_dir=$STATE_HOME/opencode
@@ -109,20 +119,11 @@ case "$ACTION" in
         [ -n "$row" ] && printf 'discovered-bin-cache-path=%s\n' "$row"
         row=$(discovered_row db)
         [ -n "$row" ] && printf 'discovered-session-database=%s\n' "$row"
-        row=$(discovered_row data)
-        [ -n "$row" ] && [ -d "$row/storage" ] && printf 'discovered-session-storage=%s\n' "$row/storage"
+        [ -n "$data_row" ] && [ -d "$data_row/storage" ] && printf 'discovered-session-storage=%s\n' "$data_row/storage"
       fi
       # Record credential stores by location only; contents are never read.
-      if [ -e "$CONFIG_DIR/auth.json" ]; then
-        printf 'credential-store-config=%s\n' "$CONFIG_DIR/auth.json"
-      else
-        printf 'credential-store-config=not-found\n'
-      fi
-      if [ -e "$data_dir/auth.json" ]; then
-        printf 'credential-store-data=%s\n' "$data_dir/auth.json"
-      else
-        printf 'credential-store-data=not-found\n'
-      fi
+      record_credential credential-store-config "$CONFIG_DIR/auth.json"
+      record_credential credential-store-data "$data_dir/auth.json"
       printf 'backup-created=%s\n' "$stamp"
     } > "$backup/manifest"
     chmod 600 "$backup/manifest"

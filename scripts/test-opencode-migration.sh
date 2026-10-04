@@ -21,14 +21,20 @@ export OPENCODE_MIGRATION_BACKUP_ROOT="$SANDBOX/data/backups"
 export OPENCODE_MIGRATION_MANAGED_CONFIG="$REPO/.config/opencode"
 CONFIG_DIR="$XDG_CONFIG_HOME/opencode"
 
-mkdir -p "$SANDBOX/bin" "$CONFIG_DIR/skills/legacy-rtk" "$CONFIG_DIR/plugins" \
-  "$XDG_DATA_HOME/opencode/storage/sessions" "$XDG_STATE_HOME/opencode" "$XDG_CACHE_HOME/opencode" \
-  "$HOME/.pi" "$SANDBOX/pi-source/agent/skills/local" "$SANDBOX/data"
-printf 'legacy skill\n' > "$CONFIG_DIR/skills/legacy-rtk/SKILL.md"
-printf '#!/bin/sh\necho legacy plugin\n' > "$CONFIG_DIR/plugins/legacy-rtk.js"
-printf 'secret-sentinel\n' > "$CONFIG_DIR/auth.json"
-printf 'session-sentinel\n' > "$CONFIG_DIR/session.db"
-printf '{"model": "opencode/gpt-5"}\n' > "$CONFIG_DIR/opencode.json"
+# build_v1_fixture: recreate the pre-migration v1-style config tree in $CONFIG_DIR.
+build_v1_fixture() {
+  rm -rf "$CONFIG_DIR"
+  mkdir -p "$CONFIG_DIR/skills/legacy-rtk" "$CONFIG_DIR/plugins"
+  printf 'legacy skill\n' > "$CONFIG_DIR/skills/legacy-rtk/SKILL.md"
+  printf '#!/bin/sh\necho legacy plugin\n' > "$CONFIG_DIR/plugins/legacy-rtk.js"
+  printf 'secret-sentinel\n' > "$CONFIG_DIR/auth.json"
+  printf 'session-sentinel\n' > "$CONFIG_DIR/session.db"
+  printf '{"model": "opencode/gpt-5"}\n' > "$CONFIG_DIR/opencode.json"
+}
+
+mkdir -p "$SANDBOX/bin" "$XDG_DATA_HOME/opencode/storage/sessions" "$XDG_STATE_HOME/opencode" \
+  "$XDG_CACHE_HOME/opencode" "$HOME/.pi" "$SANDBOX/pi-source/agent/skills/local" "$SANDBOX/data"
+build_v1_fixture
 printf 'data-credential-sentinel\n' > "$XDG_DATA_HOME/opencode/auth.json"
 printf 'session-database-sentinel\n' > "$XDG_DATA_HOME/opencode/opencode.db"
 printf '{"session": "fixture"}\n' > "$XDG_DATA_HOME/opencode/storage/sessions/session.json"
@@ -212,13 +218,7 @@ fi
 
 # --- Failed activation leaves the working prior environment ------------------
 # Recreate the pristine v1 fixture, then make the activation's `ln` fail.
-rm -rf "$CONFIG_DIR"
-mkdir -p "$CONFIG_DIR/skills/legacy-rtk" "$CONFIG_DIR/plugins"
-printf 'legacy skill\n' > "$CONFIG_DIR/skills/legacy-rtk/SKILL.md"
-printf '#!/bin/sh\necho legacy plugin\n' > "$CONFIG_DIR/plugins/legacy-rtk.js"
-printf 'secret-sentinel\n' > "$CONFIG_DIR/auth.json"
-printf 'session-sentinel\n' > "$CONFIG_DIR/session.db"
-printf '{"model": "opencode/gpt-5"}\n' > "$CONFIG_DIR/opencode.json"
+build_v1_fixture
 printf 'installed-not-yet\n' > "$CONFIG_DIR/act-marker"
 marked_snapshot=$(treecsum "$CONFIG_DIR")
 mkdir -p "$SANDBOX/broken-ln"
@@ -264,14 +264,24 @@ fi
 
 # --- Repeated full invocation: new backups, never overwriting prior ones -----
 cycles_before=$(backup_count "$OPENCODE_MIGRATION_BACKUP_ROOT")
+prior_manifests=$(find "$OPENCODE_MIGRATION_BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d | sort \
+  | while IFS= read -r d; do shasum -a 256 "$d/manifest" 2>/dev/null; done)
 rm -f "$CONFIG_DIR"
 run prepare >/dev/null 2>&1
 ln -s "$OPENCODE_MIGRATION_MANAGED_CONFIG" "$CONFIG_DIR"
 run commit >/dev/null 2>&1
 cycles_after=$(backup_count "$OPENCODE_MIGRATION_BACKUP_ROOT")
+later_manifests=$(find "$OPENCODE_MIGRATION_BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d | sort \
+  | while IFS= read -r d; do shasum -a 256 "$d/manifest" 2>/dev/null; done)
+prior_intact=1
+while IFS= read -r sum; do
+  [ -z "$sum" ] && continue
+  grep -qx "$sum" <<< "$later_manifests" || prior_intact=0
+done <<< "$prior_manifests"
 if [ "$cycles_after" = $((cycles_before + 1)) ] \
   && [ -f "$backup/manifest" ] \
   && grep -Fqx 'previous-version=opencode v1.15.13' "$backup/manifest" \
+  && [ "$prior_intact" -eq 1 ] \
   && [ "$data_snapshot" = "$(treecsum "$XDG_DATA_HOME/opencode")" ]; then
   ok 'repeated invocation keeps prior backups and machine-local state intact'
 else
@@ -284,18 +294,18 @@ fi
 EVOLVE="$SANDBOX/evolve"
 mkdir -p "$EVOLVE"
 cp -R "$REPO/.config/opencode" "$EVOLVE/bundle"
-if OPENCODE_MIGRATION_CONFIG="$EVOLVE/config" \
-   OPENCODE_MIGRATION_MANAGED_CONFIG="$EVOLVE/bundle" \
-   OPENCODE_MIGRATION_BACKUP_ROOT="$EVOLVE/backups" \
-   "$REPO/scripts/install-opencode.sh" >"$EVOLVE/install.log" 2>&1 \
+evolve_install() {
+  OPENCODE_MIGRATION_CONFIG="$EVOLVE/config" \
+  OPENCODE_MIGRATION_MANAGED_CONFIG="$EVOLVE/bundle" \
+  OPENCODE_MIGRATION_BACKUP_ROOT="$EVOLVE/backups" \
+    "$REPO/scripts/install-opencode.sh"
+}
+if evolve_install >"$EVOLVE/install.log" 2>&1 \
   && [ -L "$EVOLVE/config" ] && [ "$(readlink "$EVOLVE/config")" = "$EVOLVE/bundle" ] \
   && [ "1" = "$(backup_count "$EVOLVE/backups")" ]; then
   mkdir -p "$EVOLVE/bundle/skills/evolved-fixture"
   printf '# evolved fixture skill\n' > "$EVOLVE/bundle/skills/evolved-fixture/SKILL.md"
-  if OPENCODE_MIGRATION_CONFIG="$EVOLVE/config" \
-     OPENCODE_MIGRATION_MANAGED_CONFIG="$EVOLVE/bundle" \
-     OPENCODE_MIGRATION_BACKUP_ROOT="$EVOLVE/backups" \
-     "$REPO/scripts/install-opencode.sh" >>"$EVOLVE/install.log" 2>&1 \
+  if evolve_install >>"$EVOLVE/install.log" 2>&1 \
     && [ -e "$EVOLVE/config/skills/evolved-fixture/SKILL.md" ] \
     && [ "1" = "$(backup_count "$EVOLVE/backups")" ]; then
     ok 'evolving managed bundle deploys through the entrypoint without a new backup or coupling'
@@ -305,6 +315,51 @@ if OPENCODE_MIGRATION_CONFIG="$EVOLVE/config" \
 else
   fail 'evolving managed bundle initial deployment'
   tail -30 "$EVOLVE/install.log" >&2
+fi
+
+# --- Discovery fallback: an unusable or absent CLI is recorded, not guessed --
+# When `debug paths` fails or no executable exists the manifest says so; the
+# conventional XDG rows are recorded as openly contextual, and nothing in the
+# migration depends on them (only the config directory is replaced).
+FALLBACK="$SANDBOX/fallback"
+mkdir -p "$FALLBACK/bin-no-paths" "$FALLBACK/config/opencode"
+printf 'fallback v1 skill\n' > "$FALLBACK/config/opencode/SKILL.md"
+# A v1 binary that answers --version but has no `debug paths` subcommand.
+cat > "$FALLBACK/bin-no-paths/opencode" <<'EOF'
+#!/bin/sh
+[ "$1" = "--version" ] && { printf '%s\n' "opencode v1.15.13"; exit 0; }
+exit 1
+EOF
+chmod +x "$FALLBACK/bin-no-paths/opencode"
+fallback_ok=1
+PATH="$FALLBACK/bin-no-paths:$PATH" OPENCODE_MIGRATION_CONFIG="$FALLBACK/config/opencode" \
+  OPENCODE_MIGRATION_MANAGED_CONFIG="$EVOLVE/bundle" OPENCODE_MIGRATION_BACKUP_ROOT="$FALLBACK/backups" \
+  run prepare >"$FALLBACK/out" 2>&1 || fallback_ok=0
+fallback_manifest=$(find "$FALLBACK/backups" -mindepth 1 -maxdepth 1 -type d | head -1)/manifest
+[ -f "$fallback_manifest" ] || fallback_ok=0
+grep -Fqx 'discovery=unavailable' "$fallback_manifest" || fallback_ok=0
+grep -Fqx 'previous-version=opencode v1.15.13' "$fallback_manifest" || fallback_ok=0
+grep -Fqx "data-path=$XDG_DATA_HOME/opencode" "$fallback_manifest" || fallback_ok=0
+grep -Fqx "state-path=$XDG_STATE_HOME/opencode" "$fallback_manifest" || fallback_ok=0
+grep -Fqx "credential-store-data=$XDG_DATA_HOME/opencode/auth.json" "$fallback_manifest" || fallback_ok=0
+grep -q 'discovered-' "$fallback_manifest" && fallback_ok=0
+[ -f "$FALLBACK/backups/$(basename "$(dirname "$fallback_manifest")")/config/SKILL.md" ] || fallback_ok=0
+# Absent CLI: same honesty, with the executable recorded as unavailable.
+FALLBACK2="$FALLBACK/no-cli"
+mkdir -p "$FALLBACK2/config/opencode"
+printf 'no-cli v1 skill\n' > "$FALLBACK2/config/opencode/SKILL.md"
+PATH=/usr/bin:/bin OPENCODE_MIGRATION_CONFIG="$FALLBACK2/config/opencode" \
+  OPENCODE_MIGRATION_MANAGED_CONFIG="$EVOLVE/bundle" OPENCODE_MIGRATION_BACKUP_ROOT="$FALLBACK2/backups" \
+  run prepare >"$FALLBACK2/out" 2>&1 || fallback_ok=0
+fallback2_manifest=$(find "$FALLBACK2/backups" -mindepth 1 -maxdepth 1 -type d | head -1)/manifest
+grep -Fqx 'discovery=unavailable' "$fallback2_manifest" || fallback_ok=0
+grep -Fqx 'previous-version=unavailable' "$fallback2_manifest" || fallback_ok=0
+grep -Fqx 'previous-executable=unavailable' "$fallback2_manifest" || fallback_ok=0
+if [ "$fallback_ok" -eq 1 ]; then
+  ok 'unavailable CLI discovery is recorded honestly and drives no migration decision'
+else
+  fail 'unavailable CLI discovery is recorded honestly and drives no migration decision'
+  cat "$FALLBACK/out" "$FALLBACK2/out" >&2 2>/dev/null || true
 fi
 
 # --- Migration entrypoints are not coupled to plugin internals ---------------
