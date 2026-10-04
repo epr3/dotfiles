@@ -172,6 +172,14 @@ else
   fail "t6b got: $out"
 fi
 rmdir .pi/agent/skills/ask-matt
+mkdir .pi/agent/skills/implement-spec
+out=$(run_check --full)
+if echo "$out" | grep -q 'implement-spec' && echo "$out" | grep -q '^FAIL'; then
+  ok "t6b2 retired implement-spec cannot pass"
+else
+  fail "t6b2 got: $out"
+fi
+rmdir .pi/agent/skills/implement-spec
 mkdir .pi/agent/skills/setup-matt-pocock-skills
 out=$(run_check --full)
 if echo "$out" | grep -q 'setup-matt-pocock-skills' && echo "$out" | grep -q '^FAIL'; then

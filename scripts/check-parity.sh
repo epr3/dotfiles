@@ -6,8 +6,9 @@ set -uo pipefail
 # mattpocock/skills at the pinned commit, over complete retained directories:
 # main SKILL.md, supporting references, templates, examples, credits, and
 # invocation/agent metadata. Inventory rules distinguish retained upstream
-# counterparts, the recorded ask-matt retirement, the setup substitution, and
-# the five local-only skills. Permitted departures exist only as entries in
+# counterparts, the recorded retirements (ask-matt, implement-spec), the
+# setup substitution, and the five local-only skills. Permitted departures
+# exist only as entries in
 # scripts/parity/exceptions/ naming the upstream counterpart, the exact
 # change, and the rationale; whole-skill exclusions and pre-existing-fork
 # exemptions are rejected, and a changed region without a recorded exact
@@ -236,9 +237,9 @@ check_inventory() {
       fail_scope "$d" '.pi/agent/skills' "recorded inventory member is missing: $d"
     done <<< "$missing"
   fi
-  # Hard-accounted rules: the recorded retirement and the substituted
-  # upstream entrypoint must never be installed (exceptions 0003 and 0004).
-  for d in "$PARITY_RETIRED" "$PARITY_SETUP_UPSTREAM"; do
+  # Hard-accounted rules: the recorded retirements and the substituted
+  # upstream entrypoint must never be installed (exceptions 0003, 0022, 0004).
+  for d in "${PARITY_RETIRED[@]}" "$PARITY_SETUP_UPSTREAM"; do
     if [ -d ".pi/agent/skills/$d" ]; then
       fail ".pi/agent/skills/$d" 'recorded-retired/substituted skill present in the inventory'
     fi

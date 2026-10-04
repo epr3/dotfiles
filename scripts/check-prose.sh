@@ -124,14 +124,18 @@ check_skill_frontmatter() {
   done < <(find .pi/agent/skills -name 'SKILL.md' -type f)
 }
 
-# -- Check 3b: local ticket schema validity --
+# -- Check 3b: ticket schema validity --
+# Historical boards carry the local frontmatter schema and are validated
+# here. Files without frontmatter follow the restored upstream `/to-tickets`
+# local-ticket template (that skill is parity-owned, so its template is not
+# re-implemented as a policy check) and are skipped, not failed.
 check_ticket_schema() {
   while IFS= read -r f; do
     local fm
     fm=$(get_frontmatter "$f")
 
     if [ -z "$fm" ]; then
-      fail "$f" "missing frontmatter (check 3)"
+      info "$f no frontmatter: follows the restored upstream ticket template (check 3 skipped)"
       continue
     fi
 
@@ -200,13 +204,15 @@ check_handoffs() {
 # recorded inventory change, not an unrecorded invocation-mode flip.
 SPEC_REMOVED=(caveman zoom-out solve resolving-merge-conflicts)
 
-# Local-only removals come from the parity map (PARITY_RETIRED); ask-matt is
-# dropped by explicit user request, recorded in scripts/parity/exceptions/.
+# Local-only removals come from the parity map (PARITY_RETIRED); ask-matt
+# and implement-spec are dropped by explicit user request, recorded in
+# scripts/parity/exceptions/.
 
 # The exact installed inventory is owned by the parity seam: map.sh computes
-# it (25 upstream counterparts - ask-matt retired, setup-matt-pocock-skills
-# substituted - plus the 5 retained local-only skills = 30), and check 7
-# mirrors that computation rather than keeping its own list.
+# it (24 retained upstream counterparts, with ask-matt and implement-spec
+# retired and setup-matt-pocock-skills substituted, plus the 5 retained
+# local-only skills = 29), and check 7 mirrors that computation rather than
+# keeping its own list.
 EXPECTED_SKILLS=()
 while IFS= read -r _dir; do EXPECTED_SKILLS+=("$_dir"); done < <(parity_expected_dirs)
 
@@ -254,7 +260,7 @@ check_inventory() {
 
   while IFS= read -r s; do
     [ -z "$s" ] && continue
-    if is_spec_removed "$s" || grep -qx "$s" <<< "${PARITY_RETIRED:-}"; then
+    if is_spec_removed "$s" || printf '%s\n' "${PARITY_RETIRED[@]}" | grep -qx "$s"; then
       info "$s removed by spec or recorded local retirement (check 5)"
     elif parity_is_upstream_skill "$s"; then
       info "$s invocation mode is owned by the pinned parity seam (check 5)"
@@ -313,17 +319,13 @@ STALE_NAME_PAT='CONTEXT\.md|CONTEXT-MAP\.md|(^|[^[:alnum:]_-])(SPEC|MAP)\.md|`ti
 #    path references elsewhere in it still fail. The renamed-file anchor:
 #    a path reference to CONTEXT-FORMAT.md matches none of these old
 #    name patterns either way, and GLOSSARY-FORMAT.md must not be caught.
-# 2. docs/agents/issue-tracker.md — documents the one-time rename ("rename
-#    its SPEC.md / MAP.md and tickets/ files"); only the legacy-layout
-#    lines that name the old layout are allowlisted (line-level, not whole
-#    file) so a fresh old-name path reference added elsewhere in it fails.
-# 3. Legacy ticket metadata compat (`type: HITL|AFK`) in implement and
+# 2. Legacy ticket metadata compat (`type: HITL|AFK`) in implement and
 #    to-tickets is allowed and never matches these patterns anyway.
 # Anything under .scratch/ is out of scope (never scanned). Bare "context"
 # words — model context, context repo, context worktree, context store, and
 # the other storage terms — denote storage or model context, not artifacts,
 # and never match these patterns.
-STALE_NAME_ALLOW='domain-modeling/GLOSSARY-FORMAT\.md:(3|82):|docs/agents/issue-tracker\.md:[0-9]+:.+rename its `SPEC'
+STALE_NAME_ALLOW='domain-modeling/GLOSSARY-FORMAT\.md:(3|82):'
 
 check_stale_names() {
   local hits h

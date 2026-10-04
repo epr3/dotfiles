@@ -17,7 +17,7 @@ else
 PARITY_UPSTREAM_SKILLS=(
   code-review=engineering codebase-design=engineering diagnosing-bugs=engineering
   domain-modeling=engineering grill-with-docs=engineering implement=engineering
-  implement-spec=engineering improve-codebase-architecture=engineering
+  improve-codebase-architecture=engineering
   pr=engineering prototype=engineering research=engineering retro=engineering
   tdd=engineering to-spec=engineering to-tickets=engineering triage=engineering
   wayfinder=engineering wizard=engineering
@@ -30,10 +30,10 @@ fi
 # Local-only skills: no upstream counterpart, provenance rules in exceptions/.
 PARITY_LOCAL_ONLY=(setup-context merge-context offload-context rebase-context explain-diff)
 
-# Recorded retirement: ask-matt is present at the pinned snapshot, dropped
-# locally by explicit user request. Recorded inventory decision, not a
-# wording or behavior exception.
-PARITY_RETIRED=ask-matt
+# Recorded retirements: present at the pinned snapshot, dropped locally by
+# explicit user request (exceptions 0003 and 0022). Recorded inventory
+# decisions, not wording or behavior exceptions.
+PARITY_RETIRED=(ask-matt implement-spec)
 
 # Upstream's setup entrypoint does not run here: the local context-repo
 # setup replaces it. One entrypoint, not two competing setup workflows.
