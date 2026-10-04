@@ -79,23 +79,5 @@ fi
 
 
 
-# Claude Code aliases
-alias c='claude'
-alias ch='claude --chrome'
-alias cs='claude --dangerously-skip-permissions'
-
-# Claude --fs shortcut
-claude() {
-  local args=()
-  for arg in "$@"; do
-    if [[ "$arg" == "--fs" ]]; then
-      args+=("--fork-session")
-    else
-      args+=("$arg")
-    fi
-  done
-  command claude "${args[@]}"
-}
-
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi

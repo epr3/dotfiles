@@ -53,6 +53,9 @@ _Avoid_: .bare layout, .git pointer layout.
 **Bootstrap**: The repeatable entrypoint that links dotfiles and runs guarded setup stages for package managers, packages, shell tools, editor extensions, and git identity.
 _Avoid_: install script, setup script.
 
+**Managed tool**: A standalone developer runtime or command-line tool included in this repository's tool-management scope. GUI applications, OS packages, editor-managed plugins and language servers, shell plugins, and agent CLIs are outside that scope.
+_Avoid_: all software, all tools.
+
 ## Relationships
 
 - **Bootstrap** links **Dotfile-managed tool config** into the home directory.
