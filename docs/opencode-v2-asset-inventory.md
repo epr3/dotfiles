@@ -31,7 +31,7 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `rebase-context` | adapted | Harness-neutral context-root default. |
 | `research` | copied | |
 | `retro` | adapted | Skill-invocation wording. |
-| `setup-context` | adapted | Global-instruction home → `~/.config/opencode/AGENTS.md`; context-root default; session claim `pi:$PI_SESSION_ID` → `opencode:<session-id>`; `ctx-init.sh`, `ctx-index.sh`, and `resolve-location.sh` defaults aligned to `${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}`. |
+| `setup-context` | adapted | Global-instruction home → `~/.config/opencode/AGENTS.md`; context-root default; session claim `pi:$PI_SESSION_ID` → `opencode:<session-id>`; `ctx-init.sh`, `ctx-index.sh`, and `resolve-location.sh` defaults aligned to `${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}`; `issue-tracker-local.md` seed reconciled to the pinned-parity board policy (both board shapes, no-label mapping) mirroring the Pi-side reconciliation on ticket 0008 of upstream-skill-parity. |
 | `tdd` | adapted | Skill-invocation wording. |
 | `teach` | copied | |
 | `to-questionnaire` | copied | |
@@ -44,6 +44,8 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `writing-for-agents` | copied | |
 
 18 skills are byte-identical copies; 11 carry narrow, recorded adaptations. No prerequisite, trigger, or activation condition was removed.
+
+Correspondence re-check (2026-10-04, after the pinned-parity restoration closed): all 18 differing files between the two trees were diffed line-by-line and every changed line is one of the recorded adaptations above (skill-invocation wording, AGENTS.md home, context-root default, session-claim ID, LSP generalization) — no other drift; the restored upstream content (tickets 0003–0005 of upstream-skill-parity, all committed before the copy was made) is present in both trees.
 
 ## Instructions
 
