@@ -22,6 +22,8 @@ Provider authentication: stored credentials cover `opencode-go` (OpenCode Go API
 
 ### Required developer choices (not silently decided)
 
+Confirmed by the developer on 2026-10-04 at the ticket `0007` approval gate: (1) keep the provider-default reasoning variant, (2) keep Kimi as-is, (3) and (4) acknowledged as unsupported gaps — no substitution was requested for any of them.
+
 1. **Default reasoning level:** sessions start on `openai/gpt-6.1-sol` with the provider-default variant. If the Pi `medium` level should be pinned, either pass `--model openai/gpt-6.1-sol#medium` per invocation/alias or store it once OpenCode gains a root-level variant setting; the managed config deliberately does not encode it.
 2. **Kimi reviewer workflow:** `opencode-go/kimi-k2.7-code` runs without reasoning-level control. If the `high` reasoning behavior matters, pick a model with the desired effort ladder (for example `glm-5.3-flash#max`) — explicit choice, not an automatic substitution.
 3. **Web extraction model:** not supported by v2.0.22; Pi's cheap-extraction configuration has no target.
