@@ -64,7 +64,7 @@ Correspondence re-check (2026-10-04, after the pinned-parity restoration closed)
 | Pi asset | Disposition | Notes |
 | --- | --- | --- |
 | `.pi/agent/extensions/rtk.ts` | rebuilt for v2 | Pi command-rewrite extension was **not** copied or loaded unchanged; ticket `0003` built a v2-approved equivalent at `.config/opencode/plugins/rtk.ts` (thin delegation to `rtk rewrite`; version floor, `RTK_DISABLED` env guard, advisory exit-3 accepted, timeout and fail-open preserved). Pi's file is byte-unchanged. |
-| `.pi/agent/extensions/session-name/index.ts` | native | OpenCode generates session titles natively. |
+| `.pi/agent/extensions/session-name/index.ts` | native | OpenCode generates session titles natively through its hidden `title` agent; the manual `/session-name` command has no v2 counterpart, and the hidden agent is now pinned to `opencode-go/qwen3.8-flash` variant `low` (see `docs/opencode-v2-workflows.md`). |
 | `.pi/agent/extensions/usage.ts` | native | OpenCode tracks usage natively; footer usage display is ticket `0004`. |
 | `pi-extensions` `subagents` | native | OpenCode `explore` / `general` subagents; model/reasoning preferences and hard read-only semantics verified (ticket `0003`). |
 | `pi-extensions` `question` | native | OpenCode native question workflow present in the primary tool catalog (ticket `0003`). |

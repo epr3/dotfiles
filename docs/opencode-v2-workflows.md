@@ -22,6 +22,20 @@ Pi preferences come from `.pi/agent/settings.json`. Validation result per prefer
 
 Provider authentication: stored credentials cover `opencode-go` (OpenCode Go API key), `openai` (OAuth), and Google (OAuth) — verified by reading **provider IDs only** from the local auth store; no credential material is read, printed, or copied, and Pi's credentials were never touched.
 
+### Hidden maintenance agents (title, compaction, summary)
+
+V2 defines three hidden agents that perform maintenance and cannot be selected directly: `title`, `compaction`, and `summary`. They use the same `agents.<id>.model` shape as visible agents. Only `title` carries an assignment in the managed bundle; the other two are deliberately omitted for reasons scoped to the installed `v2.0.22`.
+
+| Hidden agent | Managed assignment | Status in `v2.0.22` |
+| --- | --- | --- |
+| `title` | `opencode-go/qwen3.8-flash` variant `low` | **Supported and configured.** Session titles are generated natively through this hidden agent. The assignment is present in the loaded managed config (`opencode debug config`); that confirms the key is accepted and loaded, not that a title request has been exercised. |
+| `compaction` | none — omitted | **Ineffective in this version.** The `agents.compaction.model` key is accepted, but the `v2.0.22` compaction runner uses the **session model** (`openai/gpt-6.1-sol`) rather than the hidden agent's model, so a GLM/`high` assignment would not take effect. |
+| `summary` | none — omitted | **Unverified in this version.** The runtime defines the hidden agent, but no local invocation path was found, so support is neither confirmed nor ruled out. |
+
+Title is a **new role choice, not a carry-over**: Pi's `session-name` extension is a manual `/session-name` command and Pi exposes no title-generation model mapping to migrate. The model is Pi-sourced — the same `opencode-go/qwen3.8-flash` Pi sets for `subagents.explore` (variant `low`) — keeping metadata generation on a cheap, already-authenticated provider.
+
+These findings are scoped to the installed `v2.0.22`. Re-check the hidden-agent behavior after an OpenCode upgrade before adding the omitted overrides; the summary gap in particular is version-specific evidence, not a claim that summary is unsupported in every release. The non-hidden settings (`model`, `compaction.auto: false`, `compaction.keep.tokens: 8000`, and the `explore`/`general` assignments) are unchanged by this addition.
+
 ### Required developer choices (not silently decided)
 
 Confirmed by the developer on 2026-10-04 at the ticket `0007` approval gate: (1) keep the provider-default reasoning variant, (2) keep Kimi as-is, (3) and (4) acknowledged as unsupported gaps — no substitution was requested for any of them.

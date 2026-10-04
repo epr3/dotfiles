@@ -33,6 +33,13 @@
         "model": "glm-5.3-flash",
         "variant": "high"
       }
+    },
+    "title": {
+      "model": {
+        "providerID": "opencode-go",
+        "model": "qwen3.8-flash",
+        "variant": "low"
+      }
     }
   }
 }
