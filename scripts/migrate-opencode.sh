@@ -66,6 +66,23 @@ case "$ACTION" in
       version=$("$executable" --version 2>/dev/null | head -1 || true)
       [ -n "$version" ] || version=unavailable
     fi
+
+    # Discover the actual machine-local locations from the installed CLI
+    # itself (`opencode debug paths`); nothing below is guessed. The evidence
+    # source is recorded in the manifest, and no migration decision depends
+    # on these rows: only the config directory is replaced.
+    discovery=unavailable
+    debug_paths=$("$executable" debug paths 2>/dev/null || true)
+    [ -n "$debug_paths" ] && discovery=opencode-debug-paths
+    discovered_row() { # <key> -> prints the tool-reported path or nothing
+      [ "$discovery" = opencode-debug-paths ] || return
+      awk -v key="$1" '$1==key {$1=""; sub(/^ +/, ""); print; exit}' <<< "$debug_paths"
+    }
+    data_dir=$(discovered_row data)
+    [ -n "$data_dir" ] || data_dir=$DATA_HOME/opencode
+    state_dir=$(discovered_row state)
+    [ -n "$state_dir" ] || state_dir=$STATE_HOME/opencode
+
     stamp=$(date '+%Y%m%d-%H%M%S')
     backup=$(mktemp -d "$BACKUP_ROOT/${stamp}.XXXXXX") || fail 'cannot create backup directory'
     if ! cp -a "$CONFIG_DIR" "$backup/config.verify"; then
@@ -80,8 +97,32 @@ case "$ACTION" in
       printf 'previous-version=%s\n' "$version"
       printf 'previous-executable=%s\n' "${executable:-unavailable}"
       printf 'config-path=%s\n' "$CONFIG_DIR"
-      printf 'data-path=%s\n' "$DATA_HOME/opencode"
-      printf 'state-path=%s\n' "$STATE_HOME/opencode"
+      printf 'discovery=%s\n' "$discovery"
+      printf 'data-path=%s\n' "$data_dir"
+      printf 'state-path=%s\n' "$state_dir"
+      if [ "$discovery" = opencode-debug-paths ]; then
+        row=$(discovered_row config)
+        [ -n "$row" ] && printf 'discovered-config-path=%s\n' "$row"
+        row=$(discovered_row cache)
+        [ -n "$row" ] && printf 'discovered-cache-path=%s\n' "$row"
+        row=$(discovered_row bin)
+        [ -n "$row" ] && printf 'discovered-bin-cache-path=%s\n' "$row"
+        row=$(discovered_row db)
+        [ -n "$row" ] && printf 'discovered-session-database=%s\n' "$row"
+        row=$(discovered_row data)
+        [ -n "$row" ] && [ -d "$row/storage" ] && printf 'discovered-session-storage=%s\n' "$row/storage"
+      fi
+      # Record credential stores by location only; contents are never read.
+      if [ -e "$CONFIG_DIR/auth.json" ]; then
+        printf 'credential-store-config=%s\n' "$CONFIG_DIR/auth.json"
+      else
+        printf 'credential-store-config=not-found\n'
+      fi
+      if [ -e "$data_dir/auth.json" ]; then
+        printf 'credential-store-data=%s\n' "$data_dir/auth.json"
+      else
+        printf 'credential-store-data=not-found\n'
+      fi
       printf 'backup-created=%s\n' "$stamp"
     } > "$backup/manifest"
     chmod 600 "$backup/manifest"
@@ -96,6 +137,7 @@ case "$ACTION" in
     rm -rf "$backup/config.verify"
     printf '%s\n' "$backup" > "$PENDING"
     say "backed up previous config; executable version: $version"
+    say "location discovery: $discovery (recorded in the backup manifest)"
     say "backup: $backup"
     ;;
 
