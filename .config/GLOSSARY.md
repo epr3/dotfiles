@@ -4,6 +4,9 @@ Application and developer-tool configuration managed under `.config/`.
 
 ## Language
 
+**Confirmed commit**: An agent-created commit whose proposed message and change scope the human explicitly approved before execution.
+_Avoid_: autonomous commit, implied approval.
+
 **Terminal emulator**: Ghostty, the desktop application hosting this repository's terminal multiplexer.
 _Avoid_: multiplexer, session.
 
