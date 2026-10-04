@@ -69,7 +69,10 @@ file-only linking resolved that blocker. The initial incomplete config had
 reported missing fields; the owner's config update resolved that warning.
 
 Repository shell regression suites (`scripts/test-artifact-locations.sh`,
-`scripts/test-check-parity.sh`, and `scripts/test-git-clone-for-worktrees.sh`) passed. No new test
+`scripts/test-check-parity.sh`, and `scripts/test-git-clone-for-worktrees.sh`) passed at the
+time. Those launchers were retired on 2026-10-04 under the standing
+no-maintained-test-suite policy (`adr/2026-10-04-no-maintained-dotfiles-test-suite.md`),
+so this is a historical record, not a currently runnable check. No new test
 framework, Yazi hotkey translation, or visual-preview gate was introduced.
 
 ## Optional local Yazi cleanup — only after validation

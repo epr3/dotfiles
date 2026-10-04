@@ -1,6 +1,7 @@
 # parity/map.sh — shared constants and helpers for the pinned parity seam.
-# Sourced (do not execute). Consumers: scripts/check-parity.sh,
-# scripts/check-prose.sh, scripts/test-check-parity.sh.
+# Sourced (do not execute). Consumers: scripts/check-parity.sh and
+# scripts/check-prose.sh. The retired parity contract-test launcher no longer
+# sources this file (standing no-maintained-test-suite policy).
 
 # Pinned upstream snapshot: do not upgrade as part of any other work.
 PARITY_PINNED_COMMIT='d81f3a183412e71a5b1e84ca21bc1a35eea03a60'

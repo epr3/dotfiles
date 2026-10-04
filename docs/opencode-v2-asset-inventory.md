@@ -51,7 +51,7 @@ Correspondence re-check (2026-10-04, after the pinned-parity restoration closed)
 
 | Pi asset | Disposition | OpenCode mechanism |
 | --- | --- | --- |
-| `.pi/agent/AGENTS.md` | adapted | `.config/opencode/AGENTS.md`, loaded as the v2 **global** `AGENTS.md`. Pi tool names were rewritten to what v2.0.22 actually exposes (grep/read navigation — no agent-facing LSP tools; `explore`/`general` subagents; `question`; conversation-tracked plans — no native todo tool), per the ticket `0003` runtime verification. The v2 `instructions` config array is accepted but **not resolved** by V2, so it is not used; `AGENTS.md` is the supported mechanism and is verified by `scripts/test-opencode-assets.sh`. |
+| `.pi/agent/AGENTS.md` | adapted | `.config/opencode/AGENTS.md`, loaded as the v2 **global** `AGENTS.md`. Pi tool names were rewritten to what v2.0.22 actually exposes (grep/read navigation — no agent-facing LSP tools; `explore`/`general` subagents; `question`; conversation-tracked plans — no native todo tool), per the ticket `0003` runtime verification. The v2 `instructions` config array is accepted but **not resolved** by V2, so it is not used; `AGENTS.md` is the supported mechanism, and its loading was verified at the time by the since-retired `scripts/test-opencode-assets.sh`. |
 
 ## Theme material
 
@@ -80,7 +80,7 @@ No Pi runtime extension or external Pi extension package is imported as an OpenC
 
 ## Exclusions
 
-Credentials, session databases, caches, installed packages/dependencies, and context worktrees are excluded by `.gitignore` and by the migration/backup scripts. `.config/opencode/skills/` contains no symlinks back to Pi; independence is asserted by `scripts/test-opencode-assets.sh`.
+Credentials, session databases, caches, installed packages/dependencies, and context worktrees are excluded by `.gitignore` and by the migration/backup scripts. `.config/opencode/skills/` contains no symlinks back to Pi; independence was asserted at the time by the since-retired `scripts/test-opencode-assets.sh`. Under the standing no-maintained-test-suite policy (`adr/2026-10-04-no-maintained-dotfiles-test-suite.md`), no automated assertion of this independence remains.
 
 ## Related
 
