@@ -4,6 +4,7 @@
 
 ## Active setup
 
+- Personal CLI preference: `session.sidebar: "hide"` in `.config/opencode/cli.json` hides the right-hand session sidebar (including the title and Context section) by default, regardless of terminal width. The bottom bar and custom Dumb Zone readout remain unchanged.
 - Target CLI rechecked as OpenCode `v2.0.22` (`opencode --version`). The live managed bundle link was created via `./install --only link` before the Dotbot wrapper was restored unchanged. Going forward, the general Dotbot config pass excludes OpenCode; use `scripts/install-opencode.sh` for guarded activation. Neither script installs or replaces the OpenCode executable.
 - Before activation, the live config directory was verified empty. Bootstrap retained that empty directory at `~/.local/share/dotfiles/opencode-backups/20261003-123656.4ylF90` (manifest records `opencode v2.0.22` and the executable path). This is a fresh-config backup, **not** a backup of the earlier lost v1 tree.
 - OpenCode reports config at `~/.config/opencode`, data at `~/.local/share/opencode`, state at `~/.local/state/opencode`, cache at `~/.cache/opencode`, and its session database at `~/.local/share/opencode/opencode.db` (`opencode debug paths`). Bootstrap manages only the config directory; it does not move or rewrite the separate data/state/cache trees.

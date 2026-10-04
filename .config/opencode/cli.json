@@ -3,5 +3,8 @@
   "theme": {
     "name": "catppuccin"
   },
+  "session": {
+    "sidebar": "hide"
+  },
   "plugins": ["./plugins/dumb-zone"]
 }
