@@ -1,3 +1,17 @@
+# Interactive Zsh startup (.zshrc).
+#
+# Interactive-only configuration. The shared environment (PATH, exports,
+# Managed tool shims) lives in .zshenv, which is sourced for every Zsh
+# invocation; everything below runs for interactive shells only.
+#
+# Sections: Zinit (plugins & snippets) — Completion — Keybindings — History —
+# Aliases — Integrations. Keep integration order stable when editing:
+# fzf → mise → zoxide → oh-my-posh → worktrunk.
+
+# =====================================================================
+# Zinit — plugin manager, plugins, snippets, completions
+# =====================================================================
+
 # Set the directory we want to store zinit and plugins
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
 
@@ -26,18 +40,40 @@ autoload -Uz compinit && compinit
 
 zinit cdreplay -q
 
+# =====================================================================
+# Completion styling
+# =====================================================================
 
+# Case-insensitive matching: lowercase typed input matches capitalized
+# candidates.
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+# Color the completion list from the session's LS_COLORS.
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+# Static completion list; no automatic menu walk.
+zstyle ':completion:*' menu no
+# fzf-tab directory previews: macOS-native BSD ls coloring (-G), not the GNU
+# `--color` flag. `command` bypasses the ls alias; the preview argument stays
+# safely quoted, so directory names containing spaces work.
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'command ls -G -- "$realpath"'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'command ls -G -- "$realpath"'
+
+# =====================================================================
 # Keybindings
+# =====================================================================
+
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
+# =====================================================================
 # History
+# =====================================================================
+
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
 SAVEHIST=$HISTSIZE
-HISTDUP=erase
+# History policy lives in these options; HISTDUP is intentionally not set.
 setopt appendhistory
 setopt sharehistory
 setopt hist_ignore_space
@@ -46,20 +82,25 @@ setopt hist_save_no_dups
 setopt hist_ignore_dups
 setopt hist_find_no_dups
 
-# Completion styling
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
-
+# =====================================================================
 # Aliases
-alias ls='ls --color'
+# =====================================================================
+
+# Listing: macOS-native BSD coloring (-G). `command` bypasses the alias so
+# the definition cannot recurse; ls resolves to /bin/ls as before.
+alias ls='command ls -G'
+# One Vim-to-Neovim alias (a duplicate declaration was removed 2026-10).
 alias vim='nvim'
 alias c='clear'
-alias vim=nvim
 
-# Shell integrations
+# eza-based listings stay as-is: they intentionally gain no ls fallback.
+alias ll="eza -l -g --icons --git"
+alias llt="eza -1 --icons --tree --git-ignore"
+
+# =====================================================================
+# Integrations
+# =====================================================================
+
 eval "$(fzf --zsh)"
 
 # mise owns Managed tool versions — Node, Python, Ruby, Go
@@ -74,14 +115,8 @@ fi
 
 eval "$(zoxide init --cmd cd zsh)"
 
-alias ll="eza -l -g --icons --git"
-alias llt="eza -1 --icons --tree --git-ignore"
-
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
 fi
-
-
-
 
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
