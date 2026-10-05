@@ -13,9 +13,10 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-# mise shims resolve Managed tools in noninteractive Zsh (scripts, editors)
-# without shell activation; interactive Zsh re-resolves via mise activate
-# (docs/mise-node-migration.md). Prepending keeps mise ahead of pnpm's node.
+# mise shims resolve Managed tools (Node, Python, Ruby, Go) in noninteractive
+# Zsh (scripts, editors) without shell activation; interactive Zsh re-resolves
+# via mise activate (docs/mise-node-migration.md, docs/mise-runtime-migration.md).
+# Prepending keeps mise ahead of pnpm's node.
 MISE_SHIMS="$HOME/.local/share/mise/shims"
 if [[ -d "$MISE_SHIMS" ]]; then
   case ":$PATH:" in
@@ -31,18 +32,15 @@ path_append() {
   esac
 }
 
-export GOROOT="$HOMEBREW_PREFIX/opt/go/libexec"
-export GOPATH="$HOME/go"
-export PYENV_ROOT="$HOME/.pyenv"
-
+# Go runtime selection moved to mise, so GOROOT must not pin Homebrew's Go
+# (mise's go would pick up the wrong GOROOT). GOPATH keeps its default (~/go).
+# `~/go/bin` stays on PATH: existing `go install`-ed tools (gopls, dlv, …)
+# keep resolving there.
 path_append "$HOMEBREW_PREFIX/bin"
-path_append "$PYENV_ROOT/bin"
-path_append "$GOPATH/bin"
-path_append "$GOROOT/bin"
+path_append "$HOME/go/bin"
 path_append "$HOME/.poetry/bin"
 path_append "$HOME/.local/bin"
 path_append "$HOME/.cargo/bin"
-path_append "$HOME/.rbenv/bin"
 path_append "$HOME/.lmstudio/bin"
 case ":$PATH:" in
   *":$HOME/.opencode/bin:"*) ;;

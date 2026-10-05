@@ -61,10 +61,13 @@ alias vim=nvim
 
 # Shell integrations
 eval "$(fzf --zsh)"
-eval "$(rbenv init -)"
-eval "$(pyenv init -)"
 
-# mise owns Managed tool versions (docs/mise-node-migration.md)
+# mise owns Managed tool versions — Node, Python, Ruby, Go
+# (docs/mise-node-migration.md, docs/mise-runtime-migration.md). The rbenv and
+# pyenv activation hooks were retired here: their shims would compete with
+# mise's resolution. Those managers and their installations remain on disk
+# untouched until separately approved cleanup; CocoaPods is reinstalled
+# explicitly into the mise ruby by scripts/install-cocoapods.sh.
 if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
 fi

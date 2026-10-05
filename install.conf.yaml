@@ -52,6 +52,11 @@
     stdout: true
     stderr: true
   -
+    command: bash scripts/install-cocoapods.sh
+    description: Install CocoaPods into the mise ruby
+    stdout: true
+    stderr: true
+  -
     command: bash scripts/install-pi.sh
     description: Install pi coding agent
     stdout: true

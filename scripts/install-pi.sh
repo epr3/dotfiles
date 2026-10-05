@@ -9,17 +9,12 @@ PACKAGE="@earendil-works/pi-coding-agent"
 # shell (docs/mise-node-migration.md). Re-exec resolves from $HOME — outside
 # this repository — so project configuration cannot participate, matching
 # scripts/install-mise-tools.sh.
-if ! command -v mise &>/dev/null && [ -x /opt/homebrew/bin/brew ]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-if ! command -v mise &>/dev/null; then
-  echo "mise is required for the pi stage; locked Node must be available first." >&2
-  exit 1
-fi
+source "$(cd "$(dirname "$0")" && pwd)/mise-stage-helpers.sh"
+mise_stage_resolve
 if [[ "${MISE_PI_STAGE:-}" != "1" ]]; then
   script_dir="$(cd "$(dirname "$0")" && pwd)"
   export MISE_PI_STAGE=1
-  cd "$HOME"
+  mise_stage_cd_home
   exec mise x -- bash "$script_dir/$(basename "$0")"
 fi
 
