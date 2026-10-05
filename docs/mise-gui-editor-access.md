@@ -75,8 +75,8 @@ Observed where noted (2026-10-05, macOS 26.5.1, VS Code 1.140.0, mise 2026.10.2)
 
 - [x] VS Code shell integration sources the real `~/.zshenv` after `ZDOTDIR` rewriting (bundle inspection: `shellIntegration-env.zsh` + `ptyHostMain.js` `USER_ZDOTDIR`), so integrated terminals and task shells run `.zshenv`'s shim prepend regardless of how VS Code itself was launched.
 - [x] Editor-shell-path probes (clean `env -i` zsh, the same startup-file path a desktop-spawned editor shell takes): untrusted `mise.toml` errors with `mise trust` guidance, env not applied; after explicit trust, project ruby 3.2.2 selects via shim and leaving restores global 3.3.0; missing `.python-version` 3.12.2 fails with `mise install` guidance, exit code 1, nothing downloaded, 3.12.2 not installed afterwards.
-- [ ] GUI-launch observation (steps 1–8 above): **pending human step** — launch VS Code from Dock/Spotlight and record the outputs here.
-- [ ] Retained editor-managed tooling spot-check from the editor terminal (step 8): **pending human step**.
+- [ ] GUI-launch observation (steps 1–8 above): **pending human step** — launch VS Code from Dock/Spotlight and record the outputs here. (Reconfirmed as a reported gap 2026-10-05 in [mise-acceptance.md](mise-acceptance.md) — issue 07.)
+- [ ] Retained editor-managed tooling spot-check from the editor terminal (step 8): **pending human step** — part of the same gap reported in [mise-acceptance.md](mise-acceptance.md).
 - Editor-managed plugins/language servers, agent CLIs (pi, OpenCode), their credentials and update ownership: untouched — no editor settings, extension, or agent config was read or modified by this slice; `.zshenv`'s PNPM_HOME, `~/go/bin`, `~/.opencode/bin`, and cargo/lmstudio path entries remain intact for anything spawned through zsh.
 
 ## Known limits (accepted by the owner decision above)

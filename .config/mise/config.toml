@@ -1,60 +1,38 @@
-# Dotfile-managed global mise configuration: reviewed, locked Managed tool
-# defaults. Linked by Bootstrap to ~/.config/mise/config.toml.
-# Ownership: docs/adr/2026-10-04-mise-managed-tool-boundary.md
-# Workflow: docs/mise-node-migration.md, docs/mise-runtime-migration.md,
-#           docs/mise-cli-ownership.md
+# Dotfile-managed global mise configuration, linked by Bootstrap to
+# ~/.config/mise/config.toml. Declares language runtimes only: every
+# standalone CLI stays Homebrew-owned (docs/mise-cli-ownership.md).
+# Ownership + exceptions: docs/adr/2026-10-04-mise-managed-tool-boundary.md
+# Operations (install, trust, lock, upgrade): docs/mise-acceptance.md
 #
-# Each version below preserves an inventoried existing installation (see
-# docs/mise-runtime-migration.md and the migration inventory). No absent
-# runtime needed a reviewed stable default. Upgrades are deliberate reviewed
-# changes: bump the version here, run `mise lock --global`, review the
-# lockfile diff, then `mise install --locked`.
-#
-# Explicit exceptions (not managed here — retained owners):
-# - Owner decision 2026-10-05 (issue 04): mise manages language runtimes
-#   only. Every standalone CLI — bun 1.3.14 included — keeps Homebrew as its
-#   installation and upgrade owner (docs/mise-cli-ownership.md); no CLI is
-#   declared here and no lock metadata covers CLIs.
-# - Rust x86_64 under Rosetta (inventory D2): blocked on a human decision;
-#   not migrated.
+# Versions preserve inventoried existing installs; upgrades are deliberate:
+# bump here, `mise lock --global`, review the diff, `mise install --locked`.
 
 [tools]
-# Node (inventory D1, signed off 2026-10-05): the mise default is the reviewed
-# installed version 22.22.3. The older pnpm env copy (22.20.0) is NOT migrated;
-# existing pnpm state remains on disk untouched.
+# Inventory D1: reviewed default; the older pnpm copy (22.20.0) is not migrated.
 node = "22.22.3"
-# Python: the sole pyenv-managed version; the pyenv copy has no user
-# site-packages (only pip), so the runtime moves cleanly.
+# Sole pyenv version; moved cleanly (no user site-packages).
 python = "3.12.4"
-# Ruby: both rbenv versions preserved; the first entry is the default (the
-# rbenv global). CocoaPods 1.15.2 is installed explicitly into the mise ruby
-# by a guarded Bootstrap stage — see scripts/install-cocoapods.sh.
+# First entry is the default (the old rbenv global); CocoaPods 1.15.2 is
+# installed into it by scripts/install-cocoapods.sh.
 ruby = ["3.3.0", "3.2.2"]
-# Go: the Homebrew-installed version; `~/go/bin` stays on PATH in .zshenv so
-# the existing `go install`-ed tools keep resolving.
+# `~/go/bin` stays on PATH in .zshenv so existing `go install`-ed tools resolve.
 go = "1.27.1"
+# Rust x86_64 under Rosetta (inventory D2): deliberately absent, blocked on a
+# human decision — ~/.cargo/bin stays on PATH until then.
 
 [tool_config]
-# Strict locking: tools declared by this config must resolve from the
-# committed mise.lock — ordinary installs never silently re-resolve newer
-# versions or rewrite the lock.
+# The committed mise.lock is authoritative: no silent re-resolution, no
+# opportunistic upgrades, no lock rewrites.
 locked = true
 
 [settings]
-# Honor compatible runtime-version files (.nvmrc, .node-version,
-# .python-version, .ruby-version, .go-version, etc.) in projects that have
-# been explicitly trusted.
+# Runtime-version files (.nvmrc, .python-version, .ruby-version, .go-version,
+# …) select versions in explicitly trusted projects.
 idiomatic_version_file_enable_tools = ["node", "python", "ruby", "go"]
-# A missing requested version must produce actionable guidance, never a
-# download triggered by a directory change or a silent fallback to another
-# installation found on PATH. Install missing tools explicitly with
-# `mise install` (after `mise trust`).
+# Missing requested versions error with `mise install` guidance — never a
+# download on directory entry, never a silent fallback.
 not_found_auto_install = false
 not_found_system_fallback = false
-# mise verifies GitHub artifact attestations for its python builds by default;
-# the python-build-standalone release for 3.12.4 publishes none, so locked
-# resolution would fail with "No GitHub artifact attestations found" and the
-# lockfile cannot record platform entries. Verification falls back to the
-# SHA-256 checksums mise records in mise.lock. Revisit only together with a
-# reviewed python version bump.
+# The python 3.12.4 build publishes no GitHub attestations; locked resolution
+# falls back to the SHA-256 checksums in mise.lock. Revisit with a python bump.
 python.github_attestations = false
