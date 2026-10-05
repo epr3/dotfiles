@@ -37,13 +37,18 @@
     stdout: true
     stderr: true
   -
+    command: bash scripts/install-mise.sh
+    description: Install mise
+    stdout: true
+    stderr: true
+  -
     command: bash scripts/install-pnpm.sh
     description: Install pnpm
     stdout: true
     stderr: true
   -
-    command: bash scripts/setup-node-lts.sh
-    description: Set Node LTS via pnpm
+    command: bash scripts/install-mise-tools.sh
+    description: Install locked tools via mise
     stdout: true
     stderr: true
   -

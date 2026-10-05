@@ -4,6 +4,30 @@ set -euo pipefail
 
 PACKAGE="@earendil-works/pi-coding-agent"
 
+# Explicit mise execution: dependent Bootstrap stages run with the locked Node
+# from the tracked global configuration, even without a previously activated
+# shell (docs/mise-node-migration.md).
+if ! command -v mise &>/dev/null && [ -x /opt/homebrew/bin/brew ]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+if ! command -v mise &>/dev/null; then
+  echo "mise is required for the pi stage; locked Node must be available first." >&2
+  exit 1
+fi
+if [[ "${MISE_PI_STAGE:-}" != "1" ]]; then
+  export MISE_PI_STAGE=1
+  exec mise x -- bash "$0"
+fi
+
+# pnpm's standalone install location may not be on PATH in a fresh shell.
+if ! command -v pnpm &>/dev/null; then
+  PNPM_HOME="$HOME/Library/pnpm"
+  if [ -x "$PNPM_HOME/pnpm" ]; then
+    export PNPM_HOME
+    export PATH="$PNPM_HOME:$PATH"
+  fi
+fi
+
 if command -v pi &>/dev/null; then
   echo "pi already installed: $(pi --version 2>/dev/null || echo unknown). Skipping installation."
   exit 0

@@ -1,0 +1,30 @@
+# Dotfile-managed global mise configuration: reviewed, locked Managed tool
+# defaults. Linked by Bootstrap to ~/.config/mise/config.toml.
+# Ownership: docs/adr/2026-10-04-mise-managed-tool-boundary.md
+# Workflow: docs/mise-node-migration.md
+#
+# Node (inventory D1, signed off 2026-10-05): the mise default is the reviewed
+# installed version 22.22.3. The older pnpm env copy (22.20.0) is NOT migrated;
+# existing pnpm state remains on disk untouched.
+# Upgrades are deliberate reviewed changes: bump the version here, run
+# `mise lock --global`, review the lockfile diff, then `mise install --locked`.
+
+[tools]
+node = "22.22.3"
+
+[tool_config]
+# Strict locking: tools declared by this config must resolve from the
+# committed mise.lock — ordinary installs never silently re-resolve newer
+# versions or rewrite the lock.
+locked = true
+
+[settings]
+# Honor compatible runtime-version files (.nvmrc, .node-version) in projects
+# that have been explicitly trusted.
+idiomatic_version_file_enable_tools = ["node"]
+# A missing requested version must produce actionable guidance, never a
+# download triggered by a directory change or a silent fallback to another
+# installation found on PATH. Install missing tools explicitly with
+# `mise install` (after `mise trust`).
+not_found_auto_install = false
+not_found_system_fallback = false

@@ -13,6 +13,17 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
+# mise shims resolve Managed tools in noninteractive Zsh (scripts, editors)
+# without shell activation; interactive Zsh re-resolves via mise activate
+# (docs/mise-node-migration.md). Prepending keeps mise ahead of pnpm's node.
+MISE_SHIMS="$HOME/.local/share/mise/shims"
+if [[ -d "$MISE_SHIMS" ]]; then
+  case ":$PATH:" in
+    *":$MISE_SHIMS:"*) ;;
+    *) export PATH="$MISE_SHIMS:$PATH" ;;
+  esac
+fi
+
 path_append() {
   case ":$PATH:" in
     *":$1:"*) ;;

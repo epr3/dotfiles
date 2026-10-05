@@ -21,6 +21,7 @@ brew "bash"
 brew "worktrunk"
 brew "gh"
 brew "rtk"
+brew "mise"
 
 cask "ghostty"
 cask "amethyst"

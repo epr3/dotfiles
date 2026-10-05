@@ -20,9 +20,9 @@ git submodule update --init dotbot
 
 | Directory | What |
 |---|---|
-| `.config/` | Dotfile-managed tool config: worktrunk, gh-dash, oh-my-posh, lazygit, nvim (standalone + VS Code Neovim profile), zellij, ghostty, btop, Superfile, OpenCode |
+| `.config/` | Dotfile-managed tool config: worktrunk, gh-dash, oh-my-posh, lazygit, nvim (standalone + VS Code Neovim profile), zellij, ghostty, btop, Superfile, OpenCode, mise |
 | `.pi/` | pi coding agent config, skills, themes, extensions |
-| `scripts/` | Idempotent bootstrap scripts (Homebrew, pnpm, Node, git identity) |
+| `scripts/` | Idempotent bootstrap scripts (Homebrew, mise, pnpm, git identity) |
 | `dotbot/` | Dotbot submodule for symlink management |
 
 > **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.

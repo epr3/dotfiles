@@ -64,6 +64,11 @@ eval "$(fzf --zsh)"
 eval "$(rbenv init -)"
 eval "$(pyenv init -)"
 
+# mise owns Managed tool versions (docs/mise-node-migration.md)
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
+
 eval "$(zoxide init --cmd cd zsh)"
 
 alias ll="eza -l -g --icons --git"
