@@ -60,4 +60,4 @@ Observed on this machine (2026-10-05, macOS 26.5.1, mise 2026.10.2):
 - [x] Missing requested version (`.nvmrc` with an uninstalled version): error with `Install all missing tools with: mise install`; no download on directory entry; explicit `mise install` activates the requested version in that project.
 - [x] Leaving the project restores the global default; no files were written into the tested repositories.
 - [x] pnpm 10.17.1, pi 1.0.0, opencode, rtk, and gh all still resolve and run.
-- [ ] GUI-launched editors: covered by issue 06 (launch-environment integration).
+- [ ] GUI-launched editors: covered by issue 06 — integration and verification procedure in [mise-gui-editor-access.md](mise-gui-editor-access.md).

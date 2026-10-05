@@ -62,7 +62,7 @@ Observed on this machine (2026-10-05, macOS 26.5.1, mise 2026.10.2):
 - [x] Unfamiliar project `mise.toml` is not trusted: its env is not applied and tool invocations error with `mise trust` guidance; no download, no silent fallback.
 - [x] Retained tooling unaffected: pnpm 10.17.1, pi, opencode, gemini, poetry 2.0.0, uv 0.12.21, lms, rtk, gh 2.102.0, zinit, fvm, flutter, brew git/zsh. *(fvm and flutter were still installed when this issue-03 checklist ran; both were removed later the same day — issue 05.)*
 - [x] pyenv 3.12.4, rbenv 3.2.2/3.3.0 (with the original CocoaPods gems), brew go 1.27.1, brew ruby 4.0.7 still present — nothing uninstalled or deleted.
-- [ ] GUI-launched editors: covered by issue 06 (launch-environment integration).
+- [ ] GUI-launched editors: covered by issue 06 — integration and verification procedure in [mise-gui-editor-access.md](mise-gui-editor-access.md).
 
 Environment note: CocoaPods prints its standard UTF-8 warning when `LANG` is unset (e.g. a minimal `env -i` shell); normal terminal sessions are unaffected. Out-of-scope observation recorded for D4 accuracy: in a minimal environment the standalone `~/.opencode/bin/opencode` copy wins on PATH in both shell modes; the inventory's "brew wins interactively" was measured in an inherited-shell environment. Neither copy was touched.
 
