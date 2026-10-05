@@ -101,7 +101,14 @@ alias llt="eza -1 --icons --tree --git-ignore"
 # Integrations
 # =====================================================================
 
-eval "$(fzf --zsh)"
+# Optional integrations initialize only when their command is available, so a
+# missing tool is skipped instead of erroring command-not-found at startup.
+# Keep the relative order stable when editing:
+# fzf → mise → zoxide → oh-my-posh → worktrunk.
+
+if command -v fzf >/dev/null 2>&1; then
+  eval "$(fzf --zsh)"
+fi
 
 # mise owns Managed tool versions — Node, Python, Ruby, Go
 # (docs/mise-node-migration.md, docs/mise-runtime-migration.md). The rbenv and
@@ -113,9 +120,13 @@ if command -v mise >/dev/null 2>&1; then
   eval "$(mise activate zsh)"
 fi
 
-eval "$(zoxide init --cmd cd zsh)"
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init --cmd cd zsh)"
+fi
 
-if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+# Apple Terminal keeps its current prompt behavior: oh-my-posh initializes
+# only in other terminal contexts, and only when the command is available.
+if [ "$TERM_PROGRAM" != "Apple_Terminal" ] && command -v oh-my-posh >/dev/null 2>&1; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
 fi
 
