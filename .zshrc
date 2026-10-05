@@ -12,33 +12,43 @@
 # Zinit — plugin manager, plugins, snippets, completions
 # =====================================================================
 
-# Set the directory we want to store zinit and plugins
+# First launch: install Zinit into the data-home-derived location when its
+# loader is absent. Every expansion is quoted, so the path also works when
+# XDG_DATA_HOME contains spaces. An installation failure is reported
+# directly here and handled by the load guard below — nothing depends on
+# this attempt succeeding.
 ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+ZINIT_LOADER="${ZINIT_HOME}/zinit.zsh"
 
-# Download Zinit, if it's not there yet
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+if [[ ! -e "$ZINIT_LOADER" ]]; then
+  mkdir -p -- "$(dirname -- "$ZINIT_HOME")" && git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
 fi
 
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
+# Load Zinit only when its loader sources successfully. A failed install
+# (loader absent) or an unusable loader skips every Zinit-dependent step
+# instead of cascading loader/plugin errors; the else branch keeps
+# completion working on its own. The rest of startup — history,
+# keybindings, aliases, integrations — never depends on this block.
+if [[ -e "$ZINIT_LOADER" ]] && source "$ZINIT_LOADER"; then
+  # Add in zsh plugins
+  zinit light zsh-users/zsh-syntax-highlighting
+  zinit light zsh-users/zsh-completions
+  zinit light zsh-users/zsh-autosuggestions
+  zinit light Aloxaf/fzf-tab
 
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
+  # Add in snippets
+  zinit snippet OMZP::git
+  zinit snippet OMZP::sudo
+  zinit snippet OMZP::command-not-found
 
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::command-not-found
-
-# Load completions
-autoload -Uz compinit && compinit
-
-zinit cdreplay -q
+  # Load completions, then replay the plugins' completion definitions
+  autoload -Uz compinit && compinit
+  zinit cdreplay -q
+else
+  # No usable Zinit loader: initialize completion standalone so tab
+  # completion keeps working without the plugin-provided completions.
+  autoload -Uz compinit && compinit
+fi
 
 # =====================================================================
 # Completion styling
