@@ -80,10 +80,6 @@ alias llt="eza -1 --icons --tree --git-ignore"
 if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
   eval "$(oh-my-posh init zsh --config $HOME/.config/ohmyposh/base.toml)"
 fi
-## [Completion]
-## Completion scripts setup. Remove the following line to uninstall
-[[ -f /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh ]] && . /Users/eduardpredescu/.config/.dart-cli-completion/zsh-config.zsh || true
-## [/Completion]
 
 
 

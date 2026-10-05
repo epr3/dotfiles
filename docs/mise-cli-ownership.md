@@ -13,9 +13,9 @@ This slice (issue 04 of the [Managed tools migration](../.scratch/mise-managed-t
 | jq | **Homebrew** (Brewfile) | `brew upgrade jq` — the verification dependency of `scripts/install-mise-tools.sh`, so it must stay brew-owned ahead of the mise-tools stage |
 | git-delta, diffnav | **Homebrew** (Brewfile) | `brew upgrade` — no mise registry backend exists for either; git-delta is lazygit's configured pager, diffnav renders gh-dash diffs |
 | git, zsh, bash, gh (+ gh-dash extension) | **Homebrew** (foundation) | `brew upgrade` |
-| Flutter (official stable) | **Homebrew cask** | `brew upgrade --cask flutter` |
-| Flutter (Flutter-Foundation fork) | **FVM** (exception, D6 — tracked in issue 05) | Deliberate revision updates via FVM |
 | poetry, pnpm (+ Pi/gemini globals), LM Studio CLI, zinit, opencode | standalone / shell / agent-owned (unchanged) | Their own update mechanisms |
+
+> Same-day follow-up (2026-10-05, issue 05): the owner then removed **Flutter entirely** — the Flutter-Foundation fork, FVM, and the official-stable brew cask are all retired, so the two Flutter rows that were here are gone. Nothing installs Dart/Flutter anymore; reinstalling is a deliberate future decision (a plain `brew install --cask flutter` if it's ever wanted again). See the ADR amendment.
 
 The inventory's registry-eligibility table (issue 01, §1) remains valid evidence that these CLIs *could* have migrated; it was never exercised into installs. The 2026-10-05 decision closes the deferral note that issues 02 and 03 carried in `.config/mise/config.toml` — no per-tool mise verification is owed for CLIs anymore, because nothing installs them through mise.
 
@@ -28,13 +28,13 @@ Upgrades remain deliberate, as with the runtimes — just through Homebrew:
 
 Known Homebrew-owned behavior (recorded in issue 02's comments, unchanged here): a Bootstrap `brew bundle` run may upgrade already-outdated formulae it manages. That predates this migration and stays outside mise's scope.
 
-## What is tracked (unchanged from issues 02/03, except comments)
+## What is tracked (issue-04 state, same-day updates from the Flutter retirement noted inline)
 
-- `Brewfile` — untouched: all retained CLIs stay listed.
-- `.config/mise/config.toml` — comment-only update resolving the "deferred to issue 04" note; `[tools]` still declares exactly the four runtimes.
+- `Brewfile` — all retained CLIs stay listed (the flutter cask left the Brewfile with the 2026-10-05 Flutter retirement, issue 05).
+- `.config/mise/config.toml` — comment-only update resolving the "deferred to issue 04" note; `[tools]` still declares exactly the four runtimes. The Flutter exception bullet left the comments with the same retirement.
 - `.config/mise/mise.lock` — untouched.
-- `install.conf.yaml`, all `scripts/` stages — untouched.
-- `.zshenv` / `.zshrc` — untouched: mise shims + activate keep owning runtime resolution, and every CLI integration (`fzf --zsh`, `zoxide init`, `oh-my-posh init`, `wt config shell init`) keeps executing its Homebrew binary.
+- `install.conf.yaml`, all `scripts/` stages — untouched by this decision (the `.fvmrc` link left `install.conf.yaml` with the Flutter retirement; the bootstrap itself never touched Flutter).
+- `.zshenv` / `.zshrc` — untouched by this decision: mise shims + activate keep owning runtime resolution, and every CLI integration (`fzf --zsh`, `zoxide init`, `oh-my-posh init`, `wt config shell init`) keeps executing its Homebrew binary. (`.zshrc` lost only the Dart CLI completion hook with the Flutter retirement.)
 
 ## Manual acceptance checklist
 
@@ -44,7 +44,7 @@ Observed on this machine (2026-10-05, macOS 26.5.1, mise 2026.10.2, read-only �
 - [x] Interactive Zsh outside this repository resolves `node/python3/ruby/go/pod` to mise installs at the locked versions, and every retained CLI (fzf, zoxide, eza, rg, bat, fd, btop, spf, oh-my-posh, wt, lazygit, zellij, yazi, tmux, jq, nvim, bun, uv) to `/opt/homebrew/bin`.
 - [x] Noninteractive Zsh outside this repository resolves the runtimes through the mise shim directory (shims sit first on PATH ahead of `PNPM_HOME` and Homebrew) and the CLIs through `/opt/homebrew/bin`.
 - [x] Shell integrations still emit under the retained owners: `fzf --zsh`, `zoxide init --cmd cd zsh`, `oh-my-posh init zsh`, `wt config shell init zsh`.
-- [x] Retained tooling unaffected: pnpm 10.17.1, pi, opencode, gemini, poetry, uv, lms, rtk 0.51.0, gh, fvm, flutter, `~/go/bin` tools.
+- [x] Retained tooling unaffected: pnpm 10.17.1, pi, opencode, gemini, poetry, uv, lms, rtk 0.51.0, gh, `~/go/bin` tools. (fvm and flutter were still installed when this checklist ran; both were removed later the same day — see the same-day follow-up note above.)
 - [ ] GUI-launched editors: covered by issue 06 (launch-environment integration).
 
 ## Post-verification cleanup checklist (human-approved, not executed)

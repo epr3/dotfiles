@@ -29,7 +29,6 @@ brew "jq"
 
 cask "ghostty"
 cask "amethyst"
-cask "flutter"
 cask "font-inconsolata"
 cask "font-inconsolata-nerd-font"
 cask "keycastr"
