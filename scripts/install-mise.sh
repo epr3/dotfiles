@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Install mise via Homebrew if not present. Skip if already available.
+# mise is also listed in the Brewfile: this stage exists because mise must be
+# present before the locked tool install stage, which runs before `brew bundle`.
 set -euo pipefail
 
 if command -v mise &>/dev/null; then

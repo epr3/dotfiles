@@ -23,16 +23,29 @@ if [ ! -f "$HOME/.config/mise/mise.lock" ]; then
   exit 1
 fi
 
+# MISE_YES keeps the stage noninteractive; locked resolution leaves nothing to
+# confirm.
 export MISE_YES=1
 echo "Installing locked tools from the global mise configuration..."
 mise install --locked
 mise reshim
 
-# Verify that Node resolves to a mise-managed installation via the global config.
+# Verify that Node resolves to a mise-managed installation at the version the
+# tracked global configuration declares.
+expected="$(sed -n 's/^node = "\(.*\)"$/\1/p' "$HOME/.config/mise/config.toml")"
+if [ -z "$expected" ]; then
+  echo "Could not read the node version request from ~/.config/mise/config.toml." >&2
+  exit 1
+fi
 resolved="$(mise which node)"
 case "$resolved" in
   "$HOME"/.local/share/mise/*) ;;
   *) echo "node does not resolve to a mise-managed install: $resolved" >&2; exit 1 ;;
 esac
-echo "node $(mise x -- node --version) at $resolved"
+resolved_version="$(mise x -- node --version)"
+if [ "$resolved_version" != "v$expected" ]; then
+  echo "node resolves to $resolved_version but the global config declares $expected." >&2
+  exit 1
+fi
+echo "node $resolved_version at $resolved (locked by the global config)"
 mise ls node
