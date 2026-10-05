@@ -14,13 +14,13 @@ Nothing was uninstalled or deleted: pyenv, rbenv, Homebrew's `go` and `ruby`, an
 | go | 1.27.1 | **mise** (`core:go`) | Homebrew-installed version preserved. `GOROOT`/`GOPATH` exports retired; `~/go/bin` stays on PATH. |
 | flutter | — | **FVM (exception, unchanged)** | Flutter-Foundation fork; no mise backend reproduces it (inventory §3, D6). Tracked in issue 05. |
 | rust | x86_64 1.70.0 | **decision point D2 (unchanged)** | Blocked on a human decision; `~/.cargo/bin` stays on PATH so the existing toolchain keeps resolving. |
-| bun, standalone CLIs | — | Homebrew until issue 04 | Decided in the CLI slice. |
+| bun, standalone CLIs | — | **Homebrew (owner decision 2026-10-05)** | Issue 04 resolved by decision: no CLI migrates; mise manages language runtimes only. See [mise-cli-ownership.md](mise-cli-ownership.md). |
 
 Retained as-is: pnpm (and its global packages), poetry, uv, LM Studio CLI, the OpenCode copies, zinit, fvm, and all Homebrew foundation tools.
 
 ## What is tracked
 
-- `.config/mise/config.toml` — declares `python = "3.12.4"`, `ruby = ["3.3.0", "3.2.2"]`, `go = "1.27.1"` alongside the existing node default; comments explain each version's inventory evidence and the explicit exceptions (Flutter, rust D2, bun → issue 04).
+- `.config/mise/config.toml` — declares `python = "3.12.4"`, `ruby = ["3.3.0", "3.2.2"]`, `go = "1.27.1"` alongside the existing node default; comments explain each version's inventory evidence and the explicit exceptions (Flutter, rust D2; the bun/CLI ownership question resolved to Homebrew retention in [mise-cli-ownership.md](mise-cli-ownership.md)).
 - `.config/mise/mise.lock` — regenerated once with `mise lock --global`; records per-platform URLs and SHA-256 checksums for all five tools, so installs verify the same bytes.
 - `scripts/install-mise-tools.sh` — verifies every declared tool generically: each declared version installed, the active resolution equals the first declared version, and the install lives in mise's data directory. Bash-3.2-compatible so it works with macOS's stock bash on fresh machines.
 - `scripts/install-cocoapods.sh` — guarded stage: installs CocoaPods **1.15.2** (the reviewed baseline version) into the mise ruby via `mise x -- gem install`, then verifies `pod` resolves inside mise's install directory at the reviewed version — on every run, including the skip path. Skips only when `mise which pod` already resolves there at the pinned version.

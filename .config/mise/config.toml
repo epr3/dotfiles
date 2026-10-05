@@ -1,7 +1,8 @@
 # Dotfile-managed global mise configuration: reviewed, locked Managed tool
 # defaults. Linked by Bootstrap to ~/.config/mise/config.toml.
 # Ownership: docs/adr/2026-10-04-mise-managed-tool-boundary.md
-# Workflow: docs/mise-node-migration.md, docs/mise-runtime-migration.md
+# Workflow: docs/mise-node-migration.md, docs/mise-runtime-migration.md,
+#           docs/mise-cli-ownership.md
 #
 # Each version below preserves an inventoried existing installation (see
 # docs/mise-runtime-migration.md and the migration inventory). No absent
@@ -12,10 +13,12 @@
 # Explicit exceptions (not managed here — retained owners):
 # - Flutter-Foundation fork: FVM honors `flutterUrl`; no mise backend
 #   reproduces the fork (inventory §3, D6). See issue 05.
+# - Owner decision 2026-10-05 (issue 04): mise manages language runtimes
+#   only. Every standalone CLI — bun 1.3.14 included — keeps Homebrew as its
+#   installation and upgrade owner (docs/mise-cli-ownership.md); no CLI is
+#   declared here and no lock metadata covers CLIs.
 # - Rust x86_64 under Rosetta (inventory D2): blocked on a human decision;
 #   not migrated.
-# - bun 1.3.14 (Homebrew) and the standalone CLIs: decision deferred to
-#   issue 04.
 
 [tools]
 # Node (inventory D1, signed off 2026-10-05): the mise default is the reviewed
