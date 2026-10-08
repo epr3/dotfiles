@@ -4,7 +4,7 @@
 # sources this file (standing no-maintained-test-suite policy).
 
 # Pinned upstream snapshot: do not upgrade as part of any other work.
-PARITY_PINNED_COMMIT='d81f3a183412e71a5b1e84ca21bc1a35eea03a60'
+PARITY_PINNED_COMMIT='b0618bc436ad893b3c5e84e55fba86586d34a404'
 PARITY_UPSTREAM_URL='https://github.com/mattpocock/skills.git'
 
 # Upstream keeps skills under category families; the curated suite is flat.

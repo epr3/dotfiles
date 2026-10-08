@@ -13,7 +13,7 @@ rationale: >
   sub-agent-tool policy is retained.
 ---
 
-- The issue tracker should have been provided to you. If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`.
+- The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
 - The issue tracker should have been provided to you. If the config home's `issue-tracker.md` is missing, tell the user to run `/setup-context`.
-- 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in `docs/agents/issue-tracker.md`.
+- 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in the tracker doc.
 - 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.), fetched via the workflow in the config home's `issue-tracker.md`.

@@ -22,7 +22,7 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `grill-with-docs` | adapted | Skill-invocation wording. |
 | `grilling` | copied | |
 | `handoff` | adapted | Skill-invocation wording. |
-| `implement` | copied | |
+| `implement` | adapted | Upstream refresh retained; OpenCode skill-loader wording for `tdd` and `code-review`. |
 | `improve-codebase-architecture` | adapted | Skill-invocation wording. |
 | `merge-context` | copied | |
 | `offload-context` | copied | Includes `offload-context.sh`. |
@@ -39,13 +39,15 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `to-tickets` | copied | |
 | `triage` | adapted | Skill-invocation wording. |
 | `wait-what` | copied | |
-| `wayfinder` | adapted | Skill-invocation wording. |
+| `wayfinder` | adapted | OpenCode skill-loader wording; the refreshed research-branch workflow pauses for human-owned branch creation and push. |
 | `wizard` | copied | |
 | `writing-for-agents` | copied | |
 
-18 skills are byte-identical copies; 11 carry narrow, recorded adaptations. No prerequisite, trigger, or activation condition was removed.
+17 skills are byte-identical copies; 12 carry narrow, recorded adaptations. No prerequisite, trigger, or activation condition was removed.
 
 Correspondence re-check (2026-10-04, after the pinned-parity restoration closed): all 18 differing files between the two trees were diffed line-by-line and every changed line is one of the recorded adaptations above (skill-invocation wording, AGENTS.md home, context-root default, session-claim ID, LSP generalization) — no other drift; the restored upstream content (tickets 0003–0005 of upstream-skill-parity, all committed before the copy was made) is present in both trees.
+
+Refresh correspondence re-check (2026-10-08): the OpenCode copies of the refreshed retained skills were compared against Pi after updating the changed packages. Every skill directory remains present in both inventories; OpenCode-only adaptations are limited to skill-loader wording, the previously recorded harness/context substitutions, and the explicit human handoff for the refreshed wayfinder research-branch operation. The `implement` copy includes the refreshed ticket-reference instruction and OpenCode skill-loader wording. `retro` remains unchanged and present in both trees.
 
 ## Instructions
 
