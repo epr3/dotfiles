@@ -2,14 +2,11 @@
 
 Issues and specs for this repo live as markdown files under `.scratch/` at the board's recorded artifact location (default: the context home - the store worktree, or the repo itself if context is in-repo; resolve overrides with `resolve-location.sh board`).
 
-## Board shapes
+## Ticket format
 
-Two shapes exist; both are read as found, and neither is migrated into the other:
+`/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/` following that skill's per-ticket template verbatim: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, `**Status:** ready-for-agent`, and acceptance-criteria checkboxes. A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort (its issues are **decision tickets**, not implementation slices); the spec lives at `.scratch/<feature-slug>/spec.md`.
 
-- **Boards published by the restored skills** - authoritative for new work. `/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/` following that skill's per-ticket template verbatim: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, `**Status:** ready-for-agent`, and acceptance-criteria checkboxes. A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort (its issues are **decision tickets**, not implementation slices); the spec lives at `.scratch/<feature-slug>/spec.md`.
-- **Historical boards** (any predating the parity restoration, such as this repo's current boards): kept exactly as found - one file per issue at `.scratch/<feature-slug>/issues/<NNNN>-<slug>.md`, zero-padded build order from `0001`, with frontmatter `status: open | resolved`, `type: research | prototype | grilling | task`, `mode: HITL | AFK`, `parent: <spec.md or map.md path>`, `blocked_by: [NNNN, ...]`, and optional `claimed_by:`. Never migrated; never a single combined issue file.
-
-This tracker has no label mechanism: triage's role vocabulary (see the `triage` skill) has no direct representation on files, so readiness is an open issue whose blockers are all resolved and which is unclaimed. On a real tracker, the triage skills' label strings and mappings apply as the `triage` skill describes.
+This tracker has no label mechanism; use each skill's status and blocking conventions. On a real tracker, the triage skills' label strings and mappings apply as the `triage` skill describes.
 
 Comments and conversation history append to the bottom of an issue file under a `## Comments` heading.
 

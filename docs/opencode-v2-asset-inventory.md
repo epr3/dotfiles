@@ -1,11 +1,11 @@
 # OpenCode v2 asset inventory and disposition
 
-Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode configuration at `.config/opencode/`, recorded per the `0002` ticket. "Copied" means byte-identical to the Pi source at inventory time; "adapted" means the copy changes harness vocabulary or machine-specific references while preserving triggers, prerequisites, and invocation intent. Pi remains unchanged and there is no ongoing synchronization between the two trees (`GLOSSARY.md` → **Curated Pi assets**; spec `Further Notes`).
+Historical inventory of **Curated Pi assets** initially copied into the Dotfile-managed OpenCode configuration at `.config/opencode/`, recorded per the `0002` ticket. "Copied" means byte-identical to the Pi source at inventory time; "adapted" means the copy changed harness vocabulary or machine-specific references while preserving triggers, prerequisites, and invocation intent. Counts and correspondence checks below describe those checkpoints, not a maintained parity contract. Since 2026-10-08, Pi and OpenCode assets are maintained independently; neither tree is the other's source of truth.
 
 ## Method
 
-- Source of truth for skills: `.pi/agent/skills/` (29 directories, 62 files).
-- Destination: `.config/opencode/skills/` (same 29 directories, 62 files, no symlinks).
+- Initial copy source: `.pi/agent/skills/` (29 directories, 62 files).
+- Initial destination: `.config/opencode/skills/` (same 29 directories, 62 files, no symlinks).
 - Disposition computed by directory-level `diff -rq` at inventory time. Referenced support files resolve relative to `SKILL.md`; the tree structure is preserved.
 - Runtime state, credentials, sessions, caches, installed packages, and context worktrees are excluded (see `.gitignore` and the "Exclusions" section).
 
@@ -31,7 +31,7 @@ Inventory of **Curated Pi assets** copied into the Dotfile-managed OpenCode conf
 | `rebase-context` | adapted | Harness-neutral context-root default. |
 | `research` | copied | |
 | `retro` | adapted | Skill-invocation wording. |
-| `setup-context` | adapted | Global-instruction home → `~/.config/opencode/AGENTS.md`; context-root default; session claim `pi:$PI_SESSION_ID` → `opencode:<session-id>`; `ctx-init.sh`, `ctx-index.sh`, and `resolve-location.sh` defaults aligned to `${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}`; `issue-tracker-local.md` seed reconciled to the pinned-parity board policy (both board shapes, no-label mapping) mirroring the Pi-side reconciliation on ticket 0008 of upstream-skill-parity. |
+| `setup-context` | adapted | Global-instruction home → `~/.config/opencode/AGENTS.md`; context-root default; session claim `pi:$PI_SESSION_ID` → `opencode:<session-id>`; `ctx-init.sh`, `ctx-index.sh`, and `resolve-location.sh` defaults aligned to `${AGENT_CONTEXT_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/agent/ctx}`; `issue-tracker-local.md` seed documents the local ticket format and no-label mapping. |
 | `tdd` | adapted | Skill-invocation wording. |
 | `teach` | copied | |
 | `to-questionnaire` | copied | |
@@ -51,9 +51,7 @@ Refresh correspondence re-check (2026-10-08): the OpenCode copies of the refresh
 
 ## Instructions
 
-| Pi asset | Disposition | OpenCode mechanism |
-| --- | --- | --- |
-| `.pi/agent/AGENTS.md` | adapted | `.config/opencode/AGENTS.md`, loaded as the v2 **global** `AGENTS.md`. Pi tool names were rewritten to what v2.0.22 actually exposes (grep/read navigation — no agent-facing LSP tools; `explore`/`general` subagents; `question`; conversation-tracked plans — no native todo tool), per the ticket `0003` runtime verification. The v2 `instructions` config array is accepted but **not resolved** by V2, so it is not used; `AGENTS.md` is the supported mechanism, and its loading was verified at the time by the since-retired `scripts/test-opencode-assets.sh`. |
+`.config/opencode/AGENTS.md` is independently maintained, not a counterpart to `.pi/agent/AGENTS.md`. Its four bullets cover commit approval, batching independent calls, native tools versus `execute` (Code Mode), and repo/skill context resolution. Global `AGENTS.md` loading was verified at the time by the since-retired `scripts/test-opencode-assets.sh`.
 
 ## Theme material
 
@@ -70,8 +68,8 @@ Refresh correspondence re-check (2026-10-08): the OpenCode copies of the refresh
 | `.pi/agent/extensions/usage.ts` | native | OpenCode tracks usage natively; footer usage display is ticket `0004`. |
 | `pi-extensions` `subagents` | native | OpenCode `explore` / `general` subagents; model/reasoning preferences and hard read-only semantics verified (ticket `0003`). |
 | `pi-extensions` `question` | native | OpenCode native question workflow present in the primary tool catalog (ticket `0003`). |
-| `pi-extensions` `todo` | unsupported | **No native todo tool exists in v2.0.22** (the release migrates `todowrite` away as a removed v1 tool). Reported as a gap; `AGENTS.md` tells agents to track multi-step work in conversation. |
-| `pi-extensions` `lsp` | unsupported | v2.0.22 exposes no agent-facing LSP tools (a config `lsp` key exists but yields nothing tool-level). Reported as a gap; grep + build/test commands replace them per the adapted instructions (ticket `0003`). |
+| `pi-extensions` `todo` | unsupported | **No native todo tool existed in v2.0.22** (the release migrated `todowrite` away as a removed v1 tool). Reported as a gap at that checkpoint. |
+| `pi-extensions` `lsp` | unsupported | v2.0.22 exposed no agent-facing LSP tools (a config `lsp` key existed but yielded nothing tool-level). Reported as a gap at that checkpoint. |
 | `pi-extensions` `web-fetch` | native | OpenCode `webfetch` tool; Pi's extraction-model selection has no v2 config surface (ticket `0003` gap report). |
 | `pi-extensions` `web-search` | native | OpenCode `websearch` tool (ticket `0003`). |
 | `pi-extensions` `statusline` | unsupported in Pi form | Rebuilt as an OpenCode CLI footer slot adapter, delivered at `.config/opencode/plugins/dumb-zone/` (ticket `0004`; zone contract per the 200k ADR, host-API patterns credited in `.config/opencode/CREDITS.md`). |
@@ -88,4 +86,3 @@ Credentials, session databases, caches, installed packages/dependencies, and con
 
 - `docs/opencode-v2-status.md` — verified vs unresolved migration status.
 - `.config/opencode/CREDITS.md` — upstream and palette attribution.
-- `.scratch/opencode-v2-pi-parity/spec.md` — parent scope.

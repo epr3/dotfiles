@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Shared helpers for guarded Bootstrap stages that drive mise. Sourced, not
 # executed — see install-mise-tools.sh, install-cocoapods.sh, install-pi.sh.
-# Same sourcing precedent as scripts/parity/map.sh for check-parity.sh.
 
 # Make brew and mise available; fail loudly when mise is absent. Stage-specific
 # messages live in the stages that call this after their own guards.

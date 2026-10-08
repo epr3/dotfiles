@@ -2,14 +2,13 @@
 
 Issues and specs for this repo live as markdown files under `.scratch/` at the board's recorded artifact location (default: the context home - here, the repo itself, since context is in-repo).
 
-## Board shapes
+## Ticket format
 
-Two shapes exist; both are read as found, and neither is migrated into the other:
+`/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/` following that skill's per-ticket template verbatim: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, `**Status:** ready-for-agent`, and acceptance-criteria checkboxes. A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort.
 
-- **Historical boards** (all current boards): authored by the pre-parity skill suite and preserved as found - one file per issue at `.scratch/<feature-slug>/issues/<NNNN>-<slug>.md`, zero-padded build order from `0001` (never a single combined issue file), with frontmatter `status: open | resolved`, `type: research | prototype | grilling | task`, `mode: HITL | AFK`, `parent: <spec.md or map.md path>`, `blocked_by: [NNNN, ...]`, and optional `claimed_by:` (absent means unclaimed; the first write after selection sets it, re-read to confirm - cooperative and best-effort, no silent steal). A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort. Each issue records its parent spec path (e.g. the relative link `../spec.md`) or its parent map path (e.g. `../map.md`). Mode constraints: `research` -> AFK; `prototype` -> HITL; `grilling` -> HITL; `task` -> either. Comments and conversation history append under a `## Comments` heading.
-- **Boards published by the restored skills**: authoritative for new work. `/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/` following that skill's per-ticket template verbatim: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, `**Status:** ready-for-agent`, and acceptance-criteria checkboxes.
+This tracker has no label mechanism; use each skill's status and blocking conventions. On a real tracker, the triage skills' label strings and mappings apply as the `triage` skill describes.
 
-This tracker has no label mechanism: triage's role vocabulary (see the `triage` skill) has no direct representation on files, so readiness is an open issue whose blockers are all resolved and which is unclaimed. On a real tracker, the triage skills' label strings and mappings apply as the `triage` skill describes.
+Comments and conversation history append under a `## Comments` heading.
 
 ## When a skill says "publish to the issue tracker"
 

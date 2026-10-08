@@ -6,7 +6,7 @@ Ticket `0003` report. Evidence comes from the installed `v2.0.22` runtime itself
 
 ## Model and reasoning preference validation
 
-Pi preferences come from `.pi/agent/settings.json`. Validation result per preference:
+The migration-time Pi preferences came from `.pi/agent/settings.json`. The table records their validation at that checkpoint, not a requirement to keep OpenCode settings aligned with Pi.
 
 | Pi preference | v2 result | Evidence |
 | --- | --- | --- |
@@ -58,14 +58,14 @@ All demonstrations run inside an isolated HOME/XDG/TMP sandbox with a scripted l
 - **Todos:** there is **no native todo tool in v2.0.22** — the runtime primary catalog contains none, and the release's own v1→v2 migration map lists `todowrite` as a tool that "is no longer available". Pi's todo extension therefore has no v2 native counterpart to adopt.
 - **LSP (agent-facing):** v2.0.22 exposes no `lsp_*` agent tools. A config `lsp` key defines language servers, but nothing agent-facing was found in the runtime catalog. Pi's LSP extension toolset (definitions/references/hover/diagnostics) has no native v2 tool equivalent at this release.
 
-Managed assets were corrected accordingly: `.config/opencode/AGENTS.md` now states the real v2.0.22 tool surface (no promising todos or LSP tools), how read-only explore is enforced, and what replaces each Pi workflow.
+At that checkpoint, `.config/opencode/AGENTS.md` was corrected to match the observed v2.0.22 tool surface. It has since been reduced to independent workflow rules; live tool definitions govern the available tools, rather than a maintained Pi/OpenCode correspondence checklist.
 
 ## Reported semantic gaps (no custom equivalents built — out of confirmed scope)
 
 | Pi behavior | v2.0.22 status | Gap |
 | --- | --- | --- |
 | Tool discovery (`tool_search`) | No equivalent. The runtime tool catalog is fixed per agent; MCP tools are always attached. | Report only. Pi's `+tool_search` default-tool setting has no v2 counterpart; discovery-based context trimming cannot be reproduced with config. |
-| Codemode | Equivalent exists natively (`execute`, primary agents only). | Semantic difference: subagent children do not receive `execute`, while Pi granted `explore` codemode explicitly. Documented in AGENTS.md. |
+| Codemode | Equivalent exists natively (`execute`, primary agents only). | Semantic difference at this checkpoint: subagent children did not receive `execute`, while Pi granted `explore` codemode explicitly. |
 | Webfetch extraction model | No config surface. | Report only (see table above). |
 | Subagent concurrency (`maxConcurrency: 4`) | No config key; the subagent tool supports foreground and background children with no concurrency cap. | Report only. |
 | Model-preset cycling (`modelPresets`) | No native preset/cycle mechanism verified on 2.0.22. | Report only. Manual mitigations: `--model provider/model#variant`, the TUI model picker, and in-session model switching. No wrapper script or plugin was built — the confirmed scope excludes custom equivalents without a demonstrated need. |

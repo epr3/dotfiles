@@ -4,7 +4,7 @@ This directory holds independently copied, non-secret agent assets for OpenCode 
 
 ## Skill suite
 
-Most skills under `skills/` are adapted copies of the curated suite at [github.com/mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), pinned in `scripts/parity/map.sh` and recorded in the root `GLOSSARY.md` under **Upstream**. Remaining skills are local-only workflows owned by this repository. The Pi copies under `.pi/agent/skills/` are the wording source; the OpenCode copies are independent and may diverge.
+Most skills under `skills/` derive from [github.com/mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), refreshed from revision `b0618bc436ad893b3c5e84e55fba86586d34a404` in October 2026. That revision records provenance, not a maintained pin. Remaining skills are local-only workflows owned by this repository. OpenCode and Pi assets are maintained independently; neither tree is the other's wording source.
 
 Per-skill attribution that travels with the prose lives beside it, for example [`skills/pr/CREDITS.md`](./skills/pr/CREDITS.md), which credits Dex Horthy's `show-me` for the visual menu reproduced in the `pr` skill.
 
