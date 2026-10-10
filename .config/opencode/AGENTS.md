@@ -2,3 +2,4 @@
 - Strongly prefer batching independent calls upfront through `execute` (Code Mode), including cataloged native tools; otherwise batch natively. Sequence dependencies.
 - Follow live tool definitions; call MCP/catalog tools through `execute`, other native tools directly.
 - Follow repo `## Agent skills` and skill prerequisites; resolve context/artifact locations before writing.
+- When looking for specs or tickets, include `.scratch/` even if gitignored; use `glob` with `hidden: true` when available, or read/search the directory explicitly.

@@ -43,6 +43,23 @@ lazygit and a shell. Worktrunk loads `.config/zellij/layouts/worktree.kdl`
 directly; no helper scripts are needed. New tabs require `opencode` on PATH;
 there is no Pi fallback. Reused tabs keep their existing agent process.
 
+## OpenCode scratch files
+
+`~/.ignore` is linked to this repo's `.ignore`, making `.scratch/` searchable in
+projects under your home directory even when Git ignores it. This also applies
+to other ripgrep-based tools; Git's ignore rules are unchanged.
+
+OpenCode v2.0.26's `@` file picker needs the exception in each project's root
+`.ignore` too. Add these lines to that file, preserving any existing rules:
+
+```gitignore
+!.scratch/
+!**/.scratch/**
+```
+
+Reopen OpenCode in that project to refresh its file index. Projects outside your
+home directory also need this local exception for agent searches.
+
 ## Post-clone steps
 
 - [Generate SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub

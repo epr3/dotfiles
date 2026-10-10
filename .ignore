@@ -1,0 +1,3 @@
+# Keep scratch specs and tickets searchable without changing Git's ignore rules.
+!.scratch/
+!**/.scratch/**
