@@ -21,6 +21,9 @@ _Avoid_: overflow limit, remaining-context warning.
 
 **Upstream**: github.com/mattpocock/skills — the origin of upstream-derived skills, not a runtime dependency or an ongoing synchronization requirement.
 
+**Implement-spec**: the skill that coordinates implementation of a specification across its dependency-ordered ticket graph, with isolated implementers and explicit human-owned Git handoffs.
+_Avoid_: unattended integration workflow.
+
 **Artifact location**: A configured destination for one kind of skill output, independent of the destinations chosen for other kinds.
 _Avoid_: context home, one output directory.
 
