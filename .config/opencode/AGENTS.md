@@ -1,5 +1,5 @@
-- Before staging/committing, propose the exact repo-style message and file scope; await explicit approval. Reconfirm changes; preserve unrelated changes/staging.
-- Follow live tool definitions: `execute` (Code Mode) runs JavaScript and can call only tools in its current catalog, whether native or MCP. Call tools outside that catalog directly.
-- Strongly prefer batching independent cataloged calls through `execute` with `Promise.allSettled`; batch other tools through a native parallel wrapper when available. Sequence dependent calls and await every call whose completion matters.
+- Before committing, propose the exact repo-style message and file scope; commit only after explicit approval. Renew approval if either changes. Preserve unrelated changes and staging. Staging and other Git commands need no approval.
+- Follow live tool definitions: `execute` can call only tools in its current Code Mode catalog; call other tools directly.
+- Batch independent catalog calls with `execute`/`Promise.allSettled`; batch other calls with the native parallel wrapper. Await required calls.
 - Follow repo `## Agent skills` and skill prerequisites; resolve context/artifact locations before writing.
-- When looking for specs or tickets, include `.scratch/` even if gitignored; use `glob` with `hidden: true` when available, or read/search the directory explicitly.
+- Search `.scratch/` for specs and tickets, including ignored files; use `glob` with `hidden: true` or read/search explicitly.
