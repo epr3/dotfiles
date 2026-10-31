@@ -141,6 +141,7 @@ backend = "core:ruby"
 specifiers = ["3.3.0"]
 
 [tools.ruby."platforms.windows-x64"]
+checksum = "sha256:6a1bb52f692befc38c00cfab64b20c7d73409d775518af952677485597d75ad4"
 url = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.3.0-1/rubyinstaller-3.3.0-1-x64.7z"
 
 [[tools.ruby]]
@@ -187,4 +188,5 @@ backend = "core:ruby"
 specifiers = ["3.2.2"]
 
 [tools.ruby."platforms.windows-x64"]
+checksum = "sha256:1f0f55ba0790676be6d701515a244159e9ca2d6314f1101560e3e8a277a2661e"
 url = "https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-3.2.2-1/rubyinstaller-3.2.2-1-x64.7z"

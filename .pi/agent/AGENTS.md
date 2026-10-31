@@ -1,29 +1,27 @@
 ## Workflow efficiency
 
-- Make reasonable, reversible assumptions instead of asking; do not ask for routine choices. Note the assumption so it can be reversed if it proves wrong.
-- Start exploration narrowly and expand only when warranted: read the specific files or sections the task needs first, and widen deliberately rather than loading context "in case".
-- Verify proportionate to risk: lightweight checks (syntax or JSON parse, a reference check, a quick smoke run) for low-risk config and doc edits, targeted checks for code changes. Report skipped or blocked checks as such; do not present unverified behavior as passing.
-- Ask when ambiguity affects the outcome, a decision is consequential, or authorization is required. Routine choices do not justify a question.
-- Do not delegate routinely; see Subagents for what justifies a subagent.
+- Prefer `codemode` for batching, chaining, and filtering; use direct tools for single calls.
+- Make and note reversible assumptions for routine choices. Ask when ambiguity affects the outcome, a decision is consequential, or authorization is required.
+- Explore narrowly; expand as needed.
+- Verify proportionately: lightweight checks for low-risk config and docs, targeted checks for code. Report skipped or blocked checks; never claim unverified behavior passes.
 
 ## Git and commits
 
-Before committing, propose the exact repo-style message and file scope; commit only after explicit approval. Renew approval if either changes. Preserve unrelated changes and existing staging. Staging and other Git commands need no approval.
+Before committing, propose the exact repo-style message and file scope; get explicit approval, renewed if either changes. Preserve unrelated changes and staging. Other Git commands need no approval.
 
 ## Code intelligence
 
-Use `lsp_*` tools for code navigation; use grep/find for text, config, and other non-code searches. Before renaming a symbol or changing its signature, check `lsp_references`. After edits, run `lsp_diagnostics` on each changed code file and fix reported errors.
+Use `lsp_*` for code navigation; grep/find for non-code. Check `lsp_references` before renaming a symbol or changing its signature. Run `lsp_diagnostics` on each changed code file and fix errors.
 
 ## Subagents
 
-Do not delegate routinely: every subagent costs tokens and context. Use `Agent` (`explore` for read-only discovery; `general` for delegated work, including code-review axes) only when an explicit workflow or skill requires delegation or there is clear benefit. Use `question` for the discrete decisions that must be surfaced, and `todo_write` / `todo_read` for multi-step work.
+Delegate only when a workflow or skill requires it, or for clear benefit. Use `Agent` `explore` for read-only discovery and `general` for delegated work, including code review. Use `question` for discrete decisions and `todo_write` / `todo_read` for multi-step work.
 
 ## Context and ADRs
 
-A repo's recorded `## Agent skills` choice overrides these machine-wide defaults. Resolve it in the config home's `agent-skills.md` for a context repo, or the repo's instructions file for in-repo context. If no choice is recorded, use the context-repo default below—except that existing in-tree context stays in-repo. For path resolution, follow *Resolving the context store* in `GLOSSARY-FORMAT.md` in the `domain-modeling` skill.
+A repo's recorded `## Agent skills` choice overrides these defaults: check the config home's `agent-skills.md` for a context repo or repo instructions for in-repo context. Resolve paths using *Resolving the context store* in the `domain-modeling` skill's `GLOSSARY-FORMAT.md`.
 
-- Resolve the context home and config home per that procedure; do not assume paths.
-- The default context store is a bare repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, with one worktree per code branch. Edit context in its paired worktree. `offload-context` pushes it; use `merge-context` and `rebase-context` to reconcile branches.
-- Existing in-repo context without recorded setup remains in-repo: read and use it; do not migrate or initialize a context repo. Suggest `setup-context` to record the choice.
-- Domain docs live at `domain.md` in the config home. Context layout and artifact destinations are declared by `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md`; consult them rather than assuming destinations. Temporary reports and handoffs go in the OS temp directory.
-- Context structure follows `git ls-files`; flag dangling references instead of creating paths. `AGENT_CONTEXT_HOME` relocates the context root when set in Pi's environment.
+- Default to a bare context repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, with a paired worktree per code branch. Edit in that worktree; push with `offload-context` and reconcile with `merge-context` / `rebase-context`.
+- Existing in-repo context without recorded setup stays in-repo. Use it and suggest `setup-context`; do not migrate or initialize a context repo.
+- Domain docs live at `domain.md` in the config home. Consult `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md` for layout and destinations. Put temporary reports and handoffs in the OS temp directory.
+- Follow `git ls-files` for context structure; flag dangling references rather than creating paths. `AGENT_CONTEXT_HOME` relocates the context root when set in Pi's environment.

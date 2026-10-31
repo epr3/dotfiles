@@ -1,9 +1,15 @@
 {
-  "lastChangelogVersion": "1.0.0",
+  "lastChangelogVersion": "1.4.0",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-6.1-sol",
+  "defaultModel": "gpt-6.1-terra",
   "defaultThinkingLevel": "medium",
-  "defaultTools": ["+codemode", "+tool_search"],
+  "defaultTools": [
+    "+codemode",
+    "+tool_search"
+  ],
+  "codemode": {
+    "mode": "on"
+  },
   "theme": "catppuccin-mocha",
   "//": "Pi settings drop-in for the artifact-first skill suite. Skills load via the Agent Skills standard (name+description at startup, body on demand, /skill:<name> to invoke). Extension packages are TypeScript, loaded by Pi via jiti (no build step). Paths resolve relative to the agent directory (~/.pi/agent) so the setup is machine-portable: scripts/install-pi-extensions.sh populates packages/pi-extensions at the pinned upstream revision.",
   "extensions": [
@@ -81,9 +87,9 @@
         "thinkingLevel": "medium"
       },
       "gpt-6-sol": {
-        "label": "GPT-6.1 Sol medium",
+        "label": "GPT-6.1 Terra medium",
         "provider": "openai-codex",
-        "model": "gpt-6.1-sol",
+        "model": "gpt-6.1-terra",
         "thinkingLevel": "medium",
         "repairDefault": true
       },
