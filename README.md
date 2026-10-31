@@ -21,7 +21,8 @@ git submodule update --init dotbot
 | Directory | What |
 |---|---|
 | `.config/` | Dotfile-managed tool config: worktrunk, gh-dash, oh-my-posh, lazygit, nvim (standalone + VS Code Neovim profile), zellij, ghostty, btop, Superfile, OpenCode, mise |
-| `.pi/` | pi coding agent config, skills, themes, extensions |
+| `skills/` | Shared agent skills (one neutral source) — linked at `~/.agents/skills`, discovered natively by both Pi and OpenCode |
+| `.pi/` | pi coding agent config, themes, extensions |
 | `scripts/` | Idempotent bootstrap scripts (Homebrew, mise + locked tools, pnpm, CocoaPods, pi, git identity) |
 | `dotbot/` | Dotbot submodule for symlink management |
 

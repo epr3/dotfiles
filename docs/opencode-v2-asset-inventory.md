@@ -1,6 +1,6 @@
 # OpenCode v2 asset inventory and disposition
 
-Historical inventory of **Curated Pi assets** initially copied into the Dotfile-managed OpenCode configuration at `.config/opencode/`, recorded per the `0002` ticket. "Copied" means byte-identical to the Pi source at inventory time; "adapted" means the copy changed harness vocabulary or machine-specific references while preserving triggers, prerequisites, and invocation intent. Counts and correspondence checks below describe those checkpoints, not a maintained parity contract. Since 2026-10-08, Pi and OpenCode assets are maintained independently; neither tree is the other's source of truth.
+Historical inventory of **Curated Pi assets** initially copied into the Dotfile-managed OpenCode configuration at `.config/opencode/`, recorded per the `0002` ticket. "Copied" means byte-identical to the Pi source at inventory time; "adapted" means the copy changed harness vocabulary or machine-specific references while preserving triggers, prerequisites, and invocation intent. Counts and correspondence checks below describe those checkpoints, not a maintained parity contract. Since 2026-10-08, Pi and OpenCode assets were maintained independently; neither tree was the other's source of truth. **Superseded 2026-11 for skills:** the `.config/opencode/skills/` and `.pi/agent/skills/` trees are removed and both agents read the single neutral source at the repository top-level `skills/` through the `~/.agents/skills` link; the checkpoint records below remain historical.
 
 ## Method
 

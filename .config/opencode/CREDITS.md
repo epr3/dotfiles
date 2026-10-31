@@ -1,12 +1,12 @@
 # Credits and third-party attribution
 
-This directory holds independently copied, non-secret agent assets for OpenCode v2. Nothing here is symlinked back to Pi, and no runtime dependency on the Pi source tree is implied. The files below carry attribution beyond this repository's own MIT `LICENSE.md`.
+This directory holds independently maintained, non-secret agent assets for OpenCode v2. Nothing here is symlinked back to Pi, and no runtime dependency on the Pi source tree is implied. The shared skill suite is not one of them: since 2026-11 it lives once at the repository top-level `skills/`, linked at `~/.agents/skills` and discovered by both Pi and OpenCode. The files below carry attribution beyond this repository's own MIT `LICENSE.md`.
 
 ## Skill suite
 
-Most skills under `skills/` derive from [github.com/mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), refreshed from revision `49dd158d1076134a641b33efb035946536778336` in October 2026. That revision records provenance, not a maintained pin. Remaining skills are local-only workflows owned by this repository. OpenCode and Pi assets are maintained independently; neither tree is the other's wording source.
+Most skills under `skills/` derive from [github.com/mattpocock/skills](https://github.com/mattpocock/skills) (MIT, Copyright (c) 2026 Matt Pocock), refreshed from revision `49dd158d1076134a641b33efb035946536778336` in October 2026. That revision records provenance, not a maintained pin. Remaining skills are local-only workflows owned by this repository. The shared skills are maintained once in that neutral source; the harness config trees (this directory, `.pi/agent`) remain independent.
 
-Per-skill attribution that travels with the prose lives beside it, for example [`skills/pr/CREDITS.md`](./skills/pr/CREDITS.md), which credits Dex Horthy's `show-me` for the visual menu reproduced in the `pr` skill.
+Per-skill attribution that travels with the prose lives beside it, for example [`skills/pr/CREDITS.md`](../../skills/pr/CREDITS.md), which credits Dex Horthy's `show-me` for the visual menu reproduced in the `pr` skill.
 
 ## Theme material
 

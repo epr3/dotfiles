@@ -15,6 +15,7 @@
       glob: false
       if: 'test ! -L "$HOME/.config/superfile"'
     ~/.pi/: .pi/*
+    ~/.agents/skills: skills
     ~/.zshenv: .zshenv
     ~/.zshrc: .zshrc
     ~/.ignore: .ignore
