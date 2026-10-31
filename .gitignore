@@ -17,6 +17,7 @@ Brewfile.lock.json
 .pi/.DS_Store
 .pi/agent/.DS_Store
 .pi/agent/crashes.json
+.pi/agent/packages/
 
 # OpenCode local runtime state and installed dependencies are never tracked.
 .config/opencode/auth.json

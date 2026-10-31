@@ -63,6 +63,11 @@
     stdout: true
     stderr: true
   -
+    command: bash scripts/install-pi-extensions.sh
+    description: Install pinned pi extensions
+    stdout: true
+    stderr: true
+  -
     command: brew bundle
     description: Install Homebrew packages
     stdout: true
