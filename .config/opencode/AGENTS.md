@@ -1,5 +1,24 @@
-- Before committing, propose the exact repo-style message and file scope; commit only after explicit approval. Renew approval if either changes. Preserve unrelated changes and staging. Staging and other Git commands need no approval.
-- Follow live tool definitions: `execute` can call only tools in its current Code Mode catalog; call other tools directly.
-- Batch independent catalog calls with `execute`/`Promise.allSettled`; batch other calls with the native parallel wrapper. Await required calls.
-- Follow repo `## Agent skills` and skill prerequisites; resolve context/artifact locations before writing.
-- Search `.scratch/` for specs and tickets, including ignored files; use `glob` with `hidden: true` or read/search explicitly.
+## Workflow
+
+- Explore narrowly; note reversible assumptions and ask about consequential ambiguity or required authorization. Follow repo skills and prerequisites; search ignored `.scratch/` for specs.
+- Favor simple, maintainable solutions: clear interfaces and errors, actionable docs, reproducible workflows, minimal dependencies.
+- Batch proportionate checks and tests after changes; run earlier when useful. Report skipped or blocked checks and unverified behavior.
+- Delegate when required or useful; use read-only agents for discovery. Track multi-step work; use structured questions for decisions.
+
+## Git
+
+Before committing, obtain explicit approval of the exact repo-style message and file scope; renew if either changes. Preserve unrelated changes and staging. Other Git commands need no approval.
+
+## Context
+
+Repo `## Agent skills` choices override defaults. Check config-home `agent-skills.md` or repo instructions; resolve paths via the `domain-modeling` skill's `GLOSSARY-FORMAT.md`.
+
+- Default: bare repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, worktree per branch; use `offload-context` to push and `merge-context` / `rebase-context` to reconcile.
+- Keep unrecorded in-repo context in place; suggest `setup-context`.
+- Consult config-home `domain.md`, `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md`. Use OS temp for reports and handoffs. Follow `git ls-files`; flag dangling references.
+
+## Tools
+
+- Follow live definitions: `execute` calls only its catalog tools. Batch catalog calls with `execute`/`Promise.allSettled`, others with the native parallel wrapper; await required calls.
+- Use code intelligence for navigation; check references before renames or signature changes. Run available diagnostics on changed code files and fix errors.
+- Search `.scratch/` explicitly or with `glob` using `hidden: true`.

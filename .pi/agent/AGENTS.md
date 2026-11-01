@@ -1,27 +1,24 @@
-## Workflow efficiency
+## Workflow
 
-- Prefer `codemode` for batching, chaining, and filtering; use direct tools for single calls.
-- Make and note reversible assumptions for routine choices. Ask when ambiguity affects the outcome, a decision is consequential, or authorization is required.
-- Explore narrowly; expand as needed.
-- Verify proportionately: lightweight checks for low-risk config and docs, targeted checks for code. Report skipped or blocked checks; never claim unverified behavior passes.
+- Explore narrowly; note reversible assumptions and ask about consequential ambiguity or required authorization. Follow repo skills and prerequisites; search ignored `.scratch/` for specs.
+- Favor simple, maintainable solutions: clear interfaces and errors, actionable docs, reproducible workflows, minimal dependencies.
+- Batch proportionate checks and tests after changes; run earlier when useful. Report skipped or blocked checks and unverified behavior.
+- Delegate when required or useful; use read-only agents for discovery. Track multi-step work; use structured questions for decisions.
 
-## Git and commits
+## Git
 
-Before committing, propose the exact repo-style message and file scope; get explicit approval, renewed if either changes. Preserve unrelated changes and staging. Other Git commands need no approval.
+Before committing, obtain explicit approval of the exact repo-style message and file scope; renew if either changes. Preserve unrelated changes and staging. Other Git commands need no approval.
 
-## Code intelligence
+## Context
 
-Use `lsp_*` for code navigation; grep/find for non-code. Check `lsp_references` before renaming a symbol or changing its signature. Run `lsp_diagnostics` on each changed code file and fix errors.
+Repo `## Agent skills` choices override defaults. Check config-home `agent-skills.md` or repo instructions; resolve paths via the `domain-modeling` skill's `GLOSSARY-FORMAT.md`.
 
-## Subagents
+- Default: bare repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, worktree per branch; use `offload-context` to push and `merge-context` / `rebase-context` to reconcile.
+- Keep unrecorded in-repo context in place; suggest `setup-context`.
+- Consult config-home `domain.md`, `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md`. Use OS temp for reports and handoffs. Follow `git ls-files`; flag dangling references.
 
-Delegate only when a workflow or skill requires it, or for clear benefit. Use `Agent` `explore` for read-only discovery and `general` for delegated work, including code review. Use `question` for discrete decisions and `todo_write` / `todo_read` for multi-step work.
+## Tools
 
-## Context and ADRs
-
-A repo's recorded `## Agent skills` choice overrides these defaults: check the config home's `agent-skills.md` for a context repo or repo instructions for in-repo context. Resolve paths using *Resolving the context store* in the `domain-modeling` skill's `GLOSSARY-FORMAT.md`.
-
-- Default to a bare context repo at `${AGENT_CONTEXT_HOME:-<harness context dir>}/<org>__<repo>`, with a paired worktree per code branch. Edit in that worktree; push with `offload-context` and reconcile with `merge-context` / `rebase-context`.
-- Existing in-repo context without recorded setup stays in-repo. Use it and suggest `setup-context`; do not migrate or initialize a context repo.
-- Domain docs live at `domain.md` in the config home. Consult `GLOSSARY-MAP.md` / `GLOSSARY.md` and `artifact-locations.md` for layout and destinations. Put temporary reports and handoffs in the OS temp directory.
-- Follow `git ls-files` for context structure; flag dangling references rather than creating paths. `AGENT_CONTEXT_HOME` relocates the context root when set in Pi's environment.
+- Batch with `codemode`; use direct tools for single calls.
+- Use `lsp_*` for code navigation, grep/find for non-code; check references before renames or signature changes. Run diagnostics on changed code files and fix errors.
+- Use `Agent` `explore` for discovery, `general` for delegated work; use `question` and `todo_write` / `todo_read` for decisions and multi-step work.
