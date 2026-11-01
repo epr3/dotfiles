@@ -2,7 +2,7 @@
 // Used by the worktrunk post-switch hook when inside Zellij.
 // Worktrunk passes the tab name and working directory via new-tab flags.
 //
-// Structure: OpenCode (top) | lazygit / shell (bottom), focused on OpenCode.
+// Structure: Pi (top) | lazygit / shell (bottom), focused on Pi.
 // All panes share the worktree working directory.
 layout {
     pane split_direction="horizontal" {
@@ -11,7 +11,7 @@ layout {
         }
         pane focus=true {
             command "zsh" {
-                args "-c" "exec opencode";
+                args "-c" "exec pi";
             }
         }
         pane split_direction="vertical" {

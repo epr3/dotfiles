@@ -39,10 +39,10 @@ normal mode with stock keybindings. The status bar shows Ctrl/Alt shortcuts.
 - `Ctrl-o`, then `d`: detach without terminating the session.
 - `Ctrl-g`: toggle locked mode to pass application shortcuts through.
 
-Inside Zellij, `wt switch <branch>` opens or reuses a branch tab with OpenCode above
+Inside Zellij, `wt switch <branch>` opens or reuses a branch tab with Pi above
 lazygit and a shell. Worktrunk loads `.config/zellij/layouts/worktree.kdl`
-directly; no helper scripts are needed. New tabs require `opencode` on PATH;
-there is no Pi fallback. Reused tabs keep their existing agent process.
+directly; no helper scripts are needed. New tabs require `pi` on PATH.
+Reused tabs keep their existing agent process.
 
 ## OpenCode scratch files
 
