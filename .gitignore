@@ -18,6 +18,8 @@ Brewfile.lock.json
 .pi/agent/.DS_Store
 .pi/agent/crashes.json
 .pi/agent/packages/
+# Jiti module cache Pi-Bolt compiles extensions into; pure runtime state.
+.pi/agent/cache/
 
 # OpenCode local runtime state and installed dependencies are never tracked.
 .config/opencode/auth.json

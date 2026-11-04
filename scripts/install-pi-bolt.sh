@@ -7,8 +7,10 @@
 # custom formula — docs/adr/2026-11-04-homebrew-owned-pi-bolt.md). This stage
 # never runs `pi-bolt update`, never touches the existing pnpm pi
 # (~/Library/pnpm/pi), never edits ~/.pi/agent runtime state, and never changes
-# what `pi` resolves to: activating Pi-Bolt as `pi` is a separate, explicit
-# step. Safe to rerun.
+# what `pi` resolves to on a machine that already has a Pi: on a fresh machine
+# with no `pi` at all it activates the entry point; when any prior `pi` exists
+# it prints the validate → activate → rollback steps instead (docs/adr/
+# 2026-11-04-homebrew-owned-pi-bolt.md). Safe to rerun.
 set -euo pipefail
 
 fail() {
@@ -55,12 +57,35 @@ else
   echo "No pi is on PATH yet. Unchanged by this stage."
 fi
 
-cat <<'EOF'
-Next steps:
-1. Validate Pi-Bolt directly against the existing config — it uses ~/.pi/agent
-   (settings, themes, extensions, sessions, credentials, skills) as is. Run
-   `pi-bolt` from a throwaway directory for an interactive check, or e.g.
-   `pi-bolt -p '...'` for a noninteractive one.
-2. Activating Pi-Bolt as `pi` is a separate, explicit step and is intentionally
-   NOT performed by this stage; an existing `pi` keeps resolving unchanged.
+# Fresh-machine rule: activate Pi-Bolt as `pi` ONLY when no prior `pi` exists
+# anywhere — not on PATH, not "${PNPM_HOME:-$HOME/Library/pnpm}/pi". When any
+# prior `pi` exists, resolution must NOT change: the human decides after the
+# interactive validation. Repeated Bootstrap runs on an already-active entry
+# point just report it (pi-entrypoint.sh is idempotent).
+pnpm_pi="${PNPM_HOME:-$HOME/Library/pnpm}/pi"
+entrypoint_dir="${PI_ENTRYPOINT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pi/bin}"
+if command -v pi &>/dev/null || [ -x "$pnpm_pi" ] || [ -L "$pnpm_pi" ]; then
+  prior_pi="$(command -v pi 2>/dev/null || true)"
+  [ -n "$prior_pi" ] || prior_pi="$pnpm_pi"
+  # Already-active entry point: report it, change nothing.
+  if [ "$(readlink -f "$prior_pi" 2>/dev/null || true)" = "$(readlink -f "$entrypoint_dir/pi" 2>/dev/null || true)" ]; then
+    echo "Pi-Bolt entry point is already active: $prior_pi (--version: $("$prior_pi" --version 2>/dev/null | head -1 || echo unknown)). No changes made."
+    exit 0
+  fi
+  pi_version="$("$prior_pi" --version 2>/dev/null | head -1 || echo unknown)"
+  echo "An existing pi was found ($prior_pi, ${pi_version}) — leaving command resolution unchanged."
+  cat <<'EOF'
+To take over command resolution after validating Pi-Bolt against your config
+(it uses ~/.pi/agent — settings, themes, extensions, sessions, credentials,
+skills — as is):
+1. Validate: run `pi-bolt` from a throwaway directory for an interactive
+   check, or e.g. `pi-bolt -p '...'` for a noninteractive one.
+2. Activate: scripts/pi-entrypoint.sh activate
+3. Rollback (keeps pnpm Pi and all local state; new shells):
+   scripts/pi-entrypoint.sh deactivate
 EOF
+  exit 0
+fi
+
+echo "No prior pi exists (nothing on PATH, nothing at $pnpm_pi) — activating the pi entry point for Pi-Bolt."
+"$(dirname "$0")/pi-entrypoint.sh" activate

@@ -32,6 +32,24 @@ if [[ -d "$MISE_SHIMS" ]]; then
   esac
 fi
 
+# Pi entry point: `pi` launches the Homebrew-owned Pi-Bolt runtime once
+# scripts/pi-entrypoint.sh activate has created $PI_ENTRYPOINT_DIR/pi
+# (docs/adr/2026-11-04-homebrew-owned-pi-bolt.md). The dir is prepended only
+# while the symlink exists, and only here — after the pnpm and mise blocks —
+# so it wins over both: PNPM_HOME (the retained pnpm Pi, the rollback target,
+# prepended earlier) and mise shims (prepended last, so a later prepend is
+# the only way to precede them). deactivate removes the symlink and nothing
+# else, leaving the agent context store and all local state intact; new
+# shells then fall back to the previous resolution with no .zshenv change.
+PI_ENTRYPOINT_DIR="${PI_ENTRYPOINT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pi/bin}"
+export PI_ENTRYPOINT_DIR
+if [[ -e "$PI_ENTRYPOINT_DIR/pi" ]]; then
+  case ":$PATH:" in
+    *":$PI_ENTRYPOINT_DIR:"*) ;;
+    *) export PATH="$PI_ENTRYPOINT_DIR:$PATH" ;;
+  esac
+fi
+
 # Append-only PATH helper: adds a directory at the end without duplicating
 # an inherited entry.
 path_append() {

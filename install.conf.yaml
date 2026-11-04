@@ -69,7 +69,7 @@
     stderr: true
   -
     command: bash scripts/install-pi-bolt.sh
-    description: Verify Homebrew-owned pi-bolt and report versions
+    description: Verify Homebrew-owned pi-bolt and activate it as pi on fresh machines
     stdout: true
     stderr: true
   -
