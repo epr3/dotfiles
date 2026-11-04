@@ -34,7 +34,10 @@ fi
 
 # Pi entry point: `pi` launches the Homebrew-owned Pi-Bolt runtime once
 # scripts/pi-entrypoint.sh activate has created $PI_ENTRYPOINT_DIR/pi
-# (docs/adr/2026-11-04-homebrew-owned-pi-bolt.md). The dir is prepended only
+# (docs/adr/2026-11-04-homebrew-owned-pi-bolt.md). The default below is
+# retyped from scripts/pi-bolt-helpers.sh (the shared definition) because
+# .zshenv cannot reliably source repository scripts; keep both expressions
+# identical. The dir is prepended only
 # while the symlink exists, and only here — after the pnpm and mise blocks —
 # so it wins over both: PNPM_HOME (the retained pnpm Pi, the rollback target,
 # prepended earlier) and mise shims (prepended last, so a later prepend is

@@ -27,8 +27,9 @@ fail() {
 # Explicit mise execution: this stage runs with the locked Node from the
 # tracked global configuration, even without a previously activated shell
 # (docs/mise-node-migration.md). Re-exec resolves from $HOME — outside this
-# repository — so project configuration cannot participate, matching
-# scripts/install-mise-tools.sh.
+# repository — so project configuration cannot participate. Unlike this stage,
+# scripts/install-mise-tools.sh does not re-exec, but it also resolves its
+# tools from $HOME for the same reason.
 source "$(cd "$(dirname "$0")" && pwd)/mise-stage-helpers.sh"
 mise_stage_resolve
 if [[ "${MISE_PI_EXTENSIONS_STAGE:-}" != "1" ]]; then

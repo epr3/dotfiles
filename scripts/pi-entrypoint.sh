@@ -39,30 +39,21 @@ case "$action" in
   *) entrypoint_usage; exit 1 ;;
 esac
 
-PI_ENTRYPOINT_DIR="${PI_ENTRYPOINT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pi/bin}"
+source "$(cd "$(dirname "$0")" && pwd)/pi-bolt-helpers.sh"
+
+PI_ENTRYPOINT_DIR="$(pi_bolt_entrypoint_dir)"
 entrypoint_pi="$PI_ENTRYPOINT_DIR/pi"
 
-# Resolve Homebrew the way scripts/install-pi-bolt.sh does.
-if ! command -v brew &>/dev/null; then
-  if [ -x /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  else
-    fail "brew is required to locate the Homebrew-owned pi-bolt. Run the Homebrew Bootstrap stage first."
-  fi
-fi
+# Resolve brew via the shared pi-bolt helpers.
+pi_bolt_require_brew "pi-entrypoint: brew is required to locate the Homebrew-owned pi-bolt. Run the Homebrew Bootstrap stage first."
 
 target="$(brew --prefix)/bin/pi-bolt"
 
-# The entry point must point at a Homebrew-owned pi-bolt. Accept the same
-# Cellar shapes as scripts/install-pi-bolt.sh.
+# The entry point must point at a Homebrew-owned pi-bolt; resolution and
+# Cellar ownership live in the shared helpers.
 homebrew_pi_bolt_ok() {
-  local resolved
   [ -e "$target" ] || return 1
-  resolved="$(readlink -f "$target")"
-  case "$resolved" in
-    "$(brew --prefix)"/Cellar/*|/opt/homebrew/Cellar/*) return 0 ;;
-    *) return 1 ;;
-  esac
+  pi_bolt_resolved_in_cellar "$(pi_bolt_cellar_path "$target")"
 }
 
 # Print "path (version)" for the `pi` resolving first on the current PATH.
@@ -80,7 +71,7 @@ resolve_pi() {
 case "$action" in
   status)
     if homebrew_pi_bolt_ok; then
-      echo "pi-bolt target: $(readlink -f "$target")"
+      echo "pi-bolt target: $(pi_bolt_cellar_path "$target")"
     else
       echo "pi-bolt target: NOT found at $target (activate requires a Homebrew-owned pi-bolt: 'brew install opensec-git/tap/pi-bolt')."
     fi
@@ -106,8 +97,8 @@ case "$action" in
       if [ ! -L "$entrypoint_pi" ]; then
         fail "$entrypoint_pi exists but is not a symlink — not touching it. Inspect it, remove or rename it yourself, then rerun activate."
       fi
-      resolved="$(readlink -f "$entrypoint_pi")"
-      if [ "$resolved" = "$(readlink -f "$target")" ]; then
+      resolved="$(pi_bolt_cellar_path "$entrypoint_pi")"
+      if [ "$resolved" = "$(pi_bolt_cellar_path "$target")" ]; then
         echo "pi-entrypoint: already active — $entrypoint_pi -> $(readlink "$entrypoint_pi") ($($entrypoint_pi --version 2>/dev/null | head -1 || echo 'version unknown'))."
         exit 0
       fi
@@ -128,7 +119,7 @@ case "$action" in
     if [ ! -L "$entrypoint_pi" ]; then
       fail "$entrypoint_pi exists but is not a symlink — not touching it. Inspect it before removing it yourself."
     fi
-    resolved="$(readlink -f "$entrypoint_pi")"
+    resolved="$(pi_bolt_cellar_path "$entrypoint_pi")"
     case "$resolved" in
       "$(brew --prefix)"/Cellar/pi-bolt/*|/opt/homebrew/Cellar/pi-bolt/*|*/Cellar/pi-bolt/*)
         ;;

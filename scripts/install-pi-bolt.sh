@@ -18,14 +18,9 @@ fail() {
   exit 1
 }
 
-# Make brew available the way the shared mise stage helpers resolve Homebrew.
-if ! command -v brew &>/dev/null; then
-  if [ -x /opt/homebrew/bin/brew ]; then
-    eval "$(/opt/homebrew/bin/brew shellenv)"
-  else
-    fail "brew is required to check pi-bolt. Run the Homebrew Bootstrap stage first."
-  fi
-fi
+source "$(cd "$(dirname "$0")" && pwd)/pi-bolt-helpers.sh"
+
+pi_bolt_require_brew "brew is required to check pi-bolt. Run the Homebrew Bootstrap stage first."
 
 if ! brew list --versions pi-bolt &>/dev/null; then
   fail "Homebrew has no pi-bolt installed. Bootstrap runs this stage after 'brew bundle', which installs pi-bolt from the Brewfile (tap opensec-git/tap, formula pi-bolt). Run 'brew bundle' — or 'brew install opensec-git/tap/pi-bolt' directly — then rerun this stage."
@@ -35,13 +30,10 @@ pi_bolt_bin="$(command -v pi-bolt || true)"
 if [ -z "$pi_bolt_bin" ]; then
   fail "Homebrew has pi-bolt installed, but it is not on PATH. Homebrew links it at \"$(brew --prefix)/bin/pi-bolt\": ensure \"$(brew --prefix)/bin\" is on PATH, then rerun."
 fi
-pi_bolt_bin_resolved="$(readlink -f "$pi_bolt_bin")"
-case "$pi_bolt_bin_resolved" in
-  "$(brew --prefix)"/Cellar/*|/opt/homebrew/Cellar/*) ;;
-  *)
-    fail "pi-bolt resolves to a non-Homebrew-owned binary: $pi_bolt_bin_resolved.Resolution: resolve the conflicting PATH entry; the Homebrew install lives at \"$(brew --prefix)/Cellar/pi-bolt\"."
-    ;;
-esac
+pi_bolt_bin_resolved="$(pi_bolt_cellar_path "$pi_bolt_bin")"
+if ! pi_bolt_resolved_in_cellar "$pi_bolt_bin_resolved"; then
+  fail "pi-bolt resolves to a non-Homebrew-owned binary: $pi_bolt_bin_resolved. Resolution: resolve the conflicting PATH entry; the Homebrew install lives at \"$(brew --prefix)/Cellar/pi-bolt\"."
+fi
 
 pi_bolt_version_raw="$(pi-bolt --version)"
 # pi-bolt --version prints "<bundled Pi version> (Pi-Bolt <Pi-Bolt version>, ...)".
@@ -63,7 +55,7 @@ fi
 # interactive validation. Repeated Bootstrap runs on an already-active entry
 # point just report it (pi-entrypoint.sh is idempotent).
 pnpm_pi="${PNPM_HOME:-$HOME/Library/pnpm}/pi"
-entrypoint_dir="${PI_ENTRYPOINT_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pi/bin}"
+entrypoint_dir="$(pi_bolt_entrypoint_dir)"
 if command -v pi &>/dev/null || [ -x "$pnpm_pi" ] || [ -L "$pnpm_pi" ]; then
   prior_pi="$(command -v pi 2>/dev/null || true)"
   [ -n "$prior_pi" ] || prior_pi="$pnpm_pi"
