@@ -28,7 +28,7 @@ fail() {
 # tracked global configuration, even without a previously activated shell
 # (docs/mise-node-migration.md). Re-exec resolves from $HOME — outside this
 # repository — so project configuration cannot participate, matching
-# scripts/install-pi.sh.
+# scripts/install-mise-tools.sh.
 source "$(cd "$(dirname "$0")" && pwd)/mise-stage-helpers.sh"
 mise_stage_resolve
 if [[ "${MISE_PI_EXTENSIONS_STAGE:-}" != "1" ]]; then

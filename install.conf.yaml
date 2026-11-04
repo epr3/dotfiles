@@ -58,11 +58,6 @@
     stdout: true
     stderr: true
   -
-    command: bash scripts/install-pi.sh
-    description: Install pi coding agent
-    stdout: true
-    stderr: true
-  -
     command: bash scripts/install-pi-extensions.sh
     description: Install pinned pi extensions
     stdout: true
@@ -70,6 +65,11 @@
   -
     command: brew bundle
     description: Install Homebrew packages
+    stdout: true
+    stderr: true
+  -
+    command: bash scripts/install-pi-bolt.sh
+    description: Verify Homebrew-owned pi-bolt and report versions
     stdout: true
     stderr: true
   -

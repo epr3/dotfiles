@@ -1,4 +1,5 @@
 tap "dlvhdr/formulae"
+tap "opensec-git/tap"
 
 # rbenv, pyenv, and go were dropped here: mise owns the migrated runtimes
 # (docs/mise-runtime-migration.md). Existing local installs are not
@@ -23,6 +24,10 @@ brew "worktrunk"
 brew "gh"
 brew "rtk"
 brew "mise"
+# pi-bolt, the compiled Pi runtime, is owned by Homebrew: normal `brew upgrade`
+# applies, with no release pin or repo-owned formula
+# (docs/adr/2026-11-04-homebrew-owned-pi-bolt.md).
+brew "pi-bolt"
 # jq verifies the locked mise tool installs in scripts/install-mise-tools.sh,
 # which runs before `brew bundle` — so it must be listed here.
 brew "jq"

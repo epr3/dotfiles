@@ -10,7 +10,7 @@ Managed with [Dotbot](https://github.com/anishathalye/dotbot).
 git clone https://github.com/epr3/dotfiles.git
 cd dotfiles
 git submodule update --init dotbot
-./install           # link configs + run bootstrap scripts, including pi
+./install           # link configs + run bootstrap scripts, including Pi-Bolt + Pi extensions
 ```
 
 > To install only the config links (skip Homebrew, package installs, git identity, etc.):
@@ -23,9 +23,11 @@ git submodule update --init dotbot
 | `.config/` | Dotfile-managed tool config: worktrunk, gh-dash, oh-my-posh, lazygit, nvim (standalone + VS Code Neovim profile), zellij, ghostty, btop, Superfile, OpenCode, mise |
 | `skills/` | Shared agent skills (one neutral source) — linked at `~/.agents/skills`, discovered natively by both Pi and OpenCode |
 | `.pi/` | pi coding agent config, themes, extensions |
-| `scripts/` | Idempotent bootstrap scripts (Homebrew, mise + locked tools, pnpm, CocoaPods, pi, git identity) |
+| `scripts/` | Idempotent bootstrap scripts (Homebrew, mise + locked tools, pnpm, CocoaPods, pi-bolt verification + pi extensions, git identity) |
 | `dotbot/` | Dotbot submodule for symlink management |
 
+> **Pi runtime migration**: Pi-Bolt — the compiled distribution of Pi — is now the installed Pi runtime, owned by Homebrew (`brew install opensec-git/tap/pi-bolt`, upgraded with `brew upgrade pi-bolt`; declared in the Brewfile). The `pi` command is not switched automatically: on a machine with an existing Pi it keeps resolving to the earlier pnpm-managed install until you validate Pi-Bolt directly against the existing config and then explicitly activate the `pi` entry point (a follow-up change will document activation and rollback fully). The pnpm installation is retained untouched for rollback. Pi-Bolt uses the same `~/.pi/agent` configuration, sessions, credentials, extensions, and shared skills as Pi, so no migration of local state is involved.
+>
 > **Terminal migration**: This repository previously managed Alacritty. It now manages Ghostty. The repository changes do not uninstall Alacritty or remove any live home-directory symlinks; those remain until you choose to migrate locally.
 >
 > **File manager migration**: Launch Superfile directly with `spf`. Its curated configuration is linked at `~/.config/superfile/config.toml`; upstream hotkeys remain unchanged. Repository changes do not uninstall Yazi or remove its existing configuration. See [validation results and safe optional cleanup](docs/superfile-migration.md), including conversion of any old whole-directory Superfile symlink. After those checks pass, remove only a verified obsolete repository-managed Yazi config symlink and uninstall Yazi explicitly with `brew uninstall yazi` if desired. Natural case-insensitive sorting (directories first), file sizes where panel width permits, Neovim, previews, and no change-directory-on-quit are configured. Persistent hidden-file visibility is not exposed by Superfile 1.6.0's configuration schema; hidden files can be toggled with its upstream default hotkey.
@@ -65,7 +67,7 @@ home directory also need this local exception for agent searches.
 
 - [Generate SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) and add to GitHub
 - Update submodules: `git submodule update --recursive --remote`
-- Run `pi` and `/login` (or set provider API keys) after the first install
+- Run Pi-Bolt (`pi-bolt`; `pi` once the entry point is activated) and `/login` (or set provider API keys) after the first install
 - Open Neovim + VS Code to let extension managers finish setup
 
 ## License

@@ -25,7 +25,7 @@ Retained as-is: pnpm (and its global packages), poetry, uv, LM Studio CLI, the O
 - `.config/mise/mise.lock` — regenerated once with `mise lock --global`; records per-platform URLs and SHA-256 checksums for all five tools, so installs verify the same bytes.
 - `scripts/install-mise-tools.sh` — verifies every declared tool generically: each declared version installed, the active resolution equals the first declared version, and the install lives in mise's data directory. Bash-3.2-compatible so it works with macOS's stock bash on fresh machines.
 - `scripts/install-cocoapods.sh` — guarded stage: installs CocoaPods **1.15.2** (the reviewed baseline version) into the mise ruby via `mise x -- gem install`, then verifies `pod` resolves inside mise's install directory at the reviewed version — on every run, including the skip path. Skips only when `mise which pod` already resolves there at the pinned version.
-- `scripts/mise-stage-helpers.sh` — shared preamble (resolve Homebrew/mise, resolve from `$HOME`, ownership guard) sourced by the mise-driving stages, including `install-pi.sh`.
+- `scripts/mise-stage-helpers.sh` — shared preamble (resolve Homebrew/mise, resolve from `$HOME`, ownership guard) sourced by the mise-driving stages.
 - `.zshrc` — `eval "$(rbenv init -)"` and `eval "$(pyenv init -)"` removed (competing runtime selection; mise activate remains).
 - `.zshenv` — `GOROOT`, `GOPATH`, `PYENV_ROOT` exports and their PATH entries retired; `~/go/bin` added so existing `go install`-ed tools (gopls, dlv, wails, …) keep resolving; `~/.rbenv/bin` retired with its hooks.
 - `Brewfile` — `rbenv`, `pyenv`, and `go` dropped. Fresh machines install the runtimes through mise; existing local installs are untouched.
