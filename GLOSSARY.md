@@ -21,7 +21,7 @@ _Avoid_: overflow limit, remaining-context warning.
 
 **Upstream**: github.com/mattpocock/skills — the origin of upstream-derived skills, not a runtime dependency or an ongoing synchronization requirement.
 
-**Implement-spec**: the skill that coordinates implementation of a specification across its dependency-ordered ticket graph, with isolated implementers and explicit human-owned Git handoffs.
+**Implement-spec**: the skill that coordinates implementation of a specification across its dependency-ordered ticket graph, with isolated implementers and a merger specialist for integration; the workflow's Git authorization follows the harness Git policy — an explicit commit or integration request authorizes, implementing a change alone never does.
 _Avoid_: unattended integration workflow.
 
 **Artifact location**: A configured destination for one kind of skill output, independent of the destinations chosen for other kinds.
@@ -78,3 +78,4 @@ _Avoid_: all software, all tools.
 - "50% context" resolved to **Model-aware compaction** measured against the active model's advertised context window; the fixed 200k **Dumb-zone contract** remains statusline-only.
 - "investigation ticket" resolved to **Decision ticket**; **Research ticket** names the evidence-gathering subtype only.
 - `type` records ticket kind and `mode` records **HITL** or **AFK**; using `type` for both was rejected.
+- "explicit human-owned Git handoffs" in the **Implement-spec** definition superseded (2026-11-05): the workflow's integration steps are delegated to a **merger** specialist and Git authorization follows the harness Git policy's explicit-request rules; implementing a ticket alone still authorizes neither commits nor integration.
