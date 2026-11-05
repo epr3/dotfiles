@@ -51,7 +51,7 @@ Refresh correspondence re-check (2026-10-08): the OpenCode copies of the refresh
 
 ## Instructions
 
-`.config/opencode/AGENTS.md` is independently maintained, not a counterpart to `.pi/agent/AGENTS.md`. Its four bullets cover commit approval, batching independent calls, native tools versus `execute` (Code Mode), and repo/skill context resolution. Global `AGENTS.md` loading was verified at the time by the since-retired `scripts/test-opencode-assets.sh`.
+`.config/opencode/AGENTS.md` is independently maintained, not a counterpart to `.pi/agent/AGENTS.md`. Its Git section carries the authorized-commit policy (an explicit commit or integration request authorizes the necessary local commits; replaced 2026-11-05 by ticket `specialist-subagent-routing/04`), with further bullets on batching independent calls, native tools versus `execute` (Code Mode), delegated-specialist routing, and repo/skill context resolution. Global `AGENTS.md` loading was verified at the time by the since-retired `scripts/test-opencode-assets.sh`.
 
 ## Theme material
 

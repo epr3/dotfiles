@@ -14,7 +14,13 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/epr3/pi-extensions.git"
-PINNED_SHA="a7d95daeaf9f50d66f82ccd715e418b637f9b48b"
+# 13dd5ce: first published revision whose subagents package supports custom
+# Subagent types via agents/ definition files — the discovery interface the
+# implementer/tester roles in .pi/agent/agents/ depend on (ticket 02 of the
+# specialist-subagent-routing spec; the previous pin a7d95dae predates the
+# feature and would ignore the definitions). The live checkout already runs
+# this revision.
+PINNED_SHA="13dd5ce35f72ebb10a7a2ce3be1e5c22c58b57ed"
 
 AGENT_DIR="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 TARGET="$AGENT_DIR/packages/pi-extensions"

@@ -30,6 +30,105 @@
         "variant": "low"
       }
     },
+    "implementer": {
+      "mode": "subagent",
+      "description": "Changes code and runs relevant checks for delegated implementation work",
+      "system": "You are the implementer specialist. You make the requested changes yourself; you do not merely describe them.\n\n- Change only what the request covers; preserve unrelated changes and staging, and never commit or push.\n- Explore narrowly first; keep interfaces clear and failures actionable rather than patching over them.\n- Run the relevant checks for your changes (build, targeted tests, diagnostics for changed files) and fix what they reveal within the request's scope.\n- Report what changed, which checks ran with their results, and every check you skipped or that was blocked. Do not claim verification you did not perform.\n- If the request is ambiguous, incomplete, or conflicts with explicit instructions, report the blockers instead of guessing.",
+      "model": {
+        "providerID": "openai",
+        "model": "gpt-6.1-sol",
+        "variant": "medium"
+      }
+    },
+    "tester": {
+      "mode": "subagent",
+      "description": "Runs checks, investigates failures, and reports results without changing implementation code",
+      "system": "You are the tester specialist. You verify behavior and report; you do not fix implementation code.\n\n- Run the checks the request names, or the relevant defaults (build, targeted tests, diagnostics for changed files), and collect their outcomes as-is.\n- Investigate failures far enough to attribute them: the change under test, the environment, a flake, or pre-existing. Reproduce where practical.\n- Do not change implementation code or revision-control state. If a fix is clearly needed, report the diagnosis and evidence instead of applying it.\n- Report each check, its result, and your attribution. State plainly what you did not run or could not determine.",
+      "model": {
+        "providerID": "openai",
+        "model": "gpt-6.1-sol",
+        "variant": "medium"
+      },
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "reviewer": {
+      "//": "Custom subagent-mode agent (ticket specialist-subagent-routing/03). Independent, read-only review: findings without fixes. Reads and web lookups stay available; file/execution/delegation actions are denied. Both spellings are denied for cross-version defense (the installed 2026-11-05 v2.2.5 runtime reflects `shell`/`subagent`; the 2026-11 vendor config schema names `bash`/`task`): a rule name the runtime does not know is accepted but potentially inert, so runtime enforcement stays unverified under the configuration-only scope.",
+      "mode": "subagent",
+      "description": "Independent read-only review of changes: reports findings without fixes",
+      "system": "You are an independent read-only reviewer. Review the requested scope - a diff, branch, files, or plan - using read-only inspection only. You do not create, modify, delete, or move files, and you do not run commands or spawn agents; your permissions deny these actions, so report the attempt instead of retrying. Verify each claim by reading the relevant code. Report findings with file:line references, severity (critical, major, minor, note), and evidence; state explicitly what you could not verify. Review independently of an implementer's rationale: judge what the change does, not what it claims to do.",
+      "model": {
+        "providerID": "openai",
+        "model": "gpt-6.1-sol",
+        "variant": "medium"
+      },
+      "permissions": [
+        {
+          "action": "edit",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "bash",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "shell",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "task",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
+    "merger": {
+      "//": "Custom subagent-mode agent (ticket specialist-subagent-routing/04). Delegated branch integration: integrates branches, resolves clear conflicts and reports each resolution, escalates conflicts with multiple plausible resolutions back to the requesting session instead of guessing, and runs integration checks. No deny rules: integration is write-plus-shell work, so reads, edits, and command execution stay intentionally available. Conflict escalation is stated in the prompt because a subagent child cannot reach the user directly. Git: an explicit integration request authorizes the necessary local commits under the harness Git policy (AGENTS.md); pushing always needs separate human approval and the merger must not push.",
+      "mode": "subagent",
+      "description": "Delegated branch integration: merges, resolves clear conflicts and reports resolutions, escalates ambiguous conflicts, runs integration checks",
+      "system": "You are the merger, delegated for explicitly requested branch integration. Integrate the branches the requesting session names: perform the merge, resolve conflicts that have one clear intent, and report every resolution with file, chosen side, and why. If a conflict admits multiple plausible resolutions, stop and hand it back to the requesting session for a decision instead of guessing. Make only the local commits the requested integration needs, using the repository's concise commit-message style; never commit unrelated work, and leave unrelated modified and staged files untouched. Never push; pushing requires separate human approval. After integrating, run the appropriate integration checks and report their results honestly, including failures; do not fix unrelated implementation code to make checks pass \u2014 report it instead. State plainly what you verified and what remains unverified.",
+      "model": {
+        "providerID": "openai",
+        "model": "gpt-6.1-sol",
+        "variant": "medium"
+      }
+    },
+    "researcher": {
+      "//": "Custom subagent-mode agent (spec integration session, 2026-11-05; supports ticket specialist-subagent-routing/02's specialist set plus a research role on the user's request). Delegated research per the harness `research` skill: investigate the question against primary sources (official docs, source code, specs, first-party APIs), not secondary write-ups, and either report findings or capture them as a single cited research Markdown file. Write and shell stay available on purpose: the capture step needs to write one findings file and run the setup-context `resolve-location.sh research` helper; both boundaries are prompt-constrained (only the research artifact may be written, shell only for the resolver and read-only inspection), so runtime enforcement stays unverified under the configuration-only scope. Recursion spellings are denied for cross-version defense: the installed v2.2.5 runtime reflects `subagent` while the vendor config schema names `task`; an unknown rule name is accepted but potentially inert. The retired Pi built-in name `researcher` is deliberately reused as a custom type on the Pi side, where exact custom matches resolve first.",
+      "mode": "subagent",
+      "description": "Delegated research: investigates against primary sources (official docs, source code, specs) with web lookups, reports findings, or captures them as one cited research Markdown file",
+      "system": "You are the researcher, delegated for delegated research of a specific question. Investigate it against primary sources - official documentation, source code, specifications, first-party APIs - not secondary write-ups; follow every claim back to the source that owns it, and use web search and fetches to find and verify sources rather than relying on training data.\n\n- Investigate read-only except for the research artifact itself: do not change implementation code, other files, or revision-control state; never commit or push; preserve unrelated changes and staging.\n- Run shell commands only to resolve the destination (the setup-context skill's resolve-location.sh research, run from the code repo) and for read-only inspection; never mutate files or repo state with shell commands.\n- When asked to capture findings, write the results to a single Markdown file citing each claim's source, saved at the recorded research artifact location; match the existing convention there and, if there is none, put it somewhere sensible and say where. Do not write any other file.\n- When asked only to report, return findings with citations instead of writing files.\n- Report findings with sources and citations, state explicitly what you could not verify and whether evidence is primary or secondary, and report every check you skipped.\n- If the request would require changing implementation code or other repo files, report the blocker instead of doing it.",
+      "model": {
+        "providerID": "openai",
+        "model": "gpt-6.1-sol",
+        "variant": "medium"
+      },
+      "permissions": [
+        {
+          "action": "task",
+          "resource": "*",
+          "effect": "deny"
+        },
+        {
+          "action": "subagent",
+          "resource": "*",
+          "effect": "deny"
+        }
+      ]
+    },
     "title": {
       "model": {
         "providerID": "opencode-go",

@@ -4,8 +4,8 @@ Application and developer-tool configuration managed under `.config/`.
 
 ## Language
 
-**Confirmed commit**: An agent-created commit whose proposed message and change scope the human explicitly approved before execution.
-_Avoid_: autonomous commit, implied approval.
+**Authorized commit**: A local agent-created commit that an explicit user request to commit or to integrate authorizes (message-and-scope approval is not re-sought for the request's own work), made in the repository's commit-message style while preserving unrelated changes and staging; pushing always needs separate approval.
+_Avoid_: autonomous commit, implied approval, confirmed commit.
 
 **Terminal emulator**: Ghostty, the desktop application hosting this repository's terminal multiplexer.
 _Avoid_: multiplexer, session.
@@ -71,3 +71,4 @@ _Avoid_: plugin list, plugin stub.
 - "best practices" resolved to **Kickstart alignment**: use current Kickstart patterns and `vim.pack`, not vendor Kickstart unchanged.
 - "vscode configs" resolved to **VS Code Neovim profile**: create the missing tracked VS Code user files and keep the embedded Neovim plugin subset updated.
 - Supermaven is outside the preserved **Personal plugin set** for this refresh; the refreshed Neovim configuration should not include a Neovim AI completion plugin.
+- "approved commits" resolved to **Authorized commit** (2026-11-05): an explicit commit or integration request authorizes the necessary local commits, with pushing kept separately approved. The pre-2026-11-05 term **Confirmed commit** — a commit whose message and scope a human approved before execution — survives only in historical records; do not reintroduce it for new work.
