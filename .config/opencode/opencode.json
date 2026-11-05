@@ -27,7 +27,7 @@
       "model": {
         "providerID": "opencode-go",
         "model": "glm-5.3-flash",
-        "variant": "high"
+        "variant": "low"
       }
     },
     "title": {

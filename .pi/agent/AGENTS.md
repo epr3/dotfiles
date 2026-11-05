@@ -3,7 +3,8 @@
 - Explore narrowly; note reversible assumptions and ask about consequential ambiguity or required authorization. Follow repo skills and prerequisites; search ignored `.scratch/` for specs.
 - Favor simple, maintainable solutions: clear interfaces and errors, actionable docs, reproducible workflows, minimal dependencies.
 - Batch proportionate checks and tests after changes; run earlier when useful. Report skipped or blocked checks and unverified behavior.
-- Delegate when required or useful; use read-only agents for discovery. Track multi-step work; use structured questions for decisions.
+- Delegate when useful, handling simple tasks directly when delegation adds little value; use read-only agents for discovery, and honor an explicitly requested specialist. Track multi-step work; use structured questions for decisions.
+- Keep every subagent at or below medium effort using a supported provider-specific effort level. Report an unavailable model or an unverifiable effort ceiling, switch to a verified compatible model and effort, and ask the user when no verified fallback exists.
 
 ## Git
 

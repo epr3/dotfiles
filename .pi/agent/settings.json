@@ -32,7 +32,7 @@
     }
   },
   "subagents": {
-    "//": "explore is read-only by allowlist; grant it extra READ-ONLY tools here. This example grants the lsp navigation set. researcher is read-only + web (web_search/web_fetch). general gets every discovered tool automatically; add names to excludeExtraTools to take some away.",
+    "//": "explore is read-only by allowlist; grant it extra READ-ONLY tools here. This example grants the lsp navigation set. researcher is read-only + web (web_search/web_fetch). general gets every discovered tool automatically; add names to excludeExtraTools to take some away. Every subagent stays at or below medium effort using a supported provider-specific effort level; provider ladders differ, and GLM-5.3-Flash has no medium rung, so it runs at the verified low effort. If a configured model is unavailable or its effort ceiling cannot be verified, report it, fall back to a verified compatible model and effort, and ask the user when no verified fallback exists. Availability and runtime behavior are not asserted by this file; the local catalog is a cache, not live availability.",
     "maxConcurrency": 4,
     "explore": {
       "defaultModel": "opencode-go/qwen3.8-flash",
@@ -53,7 +53,7 @@
     },
     "general": {
       "defaultModel": "opencode-go/glm-5.3-flash",
-      "thinkingLevel": "high",
+      "thinkingLevel": "low",
       "excludeExtraTools": []
     }
   },
