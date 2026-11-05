@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.4.0",
+  "lastChangelogVersion": "1.5.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6.1-terra",
   "defaultThinkingLevel": "medium",
@@ -11,18 +11,19 @@
     "mode": "on"
   },
   "theme": "catppuccin-mocha",
-  "//": "Pi settings drop-in for the artifact-first skill suite. Skills load via the Agent Skills standard (name+description at startup, body on demand, /skill:<name> to invoke). Extension packages are TypeScript, loaded by Pi via jiti (no build step). Paths resolve relative to the agent directory (~/.pi/agent) so the setup is machine-portable: scripts/install-pi-extensions.sh populates packages/pi-extensions at the pinned upstream revision.",
+  "//": "Skills load via the Agent Skills standard. Extension packages are TypeScript loaded by Pi via jiti from the local project worktree.",
   "extensions": [
+    "-extensions/usage.ts",
     "extensions/rtk.ts",
-    "packages/pi-extensions/packages/subagents",
-    "packages/pi-extensions/packages/question",
-    "packages/pi-extensions/packages/todo",
-    "packages/pi-extensions/packages/lsp",
-    "packages/pi-extensions/packages/statusline",
-    "packages/pi-extensions/packages/model-compaction",
-    "packages/pi-extensions/packages/web-fetch",
-    "packages/pi-extensions/packages/web-search",
-    "packages/pi-extensions/packages/model-presets"
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/subagents",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/question",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/todo",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/lsp",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/statusline",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/model-compaction",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-fetch",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/web-search",
+    "/Users/eduardpredescu/Desktop/Projects/pi-extensions/main/packages/model-presets"
   ],
   "webFetch": {
     "extractionModel": {

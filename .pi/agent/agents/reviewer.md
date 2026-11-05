@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Independent read-only review of changes: reports findings without fixes
+description: "Independent read-only review of changes: reports findings without fixes"
 model: openai-codex/gpt-6.1-terra
 thinkingLevel: medium
 disallowedTools: bash

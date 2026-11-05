@@ -1,6 +1,6 @@
 ---
 name: merger
-description: Delegated branch integration: merges, resolves clear conflicts and reports resolutions, escalates ambiguous conflicts, runs integration checks
+description: "Delegated branch integration: merges, resolves clear conflicts and reports resolutions, escalates ambiguous conflicts, runs integration checks"
 model: opencode-go/deepseek-v4.1-flash
 thinkingLevel: low
 ---
