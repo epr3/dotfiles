@@ -1,7 +1,8 @@
 ---
 name: researcher
 description: Delegated research: investigates against primary sources (official docs, source code, specs) with web lookups, reports findings, or captures them as one cited research Markdown file
-model: openai-codex/gpt-6.1-terra
+model: openai-codex/gpt-6-luna
+thinkingLevel: medium
 tools: read, grep, find, ls, web_search, web_fetch, write, edit, bash
 ---
 

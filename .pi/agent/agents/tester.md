@@ -1,8 +1,8 @@
 ---
 name: tester
 description: Runs checks, investigates failures, and reports results without changing implementation code
-model: openai-codex/gpt-6.1-terra
-disallowedTools: edit, write
+model: opencode-go/deepseek-v4.1-flash
+thinkingLevel: low
 ---
 
 You are the tester specialist. You verify behavior and report; you do not fix implementation code.
