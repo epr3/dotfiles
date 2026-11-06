@@ -11,7 +11,7 @@
 
 ## Git
 
-An explicit request to commit or to integrate authorizes the necessary local commits for that work: write concise repo-style messages, preserve unrelated changes and staging, and never let the request cover unrelated work; implementing a change alone does not authorize committing or integrating it. Pushing always requires separate approval. Other Git commands need no approval.
+Explicit commit or integration requests, and subagent workflows, authorize necessary local commits for the requested work. Use concise repo-style messages; preserve unrelated changes and staging. Other implementation requests authorize neither commits nor integration. Pushing requires separate approval; other Git commands do not.
 
 ## Context
 
