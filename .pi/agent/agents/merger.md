@@ -1,7 +1,7 @@
 ---
 name: merger
 description: "Delegated branch integration: merges, resolves clear conflicts and reports resolutions, escalates ambiguous conflicts, runs integration checks"
-model: opencode-go/deepseek-v4.1-flash
+model: opencode-go/mimo-v2.6-flash
 thinkingLevel: low
 ---
 

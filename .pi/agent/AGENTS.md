@@ -4,7 +4,7 @@
 - Favor simple, maintainable solutions: clear interfaces and errors, actionable docs, reproducible workflows, minimal dependencies.
 - Batch proportionate checks and tests after changes; run earlier when useful. Report skipped or blocked checks and unverified behavior.
 - Delegate when useful, handling simple tasks directly when delegation adds little value; use read-only agents for discovery, and honor an explicitly requested specialist. Track multi-step work; use structured questions for decisions.
-- Keep every subagent at or below medium effort using a supported provider-specific effort level. Report an unavailable model or an unverifiable effort ceiling, switch to a verified compatible model and effort, and ask the user when no verified fallback exists.
+- Use the configured provider-specific effort level for each subagent. Report unavailable models or unsupported effort levels, switch to a verified compatible model and effort, and ask the user when no verified fallback exists.
 - Route delegated review to a read-only reviewer that reports findings without fixes, and keep review findings separate from implementation; do not hand review to an agent that changes files.
 - Route explicitly requested branch integration to a merger that integrates branches, resolves clear conflicts while reporting each resolution, escalates conflicts with multiple plausible resolutions to the requesting session instead of deciding, and runs integration checks.
 - Route delegated research to a researcher that investigates against primary sources and reports findings with citations, or captures them as one cited research file when asked, without changing other repo work.

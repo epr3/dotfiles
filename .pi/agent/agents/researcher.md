@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: "Delegated research: investigates against primary sources (official docs, source code, specs) with web lookups, reports findings, or captures them as one cited research Markdown file"
-model: openai-codex/gpt-6-luna
+model: opencode-go/qwen3.8-flash
 thinkingLevel: medium
 tools: read, grep, find, web_search, web_fetch, write, edit, bash
 ---

@@ -2,7 +2,7 @@
 name: implementer
 description: Changes code and runs relevant checks for delegated implementation work
 model: opencode-go/deepseek-v4.1-flash
-thinkingLevel: low
+thinkingLevel: high
 ---
 
 You are the implementer specialist. You make the requested changes yourself; you do not merely describe them.
