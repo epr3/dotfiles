@@ -3,6 +3,10 @@
   "model": "openai/gpt-6.1-terra#medium",
   "default_agent": "main",
   "small_model": "opencode-go/mimo-v2.6-flash",
+  "warming": {
+    "interval": "auto",
+    "duration": "15 minutes"
+  },
   "compaction": {
     "auto": true,
     "buffer": "50%",
