@@ -5,6 +5,15 @@ command palette. Run it again, press Escape while the panel has focus, or click
 the close hint to close. The panel uses the active theme and the host's session
 panel layout and scrolling.
 
+With the panel focused, press Enter to search/select a conversation with the
+host's picker (arrows and Enter; Escape cancels). Click a tree row or the root
+label to open it directly. Use the host's **Focus right pane** command to focus
+the monitor without a mouse. Navigation opens the existing conversation and
+rebinds the monitor to it, retaining the original root scope so siblings and the
+root remain reachable. It does not create sessions or change their content or
+execution. On a narrow terminal the host keeps the monitor full-screen; close
+it with Escape to read the selected conversation, then `/subagents` to reopen.
+
 The open panel is live: it resolves the current session's ancestors and pages
 each parent's children recursively, even when they are not in the TUI cache.
 Session events trigger debounced reads; five-second polling recovers missed
@@ -60,7 +69,7 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   visible. Temporary TUI-slot checks also retained 24 nested rows and focused
   scrolling across widths 60 → 35 → 18 → 60 without remounting or refetching.
   A human terminal/theme check and deep nesting in the real TUI remain unverified.
-- Navigation, automatic opening, and suppression behavior belong to later
+- Automatic opening and suppression behavior belong to later
   tickets. This slice does not implement them.
 - Deleted sessions or descendants inaccessible to the connected server cannot
   be recovered if they were never discovered.
@@ -77,3 +86,11 @@ used here were found unsupported; unavailable values remain explicitly unknown.
 
 Verification uses temporary ad hoc checks, not a repository test suite or
 verification script (see `docs/adr/2026-10-04-no-maintained-dotfiles-test-suite.md`).
+
+Navigation was checked at the TUI plugin boundary with temporary ad hoc checks
+for descendant/sibling/root routes, root scope across panel remounts, cancelled
+selection, inaccessible sessions, and absence of mutation calls. Installed
+v2.2.7 PTY checks opened a real existing descendant by both row click and the
+keyboard picker, then observed its transcript beside the original root and
+sibling tree. Real deeper-than-one-level descendant navigation and narrow-screen
+navigation remain unverified; nested scope is covered by the boundary check.
