@@ -15,9 +15,10 @@ execution. On a narrow terminal the host keeps the monitor full-screen; close
 it with Escape to read the selected conversation, then `/subagents` to reopen.
 
 Monitoring stays live while viewing a session, even with the panel closed. The
-first successful discovery establishes a baseline for its root; subsequently
-discovered descendants open the monitor automatically only when no panel is
-visible. Another panel is never displaced, and blocked openings are not queued.
+first successful discovery establishes a baseline for its root; a creation event
+received during that discovery still opens the monitor once the descendant's
+membership is confirmed. Subsequently discovered descendants open automatically
+only when no panel is visible. Another panel is never displaced, and blocked openings are not queued.
 Closing the monitor (including via the host), or replacing it with another panel,
 suppresses automatic reopening for that root tree. `/subagents` can still open it
 deliberately. Suppression survives switching between roots and descendants within
@@ -34,6 +35,7 @@ Finished and archived descendants are not filtered out. Previously discovered
 rows are retained across refreshes and closing/reopening for this plugin's
 lifetime; no-longer-discoverable rows are marked as last known data. Reloading
 the plugin loses that in-memory history but rediscovers accessible descendants.
+A route change restores that scope's retained view before making network reads.
 A discovery failure keeps the last view with a stale-data warning and retries
 automatically. No execution or conversation mutation APIs are called.
 
@@ -57,12 +59,15 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   cannot identify executions owned by another server process.
 - Session `tokens` are reported cumulative provider categories, displayed
   separately (input, output, reasoning, cache read/write). Reasoning may overlap
-  output, so these are not summed. Missing/invalid categories are **Tokens
-  unknown**, never default zeros. Usage can lag streaming until recorded.
+  output, so these are not summed. Missing/invalid categories are marked
+  **unknown** individually; **Tokens unknown** means no category is known.
+  Known categories (including reported zeros) are preserved. Usage can lag streaming until recorded.
 - For explicitly running sessions, `client.message.list` reads the latest
   assistant message (`type: "assistant", order: "desc", limit: 1`). An incomplete
   message's running/streaming tool name, reasoning, or response content kind
-  supplies activity. Completed messages and failed reads yield **Activity
+  supplies activity. Text parts have no per-part completion timestamp in this
+  runtime; response activity is limited to incomplete assistant messages.
+  Completed messages and failed reads yield **Activity
   unknown**. Prompts, tool arguments, and outputs are not displayed.
 - `context.data.listen` supplies `{ details }`. `session.*` events (including
   creation, execution, message content, and usage changes) invalidate discovery;

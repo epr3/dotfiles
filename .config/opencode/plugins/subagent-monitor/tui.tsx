@@ -29,14 +29,15 @@ export default Plugin.define({
           const scopeID = navigationScope?.sessionID === route.sessionID
             ? navigationScope.rootID
             : route.sessionID
-          onCleanup(watchTree(context, scopeID, (value) => {
+          onCleanup(watchTree(context, scopeID, (value, createdIDs) => {
             setTree(value)
             setError("")
             const previous = seen.get(value.root.id)
             const ids = new Set(value.rows.map(({ session }) => session.id))
             seen.set(value.root.id, ids)
             const closed = [value.root.id, ...ids].some((id) => suppressed.has(id))
-            if (previous && [...ids].some((id) => !previous.has(id)) && !closed && !activePanel) {
+            const added = createdIDs.length > 0 || (previous && [...ids].some((id) => !previous.has(id)))
+            if (added && !closed && !activePanel) {
               context.ui.panel.open(panelName)
             }
           }, (cause) => {
@@ -80,10 +81,10 @@ export default Plugin.define({
           current: props.panel.sessionID,
           options: [
             { title: sessionLabel(snapshot.root), value: snapshot.root.id, description: "Root conversation" },
-            ...snapshot.rows.map(({ session, depth }) => ({
+            ...snapshot.rows.map(({ session, depth, status }) => ({
               title: `${"  ".repeat(depth)}└ ${sessionLabel(session)}`,
               value: session.id,
-              description: session.outcome ?? "Status unknown",
+              description: status,
             })),
           ],
         })

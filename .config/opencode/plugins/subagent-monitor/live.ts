@@ -10,7 +10,7 @@ type Context = {
     session: SessionReader & { active(): Promise<Record<string, { type: string }>> }
     message: { list(input: { sessionID: string; limit: number; order: "desc"; type: "assistant" }): Promise<{ data: Message[] }> }
   }
-  data: { listen(callback: (event: { details: { type: string } }) => void): () => void }
+  data: { listen(callback: (event: { details: { type: string; data?: { sessionID?: string } } }) => void): () => void }
 }
 export type LiveTree = {
   root: Tree["root"]
@@ -19,10 +19,12 @@ export type LiveTree = {
 
 function usage(session: Tree["root"]): string {
   const tokens = session.tokens
-  if (!tokens || ![tokens.input, tokens.output, tokens.reasoning, tokens.cache?.read, tokens.cache?.write]
-    .every((value) => Number.isFinite(value) && value >= 0)) return "Tokens unknown"
+  const categories = [tokens?.input, tokens?.output, tokens?.reasoning, tokens?.cache?.read, tokens?.cache?.write]
+  const known = (value: number | undefined): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0
+  if (!categories.some(known)) return "Tokens unknown"
+  const [input, output, reasoning, read, write] = categories.map((value) => known(value) ? value : "unknown")
   // Keep provider categories separate: reasoning may overlap output; do not invent a total.
-  return `Tokens · in ${tokens.input} · out ${tokens.output} · reasoning ${tokens.reasoning} · cache read ${tokens.cache.read} / write ${tokens.cache.write}`
+  return `Tokens · in ${input} · out ${output} · reasoning ${reasoning} · cache read ${read} / write ${write}`
 }
 
 /** Read-only live adapter at the TUI boundary. Reads are serialized and events invalidate,
@@ -30,7 +32,7 @@ function usage(session: Tree["root"]): string {
 export function watchTree(
   context: Context,
   sessionID: string,
-  update: (tree: LiveTree) => void,
+  update: (tree: LiveTree, createdIDs: readonly string[]) => void,
   failure: (cause: unknown) => void,
   retained = new Map<string, LiveTree>(),
 ): () => void {
@@ -39,6 +41,13 @@ export function watchTree(
   let dirty = false
   let rootID = sessionID
   let timer: ReturnType<typeof setTimeout> | undefined
+  const created = new Set<string>()
+
+  // Routes remount the watcher, including while the server is unavailable.
+  // Restore only this scope's retained view before attempting any network reads.
+  const cached = retained.get(sessionID) ?? [...retained.values()].find((tree) =>
+    tree.rows.some(({ session }) => session.id === sessionID))
+  if (cached) { rootID = cached.root.id; update(cached, []) }
 
   async function refresh() {
     if (stopped) return
@@ -86,7 +95,14 @@ export function watchTree(
       }
       visit(rootID, 0)
       const value = { root: tree.root, rows: ordered }
-      if (!stopped) { retained.set(rootID, value); update(value) }
+      if (!stopped) {
+        // Creation events are only hints until discovery confirms membership.
+        // Preserve them across failed/overlapping reads, including the first one.
+        const createdIDs = [...created].filter((id) => current.has(id))
+        for (const id of createdIDs) created.delete(id)
+        retained.set(rootID, value)
+        update(value, createdIDs)
+      }
     } catch (cause) {
       if (!stopped) failure(cause)
     } finally {
@@ -100,6 +116,7 @@ export function watchTree(
   }
   // Subscribe before discovery: events during a read cause another pass, never a lost update.
   const unsubscribe = context.data.listen(({ details }) => {
+    if (details.type === "session.created" && details.data?.sessionID) created.add(details.data.sessionID)
     if (details.type.startsWith("session.") || details.type === "server.connected") schedule()
   })
   const poll = setInterval(schedule, 5000)
