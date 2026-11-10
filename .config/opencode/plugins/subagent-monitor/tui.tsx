@@ -1,26 +1,26 @@
 /** @jsxImportSource @opentui/solid */
 import { Plugin } from "@opencode/plugin/tui"
 import { For, Show, createSignal, onCleanup } from "solid-js"
-import { discoverTree, sessionLabel, type Tree } from "./tree.ts"
+import { sessionLabel } from "./tree.ts"
+import { watchTree, type LiveTree } from "./live.ts"
 
 const panelName = "subagent-monitor.tree"
 
 export default Plugin.define({
   id: "subagent-monitor",
   setup(context: any) {
+    const retained = new Map<string, LiveTree>()
     function Monitor(props: { panel: any }) {
-      const [tree, setTree] = createSignal<Tree>()
+      const [tree, setTree] = createSignal<LiveTree>()
       const [error, setError] = createSignal("")
-      let disposed = false
-      onCleanup(() => { disposed = true })
-      // Keep this snapshot mounted until explicitly closed. No execution or message mutations.
-      void discoverTree(context.client.session, props.panel.sessionID).then(
-        (value) => { if (!disposed) setTree(value) },
+      onCleanup(watchTree(context, props.panel.sessionID,
+        (value) => { setTree(value); setError("") },
         (cause) => {
           console.warn("[subagent-monitor] discovery failed", cause)
-          if (!disposed) setError("Could not discover the session tree. Close and reopen to retry.")
+          setError("Tree refresh failed; displayed data may be stale. Retrying automatically.")
         },
-      )
+        retained,
+      ))
       context.keymap.layer(() => ({
         commands: [{ bind: "escape", title: "Close subagent monitor", run: props.panel.close }],
       }))
@@ -35,15 +35,16 @@ export default Plugin.define({
           <Show when={tree()}>{(value) => (
             <>
               <text fg={context.theme.text.muted}>Root: {sessionLabel(value().root)}</text>
-              <text fg={context.theme.text.muted}>Snapshot · activity and usage unknown</text>
+              <text fg={context.theme.text.muted}>Live · events + 5-second polling</text>
               <scrollbox flexGrow={1} minHeight={0} focused={props.panel.focused}>
                 <Show when={value().rows.length === 0}>
                   <text fg={context.theme.text.muted}>No discoverable subagents</text>
                 </Show>
-                <For each={value().rows}>{({ session, depth }) => (
+                <For each={value().rows}>{({ session, depth, status, activity, usage, stale }) => (
                   <box flexShrink={0} paddingLeft={depth * 2}>
                     <text fg={context.theme.text.base}>└ {sessionLabel(session)}</text>
-                    <text fg={context.theme.text.muted}>  {session.outcome ?? "Status unknown"}</text>
+                    <text fg={context.theme.text.muted}>  {status} · {activity}{stale ? " · No longer discoverable; last known data" : ""}</text>
+                    <text fg={context.theme.text.muted}>  {usage}</text>
                   </box>
                 )}</For>
               </scrollbox>

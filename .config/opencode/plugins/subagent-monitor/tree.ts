@@ -5,6 +5,7 @@ export type Session = {
   title?: string
   agent?: string
   outcome?: "succeeded" | "failed" | "interrupted"
+  tokens?: { input: number; output: number; reasoning: number; cache: { read: number; write: number } }
 }
 
 export type SessionReader = {
