@@ -9,6 +9,13 @@ const panelName = "subagent-monitor.tree"
 export default Plugin.define({
   id: "subagent-monitor",
   setup(context: any) {
+    const agentEmojis: Record<string, string> = Object.create(null)
+    const configuredEmojis = context.options?.agentEmojis
+    if (configuredEmojis && typeof configuredEmojis === "object" && !Array.isArray(configuredEmojis)) {
+      for (const [agent, emoji] of Object.entries(configuredEmojis)) {
+        if (typeof emoji === "string") agentEmojis[agent.toLowerCase()] = emoji
+      }
+    }
     const retained = new Map<string, LiveTree>()
     // The host binds each panel to one conversation. Carry the original root
     // across the remount when we rebind the panel after navigating.
@@ -29,6 +36,11 @@ export default Plugin.define({
           const scopeID = navigationScope?.sessionID === route.sessionID
             ? navigationScope.rootID
             : route.sessionID
+          const knownRoot = retained.get(scopeID)?.root.id ?? [...retained.values()]
+            .find((snapshot) => snapshot.rows.some(({ session }) => session.id === scopeID))?.root.id ?? scopeID
+          if (!activePanel && !suppressed.has(scopeID) && !suppressed.has(knownRoot)) {
+            context.ui.panel.open(panelName)
+          }
           onCleanup(watchTree(context, scopeID, (value, createdIDs) => {
             setTree(value)
             setError("")
@@ -51,6 +63,17 @@ export default Plugin.define({
     function closeMonitor(sessionID: string) {
       suppressed.add(sessionID)
       context.ui.panel.close()
+    }
+    function statusCue(status: string, stale: boolean) {
+      if (stale) return { symbol: "?", color: context.theme.text.muted }
+      if (status === "Running") return { symbol: "●", color: context.theme.text.feedback.success.base }
+      if (status === "succeeded") return { symbol: "✓", color: context.theme.text.feedback.success.base }
+      if (status === "failed") return { symbol: "✕", color: context.theme.text.feedback.error.base }
+      if (status === "interrupted") return { symbol: "■", color: context.theme.text.feedback.warning.base }
+      return { symbol: "?", color: context.theme.text.muted }
+    }
+    function agentEmoji(agent?: string) {
+      return agentEmojis[agent?.toLowerCase() ?? ""] ?? agentEmojis.default ?? ""
     }
     function Monitor(props: { panel: any }) {
       let disposed = false
@@ -81,8 +104,8 @@ export default Plugin.define({
           current: props.panel.sessionID,
           options: [
             { title: sessionLabel(snapshot.root), value: snapshot.root.id, description: "Root conversation" },
-            ...snapshot.rows.map(({ session, depth, status }) => ({
-              title: `${"  ".repeat(depth)}└ ${sessionLabel(session)}`,
+            ...snapshot.rows.map(({ session, status }) => ({
+              title: `${agentEmoji(session.agent)} ${sessionLabel(session)}`,
               value: session.id,
               description: status,
             })),
@@ -97,7 +120,7 @@ export default Plugin.define({
         ],
       }))
       return (
-        <box flexDirection="column" width="100%" height="100%" minWidth={0} minHeight={0} padding={1} gap={1}>
+        <box flexDirection="column" width="100%" height="100%" minWidth={0} minHeight={0} padding={1}>
           <text fg={context.theme.text.base}>Subagents</text>
           <text fg={context.theme.text.muted} onMouseUp={() => closeMonitor(props.panel.sessionID)}>
             esc close · /subagents toggle
@@ -107,21 +130,29 @@ export default Plugin.define({
           <Show when={!tree() && !error()}><text fg={context.theme.text.muted}>Discovering subagents…</text></Show>
           <Show when={tree()}>{(value) => (
             <>
-              <text fg={context.theme.text.muted} width="100%" flexShrink={0} wrapMode="none" truncate
-                onMouseUp={() => openConversation(value().root.id)}>Root: {sessionLabel(value().root)}</text>
-              <text fg={context.theme.text.muted}>Live · events + 5-second polling</text>
+              <box marginTop={1} flexShrink={0} minWidth={0}>
+                <text fg={context.theme.text.muted} width="100%" wrapMode="none" truncate
+                  onMouseUp={() => openConversation(value().root.id)}>Root: {sessionLabel(value().root)}</text>
+              </box>
+              <text fg={context.theme.text.muted} wrapMode="none" truncate>
+                {value().rows.length} agents · {value().rows.filter((row) => row.status === "Running" && !row.stale).length} running · live
+              </text>
               <scrollbox flexGrow={1} minWidth={0} minHeight={0} focused={props.panel.focused}>
                 <Show when={value().rows.length === 0}>
                   <text fg={context.theme.text.muted}>No discoverable subagents</text>
                 </Show>
-                <For each={value().rows}>{({ session, depth, status, activity, usage, stale }) => (
-                  <box flexDirection="column" flexShrink={0} minWidth={0}
-                    // Let the host resize the same mounted tree. Reserve label space even at deep nesting.
-                    paddingLeft={Math.min(depth * 2, Math.max(0, props.panel.width - 24))}
+                <For each={value().rows}>{({ session, status, activity, usage, stale }) => (
+                  <box flexDirection="column" flexShrink={0} minWidth={0} marginBottom={1}
                     onMouseUp={() => openConversation(session.id)}>
-                    <text fg={context.theme.text.base} wrapMode="none" truncate>└ {sessionLabel(session)}</text>
-                    <text fg={context.theme.text.muted} wrapMode="none" truncate>  {status} · {activity}{stale ? " · No longer discoverable; last known data" : ""}</text>
-                    <text fg={context.theme.text.muted} wrapMode="none" truncate>  {usage}</text>
+                    <box flexDirection="row" minWidth={0}>
+                      <text fg={statusCue(status, stale).color}>● </text>
+                      <text fg={context.theme.text.base} flexShrink={1} wrapMode="none" truncate>{session.id === props.panel.sessionID ? "▶ " : ""}{agentEmoji(session.agent)} {sessionLabel(session)}</text>
+                    </box>
+                    <text fg={statusCue(status, stale).color} width="100%" wrapMode="word">  {statusCue(status, stale).symbol} {status}{stale ? " · Last known data" : ""}</text>
+                    <Show when={status === "Running"}>
+                      <text fg={context.theme.text.muted} width="100%" wrapMode="word">  {activity}</text>
+                    </Show>
+                    <For each={usage}>{(line) => <text fg={context.theme.text.muted} width="100%" wrapMode="word">  {line}</text>}</For>
                   </box>
                 )}</For>
               </scrollbox>

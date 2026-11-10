@@ -14,17 +14,16 @@ type Context = {
 }
 export type LiveTree = {
   root: Tree["root"]
-  rows: (Tree["rows"][number] & { status: string; activity: string; usage: string; stale: boolean })[]
+  rows: (Tree["rows"][number] & { status: string; activity: string; usage: string[]; stale: boolean })[]
 }
 
-function usage(session: Tree["root"]): string {
+function usage(session: Tree["root"]): string[] {
   const tokens = session.tokens
-  const categories = [tokens?.input, tokens?.output, tokens?.reasoning, tokens?.cache?.read, tokens?.cache?.write]
+  const categories = [tokens?.input, tokens?.output, tokens?.cache?.read, tokens?.cache?.write]
   const known = (value: number | undefined): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0
-  if (!categories.some(known)) return "Tokens unknown"
-  const [input, output, reasoning, read, write] = categories.map((value) => known(value) ? value : "unknown")
-  // Keep provider categories separate: reasoning may overlap output; do not invent a total.
-  return `Tokens · in ${input} · out ${output} · reasoning ${reasoning} · cache read ${read} / write ${write}`
+  if (!categories.some(known)) return ["Tokens unknown"]
+  const [input, output, read, write] = categories.map((value) => known(value) ? value : "unknown")
+  return [`Tokens: in ${input} · out ${output}`, `Cache: read ${read} · write ${write}`]
 }
 
 /** Read-only live adapter at the TUI boundary. Reads are serialized and events invalidate,

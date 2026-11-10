@@ -6,5 +6,22 @@
   "session": {
     "sidebar": "hide"
   },
-  "plugins": ["./plugins/dumb-zone", "./plugins/subagent-monitor"]
+  "plugins": [
+    "./plugins/dumb-zone",
+    {
+      "package": "./plugins/subagent-monitor",
+      "options": {
+        "agentEmojis": {
+          "explore": "🔎",
+          "general": "🤖",
+          "implementer": "🔧",
+          "tester": "🧪",
+          "reviewer": "🔍",
+          "merger": "🔀",
+          "researcher": "📚",
+          "default": "🤖"
+        }
+      }
+    }
+  ]
 }

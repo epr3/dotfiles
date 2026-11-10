@@ -1,9 +1,39 @@
 # Subagent monitor
 
-In a session, run `/subagents` or select **Toggle subagent monitor** from the
-command palette. Run it again, press Escape while the panel has focus, or click
-the close hint to close. The panel uses the active theme and the host's session
-panel layout and scrolling.
+The monitor opens by default when entering a session, unless another panel is
+already visible or the monitor was dismissed for that root. Run `/subagents` or
+select **Toggle subagent monitor** from the command palette to toggle it. Press
+Escape while the panel has focus, or click the close hint to close. The panel uses
+the active theme and the host's session panel layout and scrolling.
+
+The header shows the total and explicitly running agent counts. Each row has a
+status symbol and theme color: ● running, ✓ succeeded, ✕ failed, ■ interrupted,
+and ? unknown or no longer discoverable. Status text remains visible without
+color. Colored bullets reflect status, and ▶ marks the currently open descendant.
+All descendants appear in a flat list.
+Configured agent-type emoji appear beside row and picker labels. The configured
+`default` is used for missing or unrecognized types.
+
+Customize these icons in the monitor's entry in `.config/opencode/cli.json`:
+
+```json
+{
+  "package": "./plugins/subagent-monitor",
+  "options": {
+    "agentEmojis": {
+      "explore": "🧭",
+      "reviewer": "👀",
+      "my-custom-agent": "🌟",
+      "default": "🤖"
+    }
+  }
+}
+```
+
+Keys are case-insensitive agent names. `default` is used for missing or
+unrecognized names; without it, those names have no icon. Set a value to an
+empty string to hide that icon. The runtime must report an agent name for a
+specific mapping to apply.
 
 With the panel focused, press Enter to search/select a conversation with the
 host's picker (arrows and Enter; Escape cancels). Click a tree row or the root
@@ -58,8 +88,8 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   `outcome`; otherwise that outcome or **Status unknown** is displayed. This
   cannot identify executions owned by another server process.
 - Session `tokens` are reported cumulative provider categories, displayed
-  separately (input, output, reasoning, cache read/write). Reasoning may overlap
-  output, so these are not summed. Missing/invalid categories are marked
+  separately (input, output, cache read/write); reasoning is omitted and no
+  total is inferred. Missing/invalid displayed categories are marked
   **unknown** individually; **Tokens unknown** means no category is known.
   Known categories (including reported zeros) are preserved. Usage can lag streaming until recorded.
 - For explicitly running sessions, `client.message.list` reads the latest
@@ -77,8 +107,8 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   than 108 available columns forces full-screen presentation; wider layouts
   show the monitor beside the conversation. Available width excludes vertical
   tabs when present. The plugin does not impose a competing breakpoint or
-  remount its contents on resize. Indentation is capped to leave label space;
-  long labels and the root title truncate rather than widening the panel.
+  remount its contents on resize. Long labels and the root title truncate rather
+  than widening the panel.
 - A v2.2.7 PTY check opened the monitor for an existing session with real
   subagents, resized 160 → 80 → 160 columns, and closed with Escape. The heading
   moved from column 82 to column 2 and back, with the root and agent rows still
