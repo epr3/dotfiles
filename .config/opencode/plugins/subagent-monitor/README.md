@@ -48,9 +48,18 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   creation, execution, message content, and usage changes) invalidate discovery;
   `server.connected` also refreshes. Event payloads never directly admit a row,
   so unrelated sessions cannot enter the tree. Reads are not an atomic snapshot.
-- The host owns sizing and panel focus. Interactive layout, theme appearance,
-  and focused scrolling still require a human TUI check; the attempted PTY
-  check was interrupted by a service restart before a result was captured.
+- The host owns sizing and panel focus. In the installed v2.2.7 host, fewer
+  than 108 available columns forces full-screen presentation; wider layouts
+  show the monitor beside the conversation. Available width excludes vertical
+  tabs when present. The plugin does not impose a competing breakpoint or
+  remount its contents on resize. Indentation is capped to leave label space;
+  long labels and the root title truncate rather than widening the panel.
+- A v2.2.7 PTY check opened the monitor for an existing session with real
+  subagents, resized 160 → 80 → 160 columns, and closed with Escape. The heading
+  moved from column 82 to column 2 and back, with the root and agent rows still
+  visible. Temporary TUI-slot checks also retained 24 nested rows and focused
+  scrolling across widths 60 → 35 → 18 → 60 without remounting or refetching.
+  A human terminal/theme check and deep nesting in the real TUI remain unverified.
 - Navigation, automatic opening, and suppression behavior belong to later
   tickets. This slice does not implement them.
 - Deleted sessions or descendants inaccessible to the connected server cannot
