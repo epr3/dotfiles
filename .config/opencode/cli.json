@@ -6,5 +6,5 @@
   "session": {
     "sidebar": "hide"
   },
-  "plugins": ["./plugins/dumb-zone"]
+  "plugins": ["./plugins/dumb-zone", "./plugins/subagent-monitor"]
 }
