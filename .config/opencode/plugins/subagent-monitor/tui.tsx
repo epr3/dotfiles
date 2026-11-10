@@ -1,6 +1,6 @@
 /** @jsxImportSource @opentui/solid */
 import { Plugin } from "@opencode/plugin/tui"
-import { For, Show, createSignal, onCleanup } from "solid-js"
+import { For, Show, createEffect, createSignal, onCleanup } from "solid-js"
 import { sessionLabel } from "./tree.ts"
 import { watchTree, type LiveTree } from "./live.ts"
 
@@ -13,22 +13,47 @@ export default Plugin.define({
     // The host binds each panel to one conversation. Carry the original root
     // across the remount when we rebind the panel after navigating.
     let navigationScope: { sessionID: string; rootID: string } | undefined
+    const seen = new Map<string, Set<string>>()
+    const suppressed = new Set<string>()
+    let activePanel: { name: string; sessionID: string } | undefined
+    const [tree, setTree] = createSignal<LiveTree>()
+    const [error, setError] = createSignal("")
+    context.ui.slot({
+      append: "app",
+      render: () => {
+        createEffect(() => {
+          const route = context.ui.router.current()
+          setTree(undefined)
+          setError("")
+          if (route.type !== "session") return
+          const scopeID = navigationScope?.sessionID === route.sessionID
+            ? navigationScope.rootID
+            : route.sessionID
+          onCleanup(watchTree(context, scopeID, (value) => {
+            setTree(value)
+            setError("")
+            const previous = seen.get(value.root.id)
+            const ids = new Set(value.rows.map(({ session }) => session.id))
+            seen.set(value.root.id, ids)
+            const closed = [value.root.id, ...ids].some((id) => suppressed.has(id))
+            if (previous && [...ids].some((id) => !previous.has(id)) && !closed && !activePanel) {
+              context.ui.panel.open(panelName)
+            }
+          }, (cause) => {
+            console.warn("[subagent-monitor] discovery failed", cause)
+            setError("Tree refresh failed; displayed data may be stale. Retrying automatically.")
+          }, retained))
+        })
+        return null
+      },
+    })
+    function closeMonitor(sessionID: string) {
+      suppressed.add(sessionID)
+      context.ui.panel.close()
+    }
     function Monitor(props: { panel: any }) {
-      const [tree, setTree] = createSignal<LiveTree>()
-      const [error, setError] = createSignal("")
       let disposed = false
       onCleanup(() => { disposed = true })
-      const scopeID = navigationScope?.sessionID === props.panel.sessionID
-        ? navigationScope.rootID
-        : props.panel.sessionID
-      onCleanup(watchTree(context, scopeID,
-        (value) => { setTree(value); setError("") },
-        (cause) => {
-          console.warn("[subagent-monitor] discovery failed", cause)
-          setError("Tree refresh failed; displayed data may be stale. Retrying automatically.")
-        },
-        retained,
-      ))
       async function openConversation(sessionID: string) {
         const snapshot = tree()
         if (!snapshot) return
@@ -66,14 +91,14 @@ export default Plugin.define({
       }
       context.keymap.layer(() => ({
         commands: [
-          { bind: "escape", title: "Close subagent monitor", run: props.panel.close },
+          { bind: "escape", title: "Close subagent monitor", run: () => closeMonitor(props.panel.sessionID) },
           { bind: "return", title: "Open monitored conversation", run: browse },
         ],
       }))
       return (
         <box flexDirection="column" width="100%" height="100%" minWidth={0} minHeight={0} padding={1} gap={1}>
           <text fg={context.theme.text.base}>Subagents</text>
-          <text fg={context.theme.text.muted} onMouseUp={() => props.panel.close()}>
+          <text fg={context.theme.text.muted} onMouseUp={() => closeMonitor(props.panel.sessionID)}>
             esc close · /subagents toggle
           </text>
           <text fg={context.theme.text.muted} onMouseUp={browse}>enter browse · click a conversation to open</text>
@@ -107,9 +132,26 @@ export default Plugin.define({
 
     context.ui.slot({
       append: "session.panel",
-      render: (panel: any) => (
-        <Show when={panel.name === panelName}><Monitor panel={panel} /></Show>
-      ),
+      render: (panel: any) => {
+        // panel.current() is plugin-scoped in v2.2.7. The shared slot is the
+        // supported boundary that also observes another plugin's visible panel.
+        let observed: typeof activePanel
+        const release = () => {
+          if (activePanel !== observed) return
+          const route = context.ui.router.current()
+          if (observed?.name === panelName && route.type === "session" && route.sessionID === observed.sessionID) {
+            suppressed.add(observed.sessionID)
+          }
+          activePanel = undefined
+        }
+        createEffect(() => {
+          const next = { name: panel.name, sessionID: panel.sessionID }
+          if (observed && (observed.name !== next.name || observed.sessionID !== next.sessionID)) release()
+          activePanel = observed = next
+        })
+        onCleanup(release)
+        return <Show when={panel.name === panelName}><Monitor panel={panel} /></Show>
+      },
     })
     context.keymap.layer(() => ({
       mode: "global",
@@ -122,7 +164,7 @@ export default Plugin.define({
         run() {
           context.ui.dialog.clear()
           if (context.ui.panel.current()?.name === panelName) {
-            context.ui.panel.close()
+            closeMonitor(context.ui.panel.current().sessionID)
           } else if (!context.ui.panel.open(panelName)) {
             context.ui.toast.show({ message: "Open a session before opening the subagent monitor.", variant: "info" })
           }

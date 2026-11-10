@@ -14,11 +14,22 @@ root remain reachable. It does not create sessions or change their content or
 execution. On a narrow terminal the host keeps the monitor full-screen; close
 it with Escape to read the selected conversation, then `/subagents` to reopen.
 
-The open panel is live: it resolves the current session's ancestors and pages
+Monitoring stays live while viewing a session, even with the panel closed. The
+first successful discovery establishes a baseline for its root; subsequently
+discovered descendants open the monitor automatically only when no panel is
+visible. Another panel is never displaced, and blocked openings are not queued.
+Closing the monitor (including via the host), or replacing it with another panel,
+suppresses automatic reopening for that root tree. `/subagents` can still open it
+deliberately. Suppression survives switching between roots and descendants within
+this plugin instance, but not plugin reload or TUI exit. Completion never closes
+the monitor.
+
+The live watcher resolves the current session's ancestors and pages
 each parent's children recursively, even when they are not in the TUI cache.
 Session events trigger debounced reads; five-second polling recovers missed
 events and reconnections. Reads are serialized, and events during discovery
-schedule another pass. The resolved root stays fixed while the panel is mounted.
+schedule another pass. The watcher follows the current root scope, preserving
+the original root during explicit monitor navigation.
 Finished and archived descendants are not filtered out. Previously discovered
 rows are retained across refreshes and closing/reopening for this plugin's
 lifetime; no-longer-discoverable rows are marked as last known data. Reloading
@@ -69,8 +80,10 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   visible. Temporary TUI-slot checks also retained 24 nested rows and focused
   scrolling across widths 60 → 35 → 18 → 60 without remounting or refetching.
   A human terminal/theme check and deep nesting in the real TUI remain unverified.
-- Automatic opening and suppression behavior belong to later
-  tickets. This slice does not implement them.
+- `panel.current()` in v2.2.7 is plugin-scoped: it cannot report another plugin's
+  panel. A contribution to the shared `session.panel` slot observes the visible
+  panel's reactive name/session and disposal instead. Navigation away is not
+  treated as a manual closure. A replacing panel is treated as dismissal.
 - Deleted sessions or descendants inaccessible to the connected server cannot
   be recovered if they were never discovered.
 
@@ -83,6 +96,22 @@ could not complete: spawning was rejected by the runtime's subagent depth limit;
 the probe consequently failed its new-child assertion. New-child event delivery
 and interactive rendered updates remain unverified. No runtime events or fields
 used here were found unsupported; unavailable values remain explicitly unknown.
+
+Ticket 04 verification: temporary TUI-boundary checks covered automatic opening,
+host and toggle closure, deliberate reopening, competing panels (with the real
+plugin-scoped `current` contract), no deferred takeover, completion retention,
+root-scoped suppression across descendant navigation, and subscription disposal.
+After rebasing onto the navigation/layout changes, the same checks passed again,
+including sibling navigation, panel rebinding, and retained root/nested scope.
+An installed v2.2.7 PTY run loaded this plugin with temporary synthetic session
+data and a separate competing plugin: both panels rendered, the competitor
+remained selected on a new child, a later child opened the monitor, host closure
+suppressed another child, deliberate reopening worked, and completion left it
+open. These were real host panel/slot lifecycle checks, not real-subagent event
+verification. Real-subagent automatic opening remains unverified in this slice;
+the prior nested spawning attempt hit the runtime depth limit (above). No panel
+behavior exercised by this slice was found unsupported. Human visual/focus and
+narrow-terminal automatic-opening checks remain outstanding.
 
 Verification uses temporary ad hoc checks, not a repository test suite or
 verification script (see `docs/adr/2026-10-04-no-maintained-dotfiles-test-suite.md`).
