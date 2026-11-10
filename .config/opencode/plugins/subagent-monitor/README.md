@@ -10,7 +10,8 @@ The header shows the total and explicitly running agent counts. Each row has a
 status symbol and theme color: ● running, ✓ succeeded, ✕ failed, ■ interrupted,
 and ? unknown or no longer discoverable. Status text remains visible without
 color. Colored bullets reflect status, and ▶ marks the currently open descendant.
-All descendants appear in a flat list.
+All descendants appear in a flat list, newest by creation time first. Agents
+without a valid creation timestamp appear last.
 Configured agent-type emoji appear beside row and picker labels. The configured
 `default` is used for missing or unrecognized types.
 

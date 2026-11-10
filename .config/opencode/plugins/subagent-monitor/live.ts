@@ -93,6 +93,13 @@ export function watchTree(
         }
       }
       visit(rootID, 0)
+      // The flat monitor and picker show newly created agents first. Keep the
+      // existing order for equal or unavailable timestamps.
+      const createdAt = (row: LiveTree["rows"][number]) => {
+        const value = row.session.time?.created
+        return typeof value === "number" && Number.isFinite(value) ? value : -Infinity
+      }
+      ordered.sort((a, b) => createdAt(b) - createdAt(a))
       const value = { root: tree.root, rows: ordered }
       if (!stopped) {
         // Creation events are only hints until discovery confirms membership.

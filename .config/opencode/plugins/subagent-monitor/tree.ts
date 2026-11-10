@@ -4,6 +4,7 @@ export type Session = {
   parentID?: string
   title?: string
   agent?: string
+  time?: { created?: number }
   outcome?: "succeeded" | "failed" | "interrupted"
   tokens?: { input: number; output: number; reasoning: number; cache: { read: number; write: number } }
 }
