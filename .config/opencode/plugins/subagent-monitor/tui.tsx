@@ -1,10 +1,14 @@
 /** @jsxImportSource @opentui/solid */
 import { Plugin } from "@opencode/plugin/tui"
-import { For, Show, createEffect, createSignal, onCleanup } from "solid-js"
+import { For, Show, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
 import { sessionLabel } from "./tree.ts"
 import { watchTree, type LiveTree } from "./live.ts"
 
 const panelName = "subagent-monitor.tree"
+
+function isFinishedStatus(status: string) {
+  return ["succeeded", "failed", "interrupted"].includes(status)
+}
 
 export default Plugin.define({
   id: "subagent-monitor",
@@ -25,9 +29,25 @@ export default Plugin.define({
     let activePanel: { name: string; sessionID: string } | undefined
     const [tree, setTree] = createSignal<LiveTree>()
     const [error, setError] = createSignal("")
+    const finishedAt = new Map<string, number>()
+    const [now, setNow] = createSignal(Date.now())
+    const visibleTree = createMemo(() => {
+      const snapshot = tree()
+      const time = now()
+      if (!snapshot) return undefined
+      return {
+        ...snapshot,
+        rows: snapshot.rows.filter((row) => {
+          const finished = finishedAt.get(row.session.id)
+          return finished === undefined || time - finished < 30_000
+        }),
+      }
+    })
     context.ui.slot({
       append: "app",
       render: () => {
+        const clock = setInterval(() => setNow(Date.now()), 1000)
+        onCleanup(() => clearInterval(clock))
         createEffect(() => {
           const route = context.ui.router.current()
           setTree(undefined)
@@ -42,6 +62,13 @@ export default Plugin.define({
             context.ui.panel.open(panelName)
           }
           onCleanup(watchTree(context, scopeID, (value, createdIDs) => {
+            const observedAt = Date.now()
+            for (const row of value.rows) {
+              if (!row.stale && row.status === "Running") finishedAt.delete(row.session.id)
+              else if (!row.stale && isFinishedStatus(row.status) && !finishedAt.has(row.session.id)) {
+                finishedAt.set(row.session.id, observedAt)
+              }
+            }
             setTree(value)
             setError("")
             const previous = seen.get(value.root.id)
@@ -79,7 +106,7 @@ export default Plugin.define({
       let disposed = false
       onCleanup(() => { disposed = true })
       async function openConversation(sessionID: string) {
-        const snapshot = tree()
+        const snapshot = visibleTree()
         if (!snapshot) return
         try {
           // Fail visibly if a discoverable conversation has since disappeared.
@@ -97,7 +124,7 @@ export default Plugin.define({
         }
       }
       async function browse() {
-        const snapshot = tree()
+        const snapshot = visibleTree()
         if (!snapshot) return
         const sessionID = await context.ui.dialog.select({
           title: "Open monitored conversation",
@@ -127,8 +154,8 @@ export default Plugin.define({
           </text>
           <text fg={context.theme.text.muted} onMouseUp={browse}>enter browse · click a conversation to open</text>
           <Show when={error()}><text fg={context.theme.text.feedback.error.base}>{error()}</text></Show>
-          <Show when={!tree() && !error()}><text fg={context.theme.text.muted}>Discovering subagents…</text></Show>
-          <Show when={tree()}>{(value) => (
+          <Show when={!visibleTree() && !error()}><text fg={context.theme.text.muted}>Discovering subagents…</text></Show>
+          <Show when={visibleTree()}>{(value) => (
             <>
               <box marginTop={1} flexShrink={0} minWidth={0}>
                 <text fg={context.theme.text.muted} width="100%" wrapMode="none" truncate
@@ -139,7 +166,7 @@ export default Plugin.define({
               </text>
               <scrollbox flexGrow={1} minWidth={0} minHeight={0} focused={props.panel.focused}>
                 <Show when={value().rows.length === 0}>
-                  <text fg={context.theme.text.muted}>No discoverable subagents</text>
+                  <text fg={context.theme.text.muted}>No visible subagents</text>
                 </Show>
                 <For each={value().rows}>{({ session, status, activity, usage, stale }) => (
                   <box flexDirection="column" flexShrink={0} minWidth={0} marginBottom={1}

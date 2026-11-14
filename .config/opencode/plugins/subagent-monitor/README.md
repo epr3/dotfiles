@@ -10,8 +10,14 @@ The header shows the total and explicitly running agent counts. Each row has a
 status symbol and theme color: ● running, ✓ succeeded, ✕ failed, ■ interrupted,
 and ? unknown or no longer discoverable. Status text remains visible without
 color. Colored bullets reflect status, and ▶ marks the currently open descendant.
-All descendants appear in a flat list, newest by creation time first. Agents
-without a valid creation timestamp appear last.
+Visible descendants appear in a flat list, newest by creation time first. Agents
+without a valid creation timestamp appear last. Succeeded, failed, and interrupted
+agents disappear from the panel and picker 30 seconds after the monitor first
+observes their completion, even if their data later becomes unknown or stale.
+Running agents and agents whose completion has not been observed remain visible.
+If an agent runs again, it reappears and its completion timer resets. This only
+hides rows; it does not delete conversations. The timer starts over after a plugin
+reload or TUI restart.
 Configured agent-type emoji appear beside row and picker labels. The configured
 `default` is used for missing or unrecognized types.
 
@@ -62,8 +68,8 @@ Session events trigger debounced reads; five-second polling recovers missed
 events and reconnections. Reads are serialized, and events during discovery
 schedule another pass. The watcher follows the current root scope, preserving
 the original root during explicit monitor navigation.
-Finished and archived descendants are not filtered out. Previously discovered
-rows are retained across refreshes and closing/reopening for this plugin's
+Archived descendants are discovered normally. Previously discovered
+rows (including hidden finished rows) are retained across refreshes and closing/reopening for this plugin's
 lifetime; no-longer-discoverable rows are marked as last known data. Reloading
 the plugin loses that in-memory history but rediscovers accessible descendants.
 A route change restores that scope's retained view before making network reads.
