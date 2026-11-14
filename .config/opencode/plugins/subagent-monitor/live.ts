@@ -22,7 +22,11 @@ function usage(session: Tree["root"]): string[] {
   const categories = [tokens?.input, tokens?.output, tokens?.cache?.read, tokens?.cache?.write]
   const known = (value: number | undefined): value is number => typeof value === "number" && Number.isFinite(value) && value >= 0
   if (!categories.some(known)) return ["Tokens unknown"]
-  const [input, output, read, write] = categories.map((value) => known(value) ? value : "unknown")
+  const [input, output, read, write] = categories.map((value) =>
+    !known(value) ? "unknown"
+      : value >= 999_500 ? `${Math.round(value / 1_000_000)}m`
+      : value >= 1000 ? `${Math.round(value / 1000)}k`
+      : String(value))
   return [`Tokens: in ${input} · out ${output}`, `Cache: read ${read} · write ${write}`]
 }
 

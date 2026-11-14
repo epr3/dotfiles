@@ -98,7 +98,9 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   separately (input, output, cache read/write); reasoning is omitted and no
   total is inferred. Missing/invalid displayed categories are marked
   **unknown** individually; **Tokens unknown** means no category is known.
-  Known categories (including reported zeros) are preserved. Usage can lag streaming until recorded.
+  Known categories under 1,000 are shown exactly; larger values are rounded to
+  whole thousands or millions (for example, 1,999 is shown as 2k and 1,999,999
+  as 2m). Usage can lag streaming until recorded.
 - For explicitly running sessions, `client.message.list` reads the latest
   assistant message (`type: "assistant", order: "desc", limit: 1`). An incomplete
   message's running/streaming tool name, reasoning, or response content kind
