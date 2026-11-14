@@ -4,7 +4,7 @@ Issues and specs for this repo live as markdown files under `.scratch/` at the b
 
 ## Ticket format
 
-`/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/` following that skill's per-ticket template verbatim: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, `**Status:** ready-for-agent`, and acceptance-criteria checkboxes. A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort (its issues are **decision tickets**, not implementation slices); the spec lives at `.scratch/<feature-slug>/spec.md`.
+`/to-tickets` writes one file per ticket under `.scratch/<feature-slug>/issues/`: `<NN>-<slug>.md` numbered from `01` in dependency order (blockers first), H1 `# <NN>: <title>`, **What to build**, **Blocked by**, and acceptance-criteria checkboxes. When triage is enabled, record the configured `ready-for-agent` role as a status line. A feature dir carries a `spec.md`; a dir carrying a `map.md` instead is a `wayfinder` effort (its issues are **decision tickets**, not implementation slices); the spec lives at `.scratch/<feature-slug>/spec.md`.
 
 This tracker has no label mechanism; use each skill's status and blocking conventions. On a real tracker, the triage skills' label strings and mappings apply as the `triage` skill describes.
 
