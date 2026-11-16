@@ -27,7 +27,11 @@ function usage(session: Tree["root"]): string[] {
       : value >= 999_500 ? `${Math.round(value / 1_000_000)}m`
       : value >= 1000 ? `${Math.round(value / 1000)}k`
       : String(value))
-  return [`Tokens: in ${input} · out ${output}`, `Cache: read ${read} · write ${write}`]
+  const total = known(tokens?.input) && known(tokens?.cache?.read) && (tokens?.cache?.write === undefined || known(tokens.cache.write))
+    ? tokens.input + tokens.cache.read + (tokens.cache.write ?? 0)
+    : 0
+  const hit = total > 0 ? `${Math.round(100 * tokens!.cache!.read! / total)}%` : "unknown"
+  return [`Tokens: in ${input} · out ${output}`, `Cache: hit ${hit} · read ${read} · write ${write}`]
 }
 
 /** Read-only live adapter at the TUI boundary. Reads are serialized and events invalidate,

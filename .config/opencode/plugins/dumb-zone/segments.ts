@@ -7,8 +7,7 @@
 //
 // Anatomy (plain Unicode, no Nerd Font needed):
 //
-//   dotfiles │ ⎇ main │ ◑ RISKY ██████░░░░ 65% eff · 130k/200k · 33% nom
-//   └─ muted ┴────────┘ └ zone ──┘└muted┘└zone┘ └────── muted ──────────────┘
+//   dotfiles │ ⎇ main │ ◑ RISKY ██████░░░░ 130k/200k │ cache hit 80%
 //
 // Unavailable reads stay honest: with no usage record or no advertised window,
 // the zone cluster is replaced by the awaiting-context placeholder — never a
@@ -18,10 +17,12 @@
 import {
   AWAITING_CONTEXT_TEXT,
   classify,
-  formatStatusSegments,
+  human,
   meter,
   meterWidthOf,
   DEFAULT_CONFIG,
+  ZONE_GLYPH,
+  ZONE_LABEL,
   ZONE_TONE,
   type DumbZoneConfig,
   type Zone,
@@ -83,13 +84,20 @@ export function sumTokens(tokens?: TokenRecord): number {
  */
 export function newestAssistantUsage(
   messages: readonly MessageRecord[] | undefined,
-): { usedTokens: number; model?: ModelRef } | undefined {
+): { usedTokens: number; model?: ModelRef; cacheHitPercent?: number } | undefined {
   if (!messages) return undefined
-  let found: { usedTokens: number; model?: ModelRef } | undefined
+  let found: { usedTokens: number; model?: ModelRef; cacheHitPercent?: number } | undefined
   for (const message of messages) {
     if (message?.type !== "assistant" || !message.tokens) continue
     const used = sumTokens(message.tokens)
-    if (used > 0) found = { usedTokens: used, model: message.model }
+    if (used > 0) {
+      const { input, cache } = message.tokens
+      const read = cache?.read
+      const write = cache?.write ?? 0
+      const valid = (n: unknown): n is number => typeof n === "number" && Number.isFinite(n) && n >= 0
+      const total = valid(input) && valid(read) && valid(write) ? input + read + write : 0
+      found = { usedTokens: used, model: message.model, cacheHitPercent: total > 0 ? 100 * read! / total : undefined }
+    }
   }
   return found
 }
@@ -139,19 +147,16 @@ export function basename(p: string | undefined | null): string {
 /** The separator between top-level segments, drawn in the muted ink. */
 export const SEGMENT_SEPARATOR = " │ "
 
-/** The zone block (glyph, label, meter, percentages) for an available reading. */
+/** The zone block (glyph, label, meter) for an available reading. */
 export function zoneRuns(result: ZoneResult, usage: FooterUsage, width: number): Run[] {
   const tone = ZONE_TONE[result.zone]
-  const segs = formatStatusSegments(result.zone, result.fracEff, result.fracNom, usage.usedTokens, usage.windowTokens)
   const m = meter(result.fracEff, width)
   return [
-    { text: segs.glyphAndLabel, tone },
+    { text: `${ZONE_GLYPH[result.zone]} ${ZONE_LABEL[result.zone]}`, tone },
     { text: " " },
     { text: m.filled, tone },
     { text: m.track, tone: "muted" },
-    { text: " " },
-    { text: segs.effPct, tone },
-    { text: ` ${segs.usageMeta}`, tone: "muted" },
+    { text: ` ${human(usage.usedTokens)}/${human(usage.windowTokens)}`, tone: "muted" },
   ]
 }
 
@@ -166,6 +171,7 @@ export function footerRuns(
   context: FooterContext,
   usage: FooterUsage | undefined,
   config: DumbZoneConfig = DEFAULT_CONFIG,
+  cacheHitPercent?: number,
 ): Run[] {
   const segments: Run[][] = []
   const folder = basename(context.directory)
@@ -179,6 +185,9 @@ export function footerRuns(
     segments.push(zoneRuns(result, usage, meterWidthOf(config)))
   } else {
     segments.push([{ text: AWAITING_CONTEXT_TEXT, tone: "muted" }])
+  }
+  if (typeof cacheHitPercent === "number" && Number.isFinite(cacheHitPercent) && cacheHitPercent >= 0 && cacheHitPercent <= 100) {
+    segments.push([{ text: `cache hit ${Math.round(cacheHitPercent)}%`, tone: "muted" }])
   }
 
   const runs: Run[] = []

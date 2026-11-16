@@ -95,9 +95,11 @@ the running v2.2.7 service, including its `/openapi.json`. References:
   `outcome`; otherwise that outcome or **Status unknown** is displayed. This
   cannot identify executions owned by another server process.
 - Session `tokens` are reported cumulative provider categories, displayed
-  separately (input, output, cache read/write); reasoning is omitted and no
+  separately (input, output, cache hit/read and write); reasoning is omitted and no
   total is inferred. Missing/invalid displayed categories are marked
   **unknown** individually; **Tokens unknown** means no category is known.
+  Cache hit percentage is read / (input + read + write); a missing write is
+  treated as zero, while missing input or read makes the percentage unknown.
   Known categories under 1,000 are shown exactly; larger values are rounded to
   whole thousands or millions (for example, 1,999 is shown as 2k and 1,999,999
   as 2m). Usage can lag streaming until recorded.

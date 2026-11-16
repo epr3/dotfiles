@@ -7,7 +7,7 @@
 // footer runs and the host-shape readers); this file only reads OpenCode state
 // and themes the parts.
 //
-//   dotfiles │ ⎇ main │ ◑ RISKY ██████░░░░ 65% eff · 130k/200k · 33% nom
+//   dotfiles │ ⎇ main │ ◑ RISKY ██████░░░░ 130k/200k │ cache hit 80%
 //
 // Host-boundary notes (verified against the installed v2.0.22 release):
 // - Slot contributions are removed through normal slot cleanup when the
@@ -106,6 +106,7 @@ export default Plugin.define({
         { directory, branch: branchOf(location()) },
         usage,
         config,
+        found?.cacheHitPercent,
       )
     }
 
