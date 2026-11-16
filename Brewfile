@@ -1,4 +1,5 @@
 tap "dlvhdr/formulae"
+tap "meta/fb"
 tap "opensec-git/tap"
 
 # rbenv, pyenv, and go were dropped here: mise owns the migrated runtimes
@@ -22,6 +23,7 @@ brew "superfile"
 brew "bash"
 brew "worktrunk"
 brew "gh"
+brew "idb"
 brew "rtk"
 brew "mise"
 # pi-bolt, the compiled Pi runtime, is owned by Homebrew: normal `brew upgrade`
