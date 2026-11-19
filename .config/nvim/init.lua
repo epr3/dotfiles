@@ -18,6 +18,7 @@ if vim.g.vscode then
   require 'plugins-vscode'
 else
   require 'plugins'
+  require('nvim.zellij-session').setup()
 end
 
 -- vim: ts=2 sts=2 sw=2 et
