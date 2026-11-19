@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: "Delegated research: investigates against primary sources (official docs, source code, specs) with web lookups, reports findings, or captures them as one cited research Markdown file"
-model: opencode-go/qwen3.8-flash
+model: opencode-go/glm-5.3
 thinkingLevel: medium
 tools: read, grep, find, web_search, web_fetch, write, edit, bash
 ---
